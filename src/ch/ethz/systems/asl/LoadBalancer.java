@@ -1,5 +1,9 @@
 package ch.ethz.systems.asl;
 
+import ch.ethz.systems.asl.justtesting.CrunchifyNIOServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 /**
@@ -7,12 +11,16 @@ import java.util.List;
  */
 public class LoadBalancer {
 
+    private static final Logger log = LogManager.getLogger(LoadBalancer.class);
+
     List<MiddlewareComponent> middlewareComponents;
     ConsistentHasher hasher;
 
     LoadBalancer(List<MiddlewareComponent> middlewareComponents, ConsistentHasher hasher) {
         this.middlewareComponents = middlewareComponents;
         this.hasher = hasher;
+
+        log.info("Load balancer initialised.");
     }
 
     void handleWriteRequest() {
