@@ -2,6 +2,8 @@ package ch.ethz.systems.asl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -10,11 +12,24 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class CrunchifyNIOServer {
 
+    private static final Logger log = LogManager.getLogger(CrunchifyNIOServer.class);
+
     @SuppressWarnings("unused")
     public static void main(String[] args) throws IOException {
+
+        /*ClassLoader cl = ClassLoader.getSystemClassLoader();
+
+        URL[] urls = ((URLClassLoader)cl).getURLs();
+
+        for(URL url: urls){
+            System.out.println(url.getFile());
+        }*/
 
         // Selector: multiplexor of SelectableChannel objects
         Selector selector = Selector.open(); // selector is open here
@@ -36,7 +51,7 @@ public class CrunchifyNIOServer {
         // Keep server running
         while (true) {
 
-            log("i'm a server and i'm waiting for new connection and buffer select...");
+            log.info("i'm a server and i'm waiting for new connection and buffer select...");
             // Selects a set of keys whose corresponding channels are ready for I/O operations
             selector.select();
 
@@ -56,7 +71,7 @@ public class CrunchifyNIOServer {
 
                     // Operation-set bit for read operations
                     crunchifyClient.register(selector, SelectionKey.OP_READ);
-                    log("Connection Accepted: " + crunchifyClient.getLocalAddress() + "\n");
+                    log.info("Connection Accepted: " + crunchifyClient.getLocalAddress() + "\n");
 
                     // Tests whether this key's channel is ready for reading
                 } else if (myKey.isReadable()) {
@@ -66,20 +81,16 @@ public class CrunchifyNIOServer {
                     crunchifyClient.read(crunchifyBuffer);
                     String result = new String(crunchifyBuffer.array()).trim();
 
-                    log("Message received: " + result);
+                    log.info("Message received: " + result);
 
                     if (result.equals("Crunchify")) {
                         crunchifyClient.close();
-                        log("\nIt's time to close connection as we got last company name 'Crunchify'");
-                        log("\nServer will keep running. Try running client again to establish new connection");
+                        log.info("\nIt's time to close connection as we got last company name 'Crunchify'");
+                        log.info("\nServer will keep running. Try running client again to establish new connection");
                     }
                 }
                 crunchifyIterator.remove();
             }
         }
-    }
-
-    private static void log(String str) {
-        System.out.println(str);
     }
 }
