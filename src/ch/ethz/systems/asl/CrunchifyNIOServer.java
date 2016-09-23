@@ -21,7 +21,7 @@ public class CrunchifyNIOServer {
 
         // ServerSocketChannel: selectable channel for stream-oriented listening sockets
         ServerSocketChannel crunchifySocket = ServerSocketChannel.open();
-        InetSocketAddress crunchifyAddr = new InetSocketAddress("localhost", 1111);
+        InetSocketAddress crunchifyAddr = new InetSocketAddress("localhost", 11212);
 
         // Binds the channel's socket to a local address and configures the socket to listen for connections
         crunchifySocket.bind(crunchifyAddr);
