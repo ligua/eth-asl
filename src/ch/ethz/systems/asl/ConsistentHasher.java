@@ -6,6 +6,8 @@ abstract class ConsistentHasher {
 
     public abstract Integer hash(String s);
 
-    public abstract List<Integer> getMachines(String s);
+    public abstract Integer getPrimaryMachine(String s);
+
+    public abstract List<Integer> getAllMachines(String s);
 
 }
