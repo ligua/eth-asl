@@ -1,6 +1,5 @@
-package ch.ethz.systems.asl;
+package main.java.asl;
 
-import ch.ethz.systems.asl.justtesting.CrunchifyNIOServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,11 +24,11 @@ public class MiddlewareMain {
 
     LoadBalancer loadBalancer;
 
-    MiddlewareMain() {
+    public MiddlewareMain() {
         this(1, 1, 1);
     }
 
-    MiddlewareMain(Integer numMemcachedServers, Integer numReadThreadsPerServer, Integer replicationFactor) {
+    public MiddlewareMain(Integer numMemcachedServers, Integer numReadThreadsPerServer, Integer replicationFactor) {
         log.info("Starting middleware...");
         this.numMemcachedServers = numMemcachedServers;
         this.numReadThreadsPerServer = numReadThreadsPerServer;

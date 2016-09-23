@@ -1,4 +1,4 @@
-package ch.ethz.systems.asl.justtesting;
+package main.java.asl.justtesting;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

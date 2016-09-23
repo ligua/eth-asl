@@ -1,4 +1,4 @@
-package ch.ethz.systems.asl;
+package main.java.asl;
 
 import java.util.List;
 
