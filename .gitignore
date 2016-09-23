@@ -16,3 +16,6 @@ Advanced Systems Lab.iml
 
 # memaslap
 mem/
+
+# Built files
+out/
