@@ -18,7 +18,12 @@ public class ConsistentHasherImpl extends ConsistentHasher {
     }
 
     @Override
-    public List<Integer> getMachines(String s) {
+    public Integer getPrimaryMachine(String s) {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getAllMachines(String s) {
         // TODO
         return null;
     }
