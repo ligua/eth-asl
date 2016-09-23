@@ -1,6 +1,5 @@
-package ch.ethz.systems.asl;
+package main.java.asl;
 
-import ch.ethz.systems.asl.justtesting.CrunchifyNIOServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
