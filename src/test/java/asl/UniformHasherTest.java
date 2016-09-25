@@ -57,4 +57,21 @@ public class UniformHasherTest {
         }
     }
 
+    @Test
+    public void testDeterminism() throws Exception {
+        String testString1 = "taivo";
+        String testString2 = "pungas";
+
+        UniformHasher uh1 = new UniformHasher(1, 1);
+        Integer machine11 = uh1.getPrimaryMachine(testString1);
+        Integer machine21 = uh1.getPrimaryMachine(testString2);
+
+        UniformHasher uh2 = new UniformHasher(1, 1);
+        Integer machine12 = uh2.getPrimaryMachine(testString1);
+        Integer machine22 = uh2.getPrimaryMachine(testString2);
+
+        assertEquals(machine11, machine12);
+        assertEquals(machine21, machine22);
+    }
+
 }
