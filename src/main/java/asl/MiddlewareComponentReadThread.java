@@ -18,6 +18,8 @@ public class MiddlewareComponentReadThread implements Runnable {
     public MiddlewareComponentReadThread(Integer componentId, Integer threadId, Queue<Request> readQueue) {
         this.componentId = componentId;
         this.threadId = threadId;
+
+        // TODO start connection to our memcached server using MemcachedConnection
         // TODO
 
 
@@ -26,6 +28,6 @@ public class MiddlewareComponentReadThread implements Runnable {
 
     @Override
     public void run() {
-        // TODO
+        // TODO start taking stuff from queue and executing it
     }
 }
