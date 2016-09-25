@@ -2,9 +2,7 @@ package main.java.asl;
 
 import java.util.List;
 
-interface ConsistentHasher {
-
-    public abstract Integer hash(String s);
+interface Hasher {
 
     public abstract Integer getPrimaryMachine(String s);
 

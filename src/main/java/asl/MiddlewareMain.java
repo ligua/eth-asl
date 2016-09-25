@@ -18,7 +18,7 @@ public class MiddlewareMain {
     Integer numReadThreadsPerServer;        // T
     Integer replicationFactor;              // R
 
-    ConsistentHasher hasher;
+    Hasher hasher;
 
     List<MiddlewareComponent> components;
 
@@ -34,7 +34,7 @@ public class MiddlewareMain {
         this.numReadThreadsPerServer = numReadThreadsPerServer;
         this.replicationFactor = replicationFactor;
 
-        this.hasher = new ConsistentHasherImpl(numMemcachedServers, replicationFactor);
+        this.hasher = new UniformHasher(numMemcachedServers, replicationFactor);
 
         // Create all middleware components
         this.components = new ArrayList<>();
