@@ -23,11 +23,15 @@ public class ReadWorker implements Runnable {
         // TODO
 
 
-        log.info(String.format("Component #%d ReadWorker #%d initialised.", componentId, threadId));
+        log.info(String.format("%s Component #%d ReadWorker #%d initialised.", getName(), componentId, threadId));
     }
 
     @Override
     public void run() {
         // TODO start taking stuff from queue and executing it
+    }
+
+    public String getName() {
+        return String.format("c%dr%d", componentId, threadId);
     }
 }
