@@ -16,6 +16,8 @@ public class MiddlewareComponentWriteThread implements Runnable {
 
     public MiddlewareComponentWriteThread(Integer componentId, Queue<Request> writeQueue) {
         this.componentId = componentId;
+
+        // TODO start connections to all memcached servers using MemcachedConnection
         // TODO
 
 
@@ -26,6 +28,6 @@ public class MiddlewareComponentWriteThread implements Runnable {
 
     @Override
     public void run() {
-        // TODO
+        // TODO start taking stuff from queue and executing it
     }
 }
