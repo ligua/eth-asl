@@ -22,14 +22,18 @@ public class LoadBalancer implements Runnable {
         log.info("Load balancer initialised.");
     }
 
-    void handleWriteRequest(Request request) {
-        // TODO send the request to appropriate machine
-    }
-
-    void handleReadRequest(Request request) {
+    /**
+     * Take one request and add it to the correct queue.
+     */
+    void handleRequest(Request request) {
         Integer primaryMachine = hasher.getPrimaryMachine(request.key);
-        // TODO send request to appropriate machine
+        MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
+        if(request.type.equals(RequestType.GET)) {
+            mc.readQueue.add(request);
+        } else {
+            mc.writeQueue.add(request);     // DELETE requests also go to the write queue.
+        }
     }
 
     @Override

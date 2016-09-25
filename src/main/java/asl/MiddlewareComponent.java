@@ -17,8 +17,8 @@ public class MiddlewareComponent {
 
     private static final Logger log = LogManager.getLogger(MiddlewareComponent.class);
 
-    Queue readQueue;
-    Queue writeQueue;
+    Queue<Request> readQueue;
+    Queue<Request> writeQueue;
 
     Integer componentId;
 
