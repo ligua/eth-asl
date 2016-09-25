@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -53,35 +55,47 @@ public class UniformHasher implements Hasher {
     }
 
     /**
+     * Turn a byte array into a long value.
+     */
+    public long bytesToLong(byte[] b) {
+        return 0;
+    }
+
+    /**
      * Hash the given string.
      */
-    public String getHash(String s) {
-        String hash;
+    public byte[] getHash(String s) {
+        byte[] hashBytes;
         try {
-            byte[] hashBytes = md.digest(s.getBytes(encoding));
-            hash = bytesToString(hashBytes);
+            hashBytes = md.digest(s.getBytes(encoding));
         } catch (UnsupportedEncodingException ex) {
             String errorString = "Encoding " + encoding + " not available.";
             log.error(errorString);
             throw new RuntimeException(errorString);
         }
 
-        return hash;
+        return hashBytes;
     }
 
     @Override
     public Integer getPrimaryMachine(String s) {
-        String hash = getHash(s);
+        //byte[] hash = getHash(s);
+        Random r = new Random();
+        r.setSeed(s.hashCode());
 
-        //Random r = new Random(hash);
-
-        return 0;
+        return r.nextInt(numMachines);
     }
 
     @Override
     public List<Integer> getAllMachines(String s) {
-        // TODO
-        return null;
+        Integer primaryMachine = getPrimaryMachine(s);
+
+        List<Integer> allMachines = new ArrayList<>();
+        for(int i=0; i<=replicationFactor; i++) {
+            allMachines.add((primaryMachine + i) % numMachines);
+        }
+
+        return allMachines;
     }
 
 }
