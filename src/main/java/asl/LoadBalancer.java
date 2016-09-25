@@ -22,29 +22,16 @@ public class LoadBalancer implements Runnable {
         log.info("Load balancer initialised.");
     }
 
-    void handleWriteRequest() {
-
+    void handleWriteRequest(Request request) {
+        List<Integer> machines = hasher.getAllMachines(request.key);
+        // TODO attach machine list to request
+        // TODO send the request to appropriate machine
     }
 
-    void handleReadRequest() {
+    void handleReadRequest(Request request) {
+        Integer primaryMachine = hasher.getPrimaryMachine(request.key);
+        // TODO send request to appropriate machine
 
-    }
-
-    /**
-     * Find if the request was a get, set or delete request.
-     */
-    public static RequestType getRequestType(String message) {
-        String firstThreeChars = message.substring(0, 3);
-
-        if(firstThreeChars.equals("set")) {
-            return RequestType.SET;
-        } else if(firstThreeChars.equals("get")) {
-            return RequestType.GET;
-        } else if(firstThreeChars.equals("del")) {
-            return RequestType.DELETE;
-        }
-
-        return RequestType.OTHER;
     }
 
     @Override

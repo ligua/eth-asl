@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import main.java.asl.LoadBalancer;
+import main.java.asl.Request;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,7 +82,7 @@ public class CrunchifyNIOServer {
                     String result = new String(crunchifyBuffer.array()).trim();
 
                     log.info("Message received: " + result);
-                    log.info("Message type: " + LoadBalancer.getRequestType(result));
+                    log.info("Message type: " + Request.getRequestType(result));
 
                     if (result.equals("Crunchify")) {
                         crunchifyClient.close();
