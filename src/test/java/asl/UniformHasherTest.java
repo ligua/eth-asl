@@ -20,20 +20,23 @@ public class UniformHasherTest {
 
     @Test
     public void getHash() throws Exception {
-        UniformHasher uh = new UniformHasher(1, 1);
+        UniformHasher uh = new UniformHasher(1, 0);
         assertEquals(Util.bytesToString(uh.getHash("taivo")), "30834776a9b6d5ac92969b8af8484859");
     }
 
-    @Test
-    public void getAllMachines() throws Exception {
-        Integer numMachines = 13;
-        Integer replicationFactor = 10;
+    public void getTargetMachinesSingle(Integer numMachines, Integer replicationFactor) throws Exception {
         UniformHasher uh = new UniformHasher(numMachines, replicationFactor);
 
         String testString = "taivo";
 
-        assertEquals(uh.getAllMachines(testString).size(), (long) replicationFactor + 1);
-        assertEquals(uh.getAllMachines(testString).get(0), uh.getPrimaryMachine(testString));
+        assertEquals(uh.getTargetMachines(uh.getPrimaryMachine(testString)).size(), (long) replicationFactor + 1);
+        assertEquals(uh.getTargetMachines(uh.getPrimaryMachine(testString)).get(0), uh.getPrimaryMachine(testString));
+    }
+
+    @Test
+    public void getTargetMachines() throws Exception {
+        getTargetMachinesSingle(1, 0);
+        getTargetMachinesSingle(13, 10);
     }
 
     @Test
@@ -62,11 +65,11 @@ public class UniformHasherTest {
         String testString1 = "taivo";
         String testString2 = "pungas";
 
-        UniformHasher uh1 = new UniformHasher(1, 1);
+        UniformHasher uh1 = new UniformHasher(1, 0);
         Integer machine11 = uh1.getPrimaryMachine(testString1);
         Integer machine21 = uh1.getPrimaryMachine(testString2);
 
-        UniformHasher uh2 = new UniformHasher(1, 1);
+        UniformHasher uh2 = new UniformHasher(1, 0);
         Integer machine12 = uh2.getPrimaryMachine(testString1);
         Integer machine22 = uh2.getPrimaryMachine(testString2);
 

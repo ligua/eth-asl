@@ -10,8 +10,8 @@ interface Hasher {
     public abstract Integer getPrimaryMachine(String s);
 
     /**
-     * Get all machines we need to write to for a given key.
+     * Get all target machines (including primary) we need to write to for a given key.
      */
-    public abstract List<Integer> getAllMachines(String s);
+    public abstract List<Integer> getTargetMachines(Integer primaryMachine);
 
 }

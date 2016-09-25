@@ -39,7 +39,8 @@ public class MiddlewareMain {
         // Create all middleware components
         this.components = new ArrayList<>();
         for(int id=0; id<numMemcachedServers; id++) {
-            components.add(new MiddlewareComponent(id, numReadThreadsPerServer));
+            List<Integer> targetMachines = hasher.getTargetMachines(id);
+            components.add(new MiddlewareComponent(id, numReadThreadsPerServer, targetMachines));
         }
 
         // Create load balancer
@@ -51,8 +52,8 @@ public class MiddlewareMain {
 
     public static void main(String[] args) {
 
-        //MiddlewareMain mwm = new MiddlewareMain(3, 5, 2);
-        MiddlewareMain mwm = new MiddlewareMain();
+        MiddlewareMain mwm = new MiddlewareMain(3, 5, 2);
+        //MiddlewareMain mwm = new MiddlewareMain();
 
     }
 

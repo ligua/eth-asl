@@ -3,6 +3,7 @@ package main.java.asl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +22,7 @@ public class MiddlewareComponent {
 
     Integer componentId;
 
-    MiddlewareComponent(Integer componentId, Integer numReadThreads) {
+    MiddlewareComponent(Integer componentId, Integer numReadThreads, List<Integer> targetMachines) {
 
         this.componentId = componentId;
 
@@ -32,7 +33,7 @@ public class MiddlewareComponent {
         ExecutorService executor = Executors.newCachedThreadPool(); // TODO read about newCachedThreadPool()
 
         // Initialise and start write thread
-        WriteWorker writeWorker = new WriteWorker(componentId, writeQueue);
+        WriteWorker writeWorker = new WriteWorker(componentId, targetMachines, writeQueue);
         executor.submit(writeWorker);
 
         // Initialise read threads
