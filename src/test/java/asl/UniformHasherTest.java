@@ -1,6 +1,7 @@
 package test.java.asl;
 
 import main.java.asl.UniformHasher;
+import main.java.asl.Util;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -20,7 +21,7 @@ public class UniformHasherTest {
     @Test
     public void getHash() throws Exception {
         UniformHasher uh = new UniformHasher(1, 1);
-        assertEquals(uh.bytesToString(uh.getHash("taivo")), "30834776a9b6d5ac92969b8af8484859");
+        assertEquals(Util.bytesToString(uh.getHash("taivo")), "30834776a9b6d5ac92969b8af8484859");
     }
 
     @Test
