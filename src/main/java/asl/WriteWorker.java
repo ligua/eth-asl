@@ -26,12 +26,16 @@ public class WriteWorker implements Runnable {
 
 
 
-        log.info(String.format("Component #%d WriteWorker initialised; writing to machines: %s.",
-                componentId, Util.collectionToString(targetMachines)));
+        log.info(String.format("%s Component #%d WriteWorker initialised; writing to machines: %s.",
+                getName(), componentId, Util.collectionToString(targetMachines)));
     }
 
     @Override
     public void run() {
         // TODO start taking stuff from queue and executing it
+    }
+
+    public String getName() {
+        return String.format("c%dw0", componentId);
     }
 }
