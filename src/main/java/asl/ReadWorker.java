@@ -8,14 +8,14 @@ import java.util.Queue;
 /**
  * This class is responsible for reading values from memcached and returning responses to the client.
  */
-public class ReadWorker implements Runnable {
+class ReadWorker implements Runnable {
 
-    Integer componentId;
-    Integer threadId;
+    private Integer componentId;
+    private Integer threadId;
 
     private static final Logger log = LogManager.getLogger(ReadWorker.class);
 
-    public ReadWorker(Integer componentId, Integer threadId, Queue<Request> readQueue) {
+    ReadWorker(Integer componentId, Integer threadId, Queue<Request> readQueue) {
         this.componentId = componentId;
         this.threadId = threadId;
 

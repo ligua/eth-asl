@@ -20,7 +20,7 @@ public class MiddlewareComponent {
     Queue<Request> readQueue;
     Queue<Request> writeQueue;
 
-    Integer componentId;
+    private Integer componentId;
 
     MiddlewareComponent(Integer componentId, Integer numReadThreads, List<Integer> targetMachines) {
 
