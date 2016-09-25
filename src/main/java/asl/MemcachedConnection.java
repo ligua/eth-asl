@@ -14,6 +14,16 @@ public class MemcachedConnection implements Closeable {
 
     private static final Logger log = LogManager.getLogger(MemcachedConnection.class);
 
+
+    public void sendRequest(Request r) {
+        String requestRaw = r.requestRaw;
+        // TODO send requestRaw and set response appropriately
+        String response = "foo";
+
+        r.response = response;
+    }
+
+
     @Override
     public void close() {
         // TODO
