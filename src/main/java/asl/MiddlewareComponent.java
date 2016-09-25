@@ -32,14 +32,14 @@ public class MiddlewareComponent {
         ExecutorService executor = Executors.newCachedThreadPool(); // TODO read about newCachedThreadPool()
 
         // Initialise and start write thread
-        MiddlewareComponentWriteThread writeThread = new MiddlewareComponentWriteThread(componentId, writeQueue);
-        executor.submit(writeThread);
+        WriteWorker writeWorker = new WriteWorker(componentId, writeQueue);
+        executor.submit(writeWorker);
 
         // Initialise read threads
         for(int threadId=0; threadId<numReadThreads; threadId++) {
-            MiddlewareComponentReadThread readThread =
-                    new MiddlewareComponentReadThread(componentId, threadId, readQueue);
-            executor.submit(readThread);
+            ReadWorker readWorker =
+                    new ReadWorker(componentId, threadId, readQueue);
+            executor.submit(readWorker);
         }
 
 
