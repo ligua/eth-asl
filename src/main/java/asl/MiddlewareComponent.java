@@ -11,6 +11,8 @@ public class MiddlewareComponent {
 
     private static final Logger log = LogManager.getLogger(MiddlewareComponent.class);
 
+    // TODO for read queues, use BlockingQueue
+
     MiddlewareComponent(Integer id) {
 
 

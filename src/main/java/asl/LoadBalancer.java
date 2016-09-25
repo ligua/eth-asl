@@ -13,9 +13,9 @@ public class LoadBalancer extends Thread {
     private static final Logger log = LogManager.getLogger(LoadBalancer.class);
 
     List<MiddlewareComponent> middlewareComponents;
-    ConsistentHasher hasher;
+    Hasher hasher;
 
-    LoadBalancer(List<MiddlewareComponent> middlewareComponents, ConsistentHasher hasher) {
+    LoadBalancer(List<MiddlewareComponent> middlewareComponents, Hasher hasher) {
         this.middlewareComponents = middlewareComponents;
         this.hasher = hasher;
 
