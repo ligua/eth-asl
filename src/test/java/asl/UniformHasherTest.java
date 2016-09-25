@@ -13,18 +13,6 @@ import static org.junit.Assert.*;
  */
 public class UniformHasherTest {
 
-    UniformHasher uh;
-
-    @Before
-    public void setUp() {
-        uh = new UniformHasher(1, 1);
-    }
-
-    @After
-    public void tearDown() {
-
-    }
-
     /*@Test
     public void bytesToString() throws Exception {
 
@@ -32,7 +20,20 @@ public class UniformHasherTest {
 
     @Test
     public void getHash() throws Exception {
-        assertEquals(uh.getHash("taivo"), "30834776a9b6d5ac92969b8af8484859");
+        UniformHasher uh = new UniformHasher(1, 1);
+        assertEquals(uh.bytesToString(uh.getHash("taivo")), "30834776a9b6d5ac92969b8af8484859");
+    }
+
+    @Test
+    public void getAllMachines() throws Exception {
+        Integer numMachines = 13;
+        Integer replicationFactor = 10;
+        UniformHasher uh = new UniformHasher(numMachines, replicationFactor);
+
+        String testString = "taivo";
+
+        assertEquals(uh.getAllMachines(testString).size(), (long) replicationFactor + 1);
+        assertEquals(uh.getAllMachines(testString).get(0), uh.getPrimaryMachine(testString));
     }
 
 }
