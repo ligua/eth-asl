@@ -3,10 +3,10 @@ package main.java.asl;
 enum RequestType { GET, SET, DELETE };
 
 public class Request {
-    public RequestType type;
-    public String requestRaw;
-    public String key;
-    public String response;
+    private RequestType type;
+    private String requestRaw;
+    private String key;
+    private String response;
 
     public Request(String request) {
         this.requestRaw = request;
@@ -14,10 +14,25 @@ public class Request {
         // TODO parse the requestRaw key and message etc
     }
 
-    /**
-     * Parse requestRaw and return appropriate type of requestRaw.
-     */
+    public RequestType getType() {
+        return type;
+    }
 
+    public String getRequestRaw() {
+        return requestRaw;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
 
     /**
      * Find if the requestRaw was a get, set or delete requestRaw.

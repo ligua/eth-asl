@@ -71,7 +71,7 @@ public class UniformHasher implements Hasher {
         return getTargetMachines(primaryMachine, replicationFactor, numMachines);
     }
 
-    public static List<Integer> getTargetMachines(Integer primaryMachine, Integer replicationFactor, Integer numMachines) {
+    private static List<Integer> getTargetMachines(Integer primaryMachine, Integer replicationFactor, Integer numMachines) {
 
         List<Integer> allMachines = new ArrayList<>();
         allMachines.add(primaryMachine);

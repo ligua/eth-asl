@@ -26,10 +26,10 @@ public class LoadBalancer implements Runnable {
      * Take one request and add it to the correct queue.
      */
     void handleRequest(Request request) {
-        Integer primaryMachine = hasher.getPrimaryMachine(request.key);
+        Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
-        if(request.type.equals(RequestType.GET)) {
+        if(request.getType().equals(RequestType.GET)) {
             mc.readQueue.add(request);
         } else {
             mc.writeQueue.add(request);     // DELETE requests also go to the write queue.

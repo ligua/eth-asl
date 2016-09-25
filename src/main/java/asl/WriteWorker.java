@@ -9,14 +9,14 @@ import java.util.Queue;
 /**
  * This class is responsible for writing values to memcached and returning responses to the client.
  */
-public class WriteWorker implements Runnable {
+class WriteWorker implements Runnable {
 
     private static final Logger log = LogManager.getLogger(WriteWorker.class);
 
-    Integer componentId;
-    List<Integer> targetMachines;
+    private Integer componentId;
+    private List<Integer> targetMachines;
 
-    public WriteWorker(Integer componentId, List<Integer> targetMachines, Queue<Request> writeQueue) {
+    WriteWorker(Integer componentId, List<Integer> targetMachines, Queue<Request> writeQueue) {
         this.componentId = componentId;
         this.targetMachines = targetMachines;
 

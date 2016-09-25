@@ -14,21 +14,21 @@ public class MiddlewareMain {
 
     private static final Logger log = LogManager.getLogger(MiddlewareMain.class);
 
-    Integer numMemcachedServers;            // N
-    Integer numReadThreadsPerServer;        // T
-    Integer replicationFactor;              // R
+    private Integer numMemcachedServers;            // N
+    private Integer numReadThreadsPerServer;        // T
+    private Integer replicationFactor;              // R
 
-    Hasher hasher;
+    private Hasher hasher;
 
-    List<MiddlewareComponent> components;
+    private List<MiddlewareComponent> components;
 
-    LoadBalancer loadBalancer;
+    private LoadBalancer loadBalancer;
 
     public MiddlewareMain() {
         this(1, 1, 1);
     }
 
-    public MiddlewareMain(Integer numMemcachedServers, Integer numReadThreadsPerServer, Integer replicationFactor) {
+    private MiddlewareMain(Integer numMemcachedServers, Integer numReadThreadsPerServer, Integer replicationFactor) {
         log.info("Starting middleware...");
         this.numMemcachedServers = numMemcachedServers;
         this.numReadThreadsPerServer = numReadThreadsPerServer;
