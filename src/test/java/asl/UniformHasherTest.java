@@ -1,10 +1,9 @@
 package test.java.asl;
 
 import main.java.asl.UniformHasher;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -34,6 +33,27 @@ public class UniformHasherTest {
 
         assertEquals(uh.getAllMachines(testString).size(), (long) replicationFactor + 1);
         assertEquals(uh.getAllMachines(testString).get(0), uh.getPrimaryMachine(testString));
+    }
+
+    @Test
+    public void testUniformity() throws Exception {
+        Integer numMachines = 13;
+        Integer replicationFactor = 10;
+        UniformHasher uh = new UniformHasher(numMachines, replicationFactor);
+
+        int[] occurrences = new int[numMachines];
+        Integer numSamples = 1000000;
+        for(int i=0; i<numSamples; i++) {
+            // Generate random string
+            String randomString = UUID.randomUUID().toString();
+
+            // Find machine for this string and remember result
+            occurrences[uh.getPrimaryMachine(randomString)] += 1;
+        }
+
+        for(int i=0; i<occurrences.length; i++) {
+            System.out.println(String.format("Machine %3d got %10d hits.", i, occurrences[i]));
+        }
     }
 
 }
