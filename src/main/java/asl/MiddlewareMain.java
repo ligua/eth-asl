@@ -38,8 +38,8 @@ public class MiddlewareMain {
 
         // Create all middleware components
         this.components = new ArrayList<>();
-        for(int id=1; id<=numMemcachedServers; id++) {
-            components.add(new MiddlewareComponent(id));
+        for(int id=0; id<numMemcachedServers; id++) {
+            components.add(new MiddlewareComponent(id, numReadThreadsPerServer));
         }
 
         // Create load balancer
