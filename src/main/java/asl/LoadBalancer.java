@@ -23,8 +23,6 @@ public class LoadBalancer implements Runnable {
     }
 
     void handleWriteRequest(Request request) {
-        List<Integer> machines = hasher.getAllMachines(request.key);
-        // TODO attach machine list to request
         // TODO send the request to appropriate machine
     }
 

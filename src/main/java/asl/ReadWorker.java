@@ -23,7 +23,7 @@ public class ReadWorker implements Runnable {
         // TODO
 
 
-        log.info(String.format("Component #%d ReadThread #%d initialised.", componentId, threadId));
+        log.info(String.format("Component #%d ReadWorker #%d initialised.", componentId, threadId));
     }
 
     @Override

@@ -3,6 +3,7 @@ package main.java.asl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -13,9 +14,11 @@ public class WriteWorker implements Runnable {
     private static final Logger log = LogManager.getLogger(WriteWorker.class);
 
     Integer componentId;
+    List<Integer> targetMachines;
 
-    public WriteWorker(Integer componentId, Queue<Request> writeQueue) {
+    public WriteWorker(Integer componentId, List<Integer> targetMachines, Queue<Request> writeQueue) {
         this.componentId = componentId;
+        this.targetMachines = targetMachines;
 
         // TODO start connections to all memcached servers using MemcachedConnection
         // TODO
@@ -23,7 +26,8 @@ public class WriteWorker implements Runnable {
 
 
 
-        log.info(String.format("Component #%d WriteThread initialised.", componentId));
+        log.info(String.format("Component #%d WriteWorker initialised; writing to machines: %s.",
+                componentId, Util.collectionToString(targetMachines)));
     }
 
     @Override
