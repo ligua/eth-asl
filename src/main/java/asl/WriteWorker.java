@@ -8,13 +8,13 @@ import java.util.Queue;
 /**
  * This class is responsible for writing values to memcached and returning responses to the client.
  */
-public class MiddlewareComponentWriteThread implements Runnable {
+public class WriteWorker implements Runnable {
 
-    private static final Logger log = LogManager.getLogger(MiddlewareComponentWriteThread.class);
+    private static final Logger log = LogManager.getLogger(WriteWorker.class);
 
     Integer componentId;
 
-    public MiddlewareComponentWriteThread(Integer componentId, Queue<Request> writeQueue) {
+    public WriteWorker(Integer componentId, Queue<Request> writeQueue) {
         this.componentId = componentId;
 
         // TODO start connections to all memcached servers using MemcachedConnection
