@@ -27,7 +27,7 @@ public class MiddlewareMain {
     private LoadBalancer loadBalancer;
 
     public MiddlewareMain() {
-        this(1, 1, 1);
+        this(1, 1, 0);
     }
 
     private MiddlewareMain(Integer numMemcachedServers, Integer numReadThreadsPerServer, Integer replicationFactor) {
@@ -55,8 +55,8 @@ public class MiddlewareMain {
 
     public static void main(String[] args) {
 
-        MiddlewareMain mwm = new MiddlewareMain(3, 5, 2);
-        //MiddlewareMain mwm = new MiddlewareMain();
+        //MiddlewareMain mwm = new MiddlewareMain(3, 5, 2);
+        MiddlewareMain mwm = new MiddlewareMain();
 
     }
 

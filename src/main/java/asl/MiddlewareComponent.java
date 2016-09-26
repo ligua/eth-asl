@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -17,7 +18,7 @@ public class MiddlewareComponent {
 
     private static final Logger log = LogManager.getLogger(MiddlewareComponent.class);
 
-    Queue<Request> readQueue;
+    BlockingQueue<Request> readQueue;
     Queue<Request> writeQueue;
 
     private Integer componentId;
