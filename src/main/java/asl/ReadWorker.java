@@ -15,6 +15,7 @@ class ReadWorker implements Runnable {
     private Integer componentId;
     private Integer threadId;
     private BlockingQueue<Request> readQueue;
+    private MemcachedConnection connection;
 
     private static final Logger log = LogManager.getLogger(ReadWorker.class);
 
@@ -22,6 +23,7 @@ class ReadWorker implements Runnable {
         this.componentId = componentId;
         this.threadId = threadId;
         this.readQueue = readQueue;
+        this.connection = new MemcachedConnection();
 
         // TODO start connection to our memcached server using MemcachedConnection
         // TODO
@@ -38,6 +40,7 @@ class ReadWorker implements Runnable {
                         Request r = readQueue.take();
                         log.info(getName() + " processing request " + r);
                         // TODO actually do something with the request
+                        connection.sendRequest(r);
                     } catch (InterruptedException ex) {
                         log.error(ex);
                     }

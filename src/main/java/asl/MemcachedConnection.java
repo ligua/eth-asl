@@ -20,7 +20,7 @@ class MemcachedConnection implements Closeable {
         // TODO send requestRaw and set response appropriately
         String response = "foo";
 
-        r.setResponse(response);
+        r.respond("lala shitty response to " + r);
     }
 
 
