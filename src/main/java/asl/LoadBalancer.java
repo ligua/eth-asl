@@ -79,15 +79,12 @@ public class LoadBalancer implements Runnable {
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
 
-                // TODO here I now have a connection to one client. I should probably either:
-                // * Save the connection and poll it every once in a while (poll all connections in order)
-                // * Spawn a new thread for handling this connection so I don't block the current thread
 
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
 
-                    // Tests whether this key's channel is ready to accept a new socket connection
                     if (myKey.isAcceptable()) {
+                        // If this key's channel is ready to accept a new socket connection
                         SocketChannel client = serverSocketChannel.accept();
 
                         // Adjusts this channel's blocking mode to false
@@ -97,8 +94,9 @@ public class LoadBalancer implements Runnable {
                         client.register(selector, SelectionKey.OP_READ);
                         log.info("Connection accepted: " + client.getLocalAddress());
 
-                        // Tests whether this key's channel is ready for reading
+
                     } else if (myKey.isReadable()) {
+                        // If this key's channel is ready for reading
 
                         SocketChannel client = (SocketChannel) myKey.channel();
                         ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -107,7 +105,7 @@ public class LoadBalancer implements Runnable {
 
                         RequestType requestType = Request.getRequestType(message);
                         log.info(requestType + " message received: " + message);
-                        if(requestType == RequestType.GET || requestType == RequestType.SET) {
+                        if(requestType == RequestType.GET || requestType == RequestType.SET || requestType == RequestType.DELETE) {
                             Request r = new Request(message);
                             handleRequest(r);
                         }
