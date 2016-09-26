@@ -1,15 +1,22 @@
 package main.java.asl;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.CharacterCodingException;
+
 enum RequestType { GET, SET, DELETE, UNKNOWN };
 
 public class Request {
     private RequestType type;
     private String requestRaw;
     private String key;
-    private String response;
+    private SelectionKey selectionKey;
 
-    public Request(String request) {
+    public Request(String request, SelectionKey selectionKey) {
         this.requestRaw = request;
+        this.selectionKey = selectionKey;
         type = getRequestType(request);
         // TODO parse the requestRaw key
         key = "fookey";
@@ -27,12 +34,26 @@ public class Request {
         return key;
     }
 
-    public String getResponse() {
-        return response;
-    }
+    /**
+     * Respond to the request.
+     */
+    public void respond(String response) {
+        if(selectionKey.isWritable()) {
+            SocketChannel client = (SocketChannel) selectionKey.channel();
+            ByteBuffer buffer = ByteBuffer.allocate(256);
+            // TODO Populate buffer
+            buffer.putInt(response.length());
+            buffer.put(response.getBytes());
 
-    public void setResponse(String response) {
-        this.response = response;
+            try {
+                client.write(buffer);
+                // TODO also close connection?
+            } catch(IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        } else {
+            throw new RuntimeException("Selection key for request " + this + " is not writable.");
+        }
     }
 
     /**
