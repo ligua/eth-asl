@@ -35,19 +35,24 @@ class WriteWorker implements Runnable {
 
     @Override
     public void run() {
-        log.info(String.format("%s started; writing to machines: %s.", getName(), Util.collectionToString(targetMachines)));
+        try {
+            log.info(String.format("%s started; writing to machines: %s.", getName(), Util.collectionToString(targetMachines)));
 
-        while(true) {
-            if(!writeQueue.isEmpty()) {
-                try {
-                    Request r = writeQueue.take();
-                    log.info(getName() + " processing request " + r);
-                    // TODO actually do something with the request
-                    
-                } catch (InterruptedException ex) {
-                    log.error(ex);
+            while (true) {
+                if (!writeQueue.isEmpty()) {
+                    try {
+                        Request r = writeQueue.take();
+                        log.info(getName() + " processing request " + r);
+                        // TODO actually do something with the request
+
+                    } catch (InterruptedException ex) {
+                        log.error(ex);
+                    }
                 }
             }
+        } catch (Exception ex) {
+            log.error(ex);
+            throw new RuntimeException(ex);
         }
     }
 

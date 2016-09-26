@@ -114,7 +114,7 @@ public class LoadBalancer implements Runnable {
                 }
             }
 
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.error(ex);
             throw new RuntimeException(ex);
         }
