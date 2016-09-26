@@ -39,6 +39,8 @@ public class LoadBalancer implements Runnable {
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
+        log.info("Sending request " + request + " to its primary machine #" + primaryMachine + ".");
+
         if(request.getType().equals(RequestType.GET)) {
             mc.readQueue.add(request);
         } else {
@@ -101,10 +103,14 @@ public class LoadBalancer implements Runnable {
                         SocketChannel client = (SocketChannel) myKey.channel();
                         ByteBuffer buffer = ByteBuffer.allocate(256);
                         client.read(buffer);
-                        String result = new String(buffer.array()).trim();
+                        String message = new String(buffer.array()).trim();
 
-                        log.info("Message received: " + result);
-                        log.info("Message type: " + Request.getRequestType(result));
+                        RequestType requestType = Request.getRequestType(message);
+                        log.info(requestType + " message received: " + message);
+                        if(requestType == RequestType.GET || requestType == RequestType.SET) {
+                            Request r = new Request(message);
+                            handleRequest(r);
+                        }
                     }
                     selectionKeyIterator.remove();
                 }

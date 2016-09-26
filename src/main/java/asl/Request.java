@@ -1,6 +1,6 @@
 package main.java.asl;
 
-enum RequestType { GET, SET, DELETE };
+enum RequestType { GET, SET, DELETE, UNKNOWN };
 
 public class Request {
     private RequestType type;
@@ -11,7 +11,8 @@ public class Request {
     public Request(String request) {
         this.requestRaw = request;
         type = getRequestType(request);
-        // TODO parse the requestRaw key and message etc
+        // TODO parse the requestRaw key
+        key = "fookey";
     }
 
     public RequestType getType() {
@@ -47,7 +48,13 @@ public class Request {
         } else if(firstThreeChars.equals("del")) {
             return RequestType.DELETE;
         } else {
-            throw new RuntimeException("Unknown requestRaw: " + request);
+            return RequestType.UNKNOWN;
         }
+    }
+
+
+    @Override
+    public String toString() {
+        return "'" + this.requestRaw + "'";
     }
 }
