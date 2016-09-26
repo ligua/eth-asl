@@ -59,6 +59,9 @@ public class CrunchifyNIOServer {
             Set<SelectionKey> crunchifyKeys = selector.selectedKeys();
             Iterator<SelectionKey> crunchifyIterator = crunchifyKeys.iterator();
 
+            // TODO here I now have a connection to one client. I should probably either:
+            // * Save the connection and poll it every once in a while (poll all connections in order)
+            // * Spawn a new thread for handling this connection so I don't block the current thread
             while (crunchifyIterator.hasNext()) {
                 SelectionKey myKey = crunchifyIterator.next();
 
