@@ -30,7 +30,7 @@ class WriteWorker implements Runnable {
 
     @Override
     public void run() {
-        log.info(String.format("%s Component #%d WriteWorker initialised; writing to machines: %s.",
+        log.info(String.format("%s Component #%d WriteWorker started; writing to machines: %s.",
                 getName(), componentId, Util.collectionToString(targetMachines)));
 
         // TODO start taking stuff from queue and executing it
