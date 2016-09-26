@@ -3,6 +3,7 @@ package main.java.asl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
@@ -28,18 +29,23 @@ class ReadWorker implements Runnable {
 
     @Override
     public void run() {
-        log.info(String.format("%s started.", getName()));
+        try {
+            log.info(String.format("%s started.", getName()));
 
-        while(true) {
-            if(!readQueue.isEmpty()) {
-                try {
-                    Request r = readQueue.take();
-                    log.info(getName() + " processing request " + r);
-                    // TODO actually do something with the request
-                } catch (InterruptedException ex) {
-                    log.error(ex);
+            while (true) {
+                if (!readQueue.isEmpty()) {
+                    try {
+                        Request r = readQueue.take();
+                        log.info(getName() + " processing request " + r);
+                        // TODO actually do something with the request
+                    } catch (InterruptedException ex) {
+                        log.error(ex);
+                    }
                 }
             }
+        } catch(Exception ex) {
+            log.error(ex);
+            throw new RuntimeException(ex);
         }
     }
 
