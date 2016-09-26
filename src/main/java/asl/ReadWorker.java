@@ -28,20 +28,19 @@ class ReadWorker implements Runnable {
 
     @Override
     public void run() {
-        log.info(String.format("%s Component #%d ReadWorker #%d started.", getName(), componentId, threadId));
+        log.info(String.format("%s started.", getName()));
 
         while(true) {
-            // log.info("Read queue top element is " + readQueue.peek());
             if(!readQueue.isEmpty()) {
                 try {
                     Request r = readQueue.take();
-                    log.info("Processing request " + r);
+                    log.info(getName() + " processing request " + r);
+                    // TODO actually do something with the request
                 } catch (InterruptedException ex) {
                     log.error(ex);
                 }
             }
         }
-        // TODO start taking stuff from queue and executing it
     }
 
     public String getName() {

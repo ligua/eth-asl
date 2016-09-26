@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * This class is responsible for writing values to memcached and returning responses to the client.
@@ -15,10 +16,14 @@ class WriteWorker implements Runnable {
 
     private Integer componentId;
     private List<Integer> targetMachines;
+    private BlockingQueue<Request> writeQueue;
 
-    WriteWorker(Integer componentId, List<Integer> targetMachines, Queue<Request> writeQueue) {
+
+
+    WriteWorker(Integer componentId, List<Integer> targetMachines, BlockingQueue<Request> writeQueue) {
         this.componentId = componentId;
         this.targetMachines = targetMachines;
+        this.writeQueue = writeQueue;
 
         // TODO start connections to all memcached servers using MemcachedConnection
         // TODO
@@ -30,10 +35,20 @@ class WriteWorker implements Runnable {
 
     @Override
     public void run() {
-        log.info(String.format("%s Component #%d WriteWorker started; writing to machines: %s.",
-                getName(), componentId, Util.collectionToString(targetMachines)));
+        log.info(String.format("%s started; writing to machines: %s.", getName(), Util.collectionToString(targetMachines)));
 
-        // TODO start taking stuff from queue and executing it
+        while(true) {
+            if(!writeQueue.isEmpty()) {
+                try {
+                    Request r = writeQueue.take();
+                    log.info(getName() + " processing request " + r);
+                    // TODO actually do something with the request
+                    
+                } catch (InterruptedException ex) {
+                    log.error(ex);
+                }
+            }
+        }
     }
 
     public String getName() {
