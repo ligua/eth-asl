@@ -21,13 +21,15 @@ class ReadWorker implements Runnable {
 
         // TODO start connection to our memcached server using MemcachedConnection
         // TODO
-
-
-        log.info(String.format("%s Component #%d ReadWorker #%d initialised.", getName(), componentId, threadId));
     }
 
     @Override
     public void run() {
+        log.info(String.format("%s Component #%d ReadWorker #%d started.", getName(), componentId, threadId));
+
+        while(true) {
+
+        }
         // TODO start taking stuff from queue and executing it
     }
 

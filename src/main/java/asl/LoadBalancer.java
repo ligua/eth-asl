@@ -30,7 +30,6 @@ public class LoadBalancer implements Runnable {
         this.middlewareComponents = middlewareComponents;
         this.hasher = hasher;
 
-        log.info("Load balancer initialised.");
     }
 
     /**
@@ -49,6 +48,8 @@ public class LoadBalancer implements Runnable {
 
     @Override
     public void run() {
+
+        log.info("Load balancer started.");
 
         try {
             // Selector: multiplexor of SelectableChannel objects
