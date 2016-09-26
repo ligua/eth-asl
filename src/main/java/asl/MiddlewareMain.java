@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * The class responsible for setting up and connecting everything in the middleware.
@@ -45,7 +47,8 @@ public class MiddlewareMain {
 
         // Create load balancer
         loadBalancer = new LoadBalancer(components, hasher);
-
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(loadBalancer);
 
         log.info("Middleware initialised.");
     }
