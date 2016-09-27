@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -20,11 +21,11 @@ public class Request {
     private RequestType type;
     private String requestRaw;
     private String key;
-    private SelectionKey selectionKey;
+    private SocketChannel client;
 
-    public Request(String request, SelectionKey selectionKey) {
+    public Request(String request, SocketChannel client) {
         this.requestRaw = request;
-        this.selectionKey = selectionKey;
+        this.client = client;
         type = getRequestType(request);
         // TODO parse the requestRaw key
         key = "fookey";
@@ -43,40 +44,32 @@ public class Request {
     }
 
     /**
-     * Respond to the request.
+     * Respond to the request and close connection.
      */
     public void respond(String response) throws IOException {
 
         Selector selector = Selector.open();
-        SocketChannel client = (SocketChannel) selectionKey.channel();
-        SelectionKey newSelectionKey = client.register(selector, SelectionKey.OP_WRITE);
-        client = (SocketChannel) newSelectionKey.channel();
+        SelectionKey selectionKey = client.register(selector, SelectionKey.OP_WRITE);
         log.info("Valid operations: " + client.validOps());
 
-        if (true) {
 
-            //selectionKey = client.register(selector, SelectionKey.OP_WRITE);
-            ByteBuffer buffer = ByteBuffer.allocate(256);
+        ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
 
-            // Populate buffer
-            buffer.putInt(response.length());
-            buffer.put(response.getBytes());
-            buffer.flip();
+        // Populate buffer
+        //buffer.putInt(response.length());
+        buffer.put(response.getBytes());
+        buffer.flip();
 
-            // Write buffer
-            while(buffer.hasRemaining()) {
-                client.write(buffer);
+        // Write buffer
+        while(buffer.hasRemaining()) {
+            client.write(buffer);
 
-                int result = client.write(buffer);
-                log.info("Responding to request " + this + ": writing '" + response + "'; result: " + result);
-            }
-
-            client.close();
-            // TODO also close connection?
-
-        } else {
-            throw new RuntimeException("Selection key for request " + this + " is not writable.");
+            int result = client.write(buffer);
+            log.info("Responding to request " + this + ": writing '" + response + "'; result: " + result);
         }
+
+        // Close connection
+        client.close();     // TODO should I close anything else?
     }
 
     /**
