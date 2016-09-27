@@ -104,7 +104,7 @@ public class LoadBalancer implements Runnable {
                         String message = new String(buffer.array()).trim();
 
                         RequestType requestType = Request.getRequestType(message);
-                        log.info(requestType + " message received: " + message);
+                        log.debug(requestType + " message received: " + message);
                         if(requestType == RequestType.GET || requestType == RequestType.SET || requestType == RequestType.DELETE) {
                             Request r = new Request(message, client);
                             handleRequest(r);
