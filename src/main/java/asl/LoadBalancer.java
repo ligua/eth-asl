@@ -39,7 +39,7 @@ public class LoadBalancer implements Runnable {
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
-        log.info("Sending request " + request + " to its primary machine #" + primaryMachine + ".");
+        log.debug("Sending request " + request + " to its primary machine #" + primaryMachine + ".");
 
         if(request.getType().equals(RequestType.GET)) {
             mc.readQueue.add(request);
