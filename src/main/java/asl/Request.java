@@ -33,8 +33,7 @@ public class Request {
         this.requestRaw = request;
         this.client = client;
         type = getRequestType(request);
-        // TODO parse the requestRaw key
-        key = "fookey";
+        key = requestRaw.split("\\s+", 3)[1];
     }
 
     public RequestType getType() {
@@ -65,7 +64,7 @@ public class Request {
      * Respond to the request and close connection.
      */
     public void respond(String response) throws IOException {
-        
+
         log.info("Valid operations: " + client.validOps());
 
 
