@@ -49,34 +49,31 @@ class MemcachedConnection implements Closeable {
             PrintWriter socketOut = new PrintWriter(memcachedSocket.getOutputStream(), true);
             InputStream socketIn = memcachedSocket.getInputStream();
 
-            log.info("sending req");
             // Send request
             socketOut.write(requestRaw + "\n");
             socketOut.flush();
-
             r.setTimeForwarded();
-            log.info("wrote to socketout");
 
+            // Read response
             String response = "";
             byte[] buffer = new byte[1024];     // TODO how big buffer do I need?
             int read = socketIn.read(buffer);
+
+            // If the message from memcached continued
             while(read != -1) {
                 String output = new String(buffer, 0, read);
-                log.info("still shit coming in from socket: " + output);
                 response += output;
-                log.info("shit came in from socket: " + output);
                 if(socketIn.available() > 0) {      // TODO This is probably not a good way to do this?
                     read = socketIn.read(buffer);
                 } else {
-                    log.info("stream done");
                     read = -1;
                 }
             }
-            log.info("got response");
 
-            r.respond("Response to " + r + ": " + response);
+            log.info("Got response to " + r + ".");
+            r.respond(response);
+
         } catch (IOException ex) {
-            System.out.println("fuck" + ex);
             log.error(ex);
             throw new RuntimeException(ex);
         }
