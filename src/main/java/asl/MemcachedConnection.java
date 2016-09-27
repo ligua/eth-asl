@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
+import java.io.IOException;
 
 /**
  * One connection with a memcached instance.
@@ -20,7 +21,12 @@ class MemcachedConnection implements Closeable {
         // TODO send requestRaw and set response appropriately
         String response = "foo";
 
-        r.respond("lala shitty response to " + r);
+        try {
+            r.respond("lala shitty response to " + r);
+        } catch (IOException ex) {
+            log.error(ex);
+            throw new RuntimeException(ex);
+        }
     }
 
 
