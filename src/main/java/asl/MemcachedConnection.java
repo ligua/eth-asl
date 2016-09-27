@@ -21,6 +21,8 @@ class MemcachedConnection implements Closeable {
         // TODO send requestRaw and set response appropriately
         String response = "foo";
 
+        r.setTimeForwarded();
+
         try {
             r.respond("lala shitty response to " + r);
         } catch (IOException ex) {

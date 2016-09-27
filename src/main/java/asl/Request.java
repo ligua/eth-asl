@@ -11,6 +11,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.CharacterCodingException;
+import java.util.Date;
 
 enum RequestType {GET, SET, DELETE, UNKNOWN};
 
@@ -23,7 +24,12 @@ public class Request {
     private String key;
     private SocketChannel client;
 
+    private Date timeCreated;
+    private Date timeForwarded;
+    private Date timeReturned;
+
     public Request(String request, SocketChannel client) {
+        setTimeCreated();
         this.requestRaw = request;
         this.client = client;
         type = getRequestType(request);
@@ -41,6 +47,18 @@ public class Request {
 
     public String getKey() {
         return key;
+    }
+
+    private void setTimeCreated() {
+        this.timeCreated = new Date();
+    }
+
+    void setTimeForwarded() {
+        this.timeForwarded = new Date();
+    }
+
+    private void setTimeReturned() {
+        this.timeReturned = new Date();
     }
 
     /**
@@ -67,6 +85,11 @@ public class Request {
             int result = client.write(buffer);
             log.info("Responding to request " + this + ": writing '" + response + "'; result: " + result);
         }
+
+        setTimeReturned();
+
+        log.info(String.format("Request took %dms to forward, %dms to return response.",
+                timeForwarded.getTime()-timeCreated.getTime(), timeReturned.getTime()-timeCreated.getTime()));
 
         // Close connection
         client.close();     // TODO should I close anything else?
