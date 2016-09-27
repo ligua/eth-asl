@@ -100,15 +100,17 @@ public class LoadBalancer implements Runnable {
 
                         SocketChannel client = (SocketChannel) myKey.channel();
                         ByteBuffer buffer = ByteBuffer.allocate(256);
-                        
                         client.read(buffer);
                         String message = new String(buffer.array()).trim();
 
                         RequestType requestType = Request.getRequestType(message);
                         log.debug(requestType + " message received: " + message);
-                        if(requestType == RequestType.GET || requestType == RequestType.SET || requestType == RequestType.DELETE) {
+                        if(requestType == RequestType.GET || requestType == RequestType.DELETE) {
                             Request r = new Request(message, client);
                             handleRequest(r);
+                        } else if(requestType == RequestType.SET) {
+                            // We need to read one more line.
+                            // TODO can I block and wait here for more input? Is that a good idea?
                         }
                     }
                     selectionKeyIterator.remove();
