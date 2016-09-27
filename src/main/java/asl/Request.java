@@ -1,14 +1,22 @@
 package main.java.asl;
 
+import com.sun.org.apache.bcel.internal.generic.Select;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.CharacterCodingException;
 
-enum RequestType { GET, SET, DELETE, UNKNOWN };
+enum RequestType {GET, SET, DELETE, UNKNOWN};
 
 public class Request {
+
+    private static final Logger log = LogManager.getLogger(Request.class);
+
     private RequestType type;
     private String requestRaw;
     private String key;
@@ -37,20 +45,35 @@ public class Request {
     /**
      * Respond to the request.
      */
-    public void respond(String response) {
-        if(selectionKey.isWritable()) {
-            SocketChannel client = (SocketChannel) selectionKey.channel();
+    public void respond(String response) throws IOException {
+
+        Selector selector = Selector.open();
+        SocketChannel client = (SocketChannel) selectionKey.channel();
+        SelectionKey newSelectionKey = client.register(selector, SelectionKey.OP_WRITE);
+        client = (SocketChannel) newSelectionKey.channel();
+        log.info("Valid operations: " + client.validOps());
+
+        if (true) {
+
+            //selectionKey = client.register(selector, SelectionKey.OP_WRITE);
             ByteBuffer buffer = ByteBuffer.allocate(256);
-            // TODO Populate buffer
+
+            // Populate buffer
             buffer.putInt(response.length());
             buffer.put(response.getBytes());
+            buffer.flip();
 
-            try {
+            // Write buffer
+            while(buffer.hasRemaining()) {
                 client.write(buffer);
-                // TODO also close connection?
-            } catch(IOException ex) {
-                throw new RuntimeException(ex);
+
+                int result = client.write(buffer);
+                log.info("Responding to request " + this + ": writing '" + response + "'; result: " + result);
             }
+
+            client.close();
+            // TODO also close connection?
+
         } else {
             throw new RuntimeException("Selection key for request " + this + " is not writable.");
         }
@@ -62,11 +85,11 @@ public class Request {
     public static RequestType getRequestType(String request) {
         String firstThreeChars = request.substring(0, 3);
 
-        if(firstThreeChars.equals("set")) {
+        if (firstThreeChars.equals("set")) {
             return RequestType.SET;
-        } else if(firstThreeChars.equals("get")) {
+        } else if (firstThreeChars.equals("get")) {
             return RequestType.GET;
-        } else if(firstThreeChars.equals("del")) {
+        } else if (firstThreeChars.equals("del")) {
             return RequestType.DELETE;
         } else {
             return RequestType.UNKNOWN;
