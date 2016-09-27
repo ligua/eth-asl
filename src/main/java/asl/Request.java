@@ -65,16 +65,13 @@ public class Request {
      * Respond to the request and close connection.
      */
     public void respond(String response) throws IOException {
-
-        Selector selector = Selector.open();
-        SelectionKey selectionKey = client.register(selector, SelectionKey.OP_WRITE);
+        
         log.info("Valid operations: " + client.validOps());
 
 
         ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
 
         // Populate buffer
-        //buffer.putInt(response.length());
         buffer.put(response.getBytes());
         buffer.flip();
 
