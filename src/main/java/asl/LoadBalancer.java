@@ -100,6 +100,7 @@ public class LoadBalancer implements Runnable {
 
                         SocketChannel client = (SocketChannel) myKey.channel();
                         ByteBuffer buffer = ByteBuffer.allocate(256);
+                        
                         client.read(buffer);
                         String message = new String(buffer.array()).trim();
 
