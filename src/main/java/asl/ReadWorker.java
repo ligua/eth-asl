@@ -24,9 +24,6 @@ class ReadWorker implements Runnable {
         this.threadId = threadId;
         this.readQueue = readQueue;
         this.connection = new MemcachedConnection();
-
-        // TODO start connection to our memcached server using MemcachedConnection
-        // TODO
     }
 
     @Override
