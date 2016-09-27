@@ -12,7 +12,7 @@ import java.net.Socket;
  * Each write thread should have one MemcachedConnection instance *per memcachedSocket server*, so R connections in total.
  * Each read thread should have one MemcachedConnection with its designated memcachedSocket server, so 1 connection in total.
  */
-class MemcachedConnection implements Closeable {
+public class MemcachedConnection implements Closeable {
 
     private static final Logger log = LogManager.getLogger(MemcachedConnection.class);
 
@@ -70,7 +70,7 @@ class MemcachedConnection implements Closeable {
                 }
             }
 
-            log.info("Got response to " + r + ".");
+            log.debug("Got response to " + r + ".");
             r.respond(response);
 
         } catch (IOException ex) {

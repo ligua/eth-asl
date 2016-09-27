@@ -1,5 +1,6 @@
-package main.java.asl;
+package test.java.asl;
 
+import main.java.asl.Request;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

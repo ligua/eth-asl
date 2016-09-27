@@ -65,9 +65,6 @@ public class Request {
      */
     public void respond(String response) throws IOException {
 
-        log.info("Valid operations: " + client.validOps());
-
-
         ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
 
         // Populate buffer
@@ -79,12 +76,12 @@ public class Request {
             client.write(buffer);
 
             int result = client.write(buffer);
-            log.info("Responding to request " + this + ": writing '" + response + "'; result: " + result);
+            log.debug("Responding to request " + this + ": writing '" + response + "'; result: " + result);
         }
 
         setTimeReturned();
 
-        log.info(String.format("Request took %dms to forward, %dms to return response.",
+        log.debug(String.format("Request took %dms to forward, %dms to return response.",
                 timeForwarded.getTime()-timeCreated.getTime(), timeReturned.getTime()-timeCreated.getTime()));
 
         // Close connection

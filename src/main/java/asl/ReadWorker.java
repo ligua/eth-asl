@@ -38,7 +38,7 @@ class ReadWorker implements Runnable {
                 if (!readQueue.isEmpty()) {
                     try {
                         Request r = readQueue.take();
-                        log.info(getName() + " processing request " + r);
+                        log.debug(getName() + " processing request " + r);
                         connection.sendRequest(r);
                     } catch (InterruptedException ex) {
                         log.error(ex);

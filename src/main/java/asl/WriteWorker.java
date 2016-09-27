@@ -42,7 +42,7 @@ class WriteWorker implements Runnable {
                 if (!writeQueue.isEmpty()) {
                     try {
                         Request r = writeQueue.take();
-                        log.info(getName() + " processing request " + r);
+                        log.debug(getName() + " processing request " + r);
                         // TODO actually do something with the request
 
                     } catch (InterruptedException ex) {
