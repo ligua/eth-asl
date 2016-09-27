@@ -3,6 +3,7 @@ package main.java.asl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -17,20 +18,18 @@ class WriteWorker implements Runnable {
     private Integer componentId;
     private List<Integer> targetMachines;
     private BlockingQueue<Request> writeQueue;
-
-
+    private List<MemcachedConnection> connections;
 
     WriteWorker(Integer componentId, List<Integer> targetMachines, BlockingQueue<Request> writeQueue) {
         this.componentId = componentId;
         this.targetMachines = targetMachines;
         this.writeQueue = writeQueue;
 
-        // TODO start connections to all memcached servers using MemcachedConnection
-        // TODO
-
-
-
-
+        connections = new ArrayList<>();
+        for(Integer targetMachine : targetMachines) {
+            // TODO initialise the connection smartly so that we actually connect to different machines based on number
+            connections.add(new MemcachedConnection());
+        }
     }
 
     @Override
@@ -43,7 +42,17 @@ class WriteWorker implements Runnable {
                     try {
                         Request r = writeQueue.take();
                         log.debug(getName() + " processing request " + r);
-                        // TODO actually do something with the request
+
+                        // Write to all secondary machines
+                        for(MemcachedConnection mc : connections.subList(1, connections.size())) {
+                            mc.sendRequest(r, false);
+                        }
+                        log.info("secondary written");
+
+                        // Write to primary machine
+                        connections.get(0).sendRequest(r);
+                        log.info("primary written");
+
 
                     } catch (InterruptedException ex) {
                         log.error(ex);
