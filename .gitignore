@@ -19,3 +19,5 @@ mem/
 
 # Built files
 out/
+build/
+dist/
