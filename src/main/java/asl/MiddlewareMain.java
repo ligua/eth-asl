@@ -27,7 +27,7 @@ public class MiddlewareMain {
     private LoadBalancer loadBalancer;
 
     public MiddlewareMain() {
-        this(1, 1, 0);
+        this(1, 1, 1);
     }
 
     private MiddlewareMain(Integer numMemcachedServers, Integer numReadThreadsPerServer, Integer replicationFactor) {
