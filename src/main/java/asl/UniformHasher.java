@@ -24,8 +24,8 @@ public class UniformHasher implements Hasher {
 
 
     public UniformHasher(Integer numMemcachedServers, Integer replicationFactor) {
-        if(replicationFactor >= numMemcachedServers) {
-            throw new RuntimeException("Replication factor cannot be larger than or equal to the number of machines!");
+        if(replicationFactor > numMemcachedServers) {
+            throw new RuntimeException("Replication factor cannot be larger than the number of machines!");
         }
         this.numMachines = numMemcachedServers;
         this.replicationFactor = replicationFactor;
@@ -74,8 +74,8 @@ public class UniformHasher implements Hasher {
     private static List<Integer> getTargetMachines(Integer primaryMachine, Integer replicationFactor, Integer numMachines) {
 
         List<Integer> allMachines = new ArrayList<>();
-        allMachines.add(primaryMachine);
-        for(int i=1; i<=replicationFactor; i++) {
+        //allMachines.add(primaryMachine);
+        for(int i=0; i<replicationFactor; i++) {
             allMachines.add((primaryMachine + i) % numMachines);
         }
 
