@@ -70,6 +70,23 @@
         <java jar="${jarfile}" fork="true"/>
     </target>
 
+    <target name="test" depends="compile">
+        <junit>
+            <classpath>
+                <pathelement location="${build.dir}" />
+                <fileset dir="${build.dir}/lib">
+                    <include name="*.jar" />
+                </fileset>
+            </classpath>
+            <batchtest>
+                <fileset dir="${build.dir}">
+                    <include name="**/*Test*" />
+                </fileset>
+            </batchtest>
+            <formatter type="brief" usefile="false"/>
+        </junit>
+    </target>
+
     <target name="clean"
             description="clean up">
         <!-- Delete the ${build} and ${dist} directory trees -->
