@@ -29,13 +29,13 @@ public class UniformHasherTest {
 
         String testString = "taivo";
 
-        assertEquals(uh.getTargetMachines(uh.getPrimaryMachine(testString)).size(), (long) replicationFactor + 1);
+        assertEquals(uh.getTargetMachines(uh.getPrimaryMachine(testString)).size(), (long) replicationFactor);
         assertEquals(uh.getTargetMachines(uh.getPrimaryMachine(testString)).get(0), uh.getPrimaryMachine(testString));
     }
 
     @Test
     public void getTargetMachines() throws Exception {
-        getTargetMachinesSingle(1, 0);
+        getTargetMachinesSingle(1, 1);
         getTargetMachinesSingle(13, 10);
     }
 
@@ -65,11 +65,11 @@ public class UniformHasherTest {
         String testString1 = "taivo";
         String testString2 = "pungas";
 
-        UniformHasher uh1 = new UniformHasher(1, 0);
+        UniformHasher uh1 = new UniformHasher(1, 1);
         Integer machine11 = uh1.getPrimaryMachine(testString1);
         Integer machine21 = uh1.getPrimaryMachine(testString2);
 
-        UniformHasher uh2 = new UniformHasher(1, 0);
+        UniformHasher uh2 = new UniformHasher(1, 1);
         Integer machine12 = uh2.getPrimaryMachine(testString1);
         Integer machine22 = uh2.getPrimaryMachine(testString2);
 
