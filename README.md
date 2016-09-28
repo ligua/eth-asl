@@ -1,4 +1,4 @@
-# ETH Advanced Systems Lab
+# ETH Advanced Systems Lab [![Build Status](https://travis-ci.com/taivop/eth-asl.svg?token=VVdx5UqWimwYeHP71qc8&branch=master)](https://travis-ci.com/taivop/eth-asl)
 Autumn semester 2016
 
 * Course website: [systems.ethz.ch](http://www.systems.ethz.ch/courses/fall2016/asl).
