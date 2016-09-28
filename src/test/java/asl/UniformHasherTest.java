@@ -4,7 +4,7 @@ import main.java.asl.UniformHasher;
 import main.java.asl.Util;
 import org.junit.Test;
 
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -45,7 +45,11 @@ public class UniformHasherTest {
         Integer replicationFactor = 10;
         UniformHasher uh = new UniformHasher(numMachines, replicationFactor);
 
-        int[] occurrences = new int[numMachines];
+        Integer[] occurrences = new Integer[numMachines];
+        for(int i=0; i<numMachines; i++) {
+            occurrences[i]= 0;
+        }
+
         Integer numSamples = 1000000;
         for(int i=0; i<numSamples; i++) {
             // Generate random string
@@ -54,6 +58,13 @@ public class UniformHasherTest {
             // Find machine for this string and remember result
             occurrences[uh.getPrimaryMachine(randomString)] += 1;
         }
+
+        // If difference between max and min is > 20%, we should probably worry
+        List occurrenceList = new ArrayList<Integer>(Arrays.asList(occurrences));
+        Integer min = (Integer) Collections.min(occurrenceList);
+        Integer max = (Integer) Collections.max(occurrenceList);
+        Integer diff = max - min;
+        assertTrue((double) diff / min < 0.05);
 
         for(int i=0; i<occurrences.length; i++) {
             System.out.println(String.format("Machine %3d got %10d hits.", i, occurrences[i]));
