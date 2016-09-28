@@ -8,3 +8,4 @@ Autumn semester 2016
 * Milestone 1: 21.10.2016 at 14:00
 * Milestone 2: 25.11.2016 at 14:00
 * Milestone 3: 23.12.2016 at 14:00
+
