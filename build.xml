@@ -23,11 +23,6 @@
         </fileset>
     </path>
 
-    <manifestclasspath property="manifest.classpath" jarfile="${jarfile}">
-        <classpath refid="test-classpath"/>
-    </manifestclasspath>
-
-
 
 
 
@@ -50,8 +45,13 @@
         <!-- Create the distribution directory -->
         <mkdir dir="${dist.dir}"/>
 
-        <!-- TODO copy resources, all dependency JARs etc to /build -->
+        <!-- Copy resources to /build -->
         <copydir src="${resources.dir}" dest="${build.dir}"/>
+
+        <!-- Manifest classpath -->
+        <manifestclasspath property="manifest.classpath" jarfile="${jarfile}">
+            <classpath refid="test-classpath"/>
+        </manifestclasspath>
 
         <!-- Put everything in ${build} into the JAR file -->
         <jar jarfile="${jarfile}" basedir="${build.dir}">
@@ -70,11 +70,11 @@
         <java jar="${jarfile}" fork="true"/>
     </target>
 
-    <target name="test" depends="compile">
+    <target name="test" depends="dist">
         <junit>
             <classpath>
                 <pathelement location="${build.dir}" />
-                <fileset dir="${build.dir}/lib">
+                <fileset dir="${lib.dir}">
                     <include name="*.jar" />
                 </fileset>
             </classpath>
