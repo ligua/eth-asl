@@ -115,7 +115,7 @@ public class LoadBalancer implements Runnable {
                             } else if (requestType == RequestType.SET) {
                                 // We may need to wait for the second line in the SET request.
                                 requestMessageBuffer.put(myKey, message);
-                                log.debug("Got a part of SET request [" + Util.unEscapeString(message) + "], waiting for more.");
+                                //log.debug("Got a part of SET request [" + Util.unEscapeString(message) + "], waiting for more.");
                             }
                         } else {
                             // If we have something already from this connection

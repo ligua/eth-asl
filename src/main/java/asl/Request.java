@@ -119,7 +119,7 @@ public class Request {
             String[] firstLineParts = firstLine.split("\\s+");
             Integer numCharsDeclared = Integer.parseInt(firstLineParts[4]);
             Integer numCharsActual = secondLine.length();
-            
+
             if (numCharsActual < numCharsDeclared) {
                 return false;
             } else {
