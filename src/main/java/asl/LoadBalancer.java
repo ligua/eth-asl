@@ -104,6 +104,7 @@ public class LoadBalancer implements Runnable {
                         message = message.substring(0, buffer.position());
 
                         if(!requestMessageBuffer.containsKey(myKey)) {
+                            log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
                             // If this is the first time we hear from this connection
                             RequestType requestType = Request.getRequestType(message);
 
@@ -111,6 +112,8 @@ public class LoadBalancer implements Runnable {
                                 // TODO assuming we get the whole GET or DELETE message in one chunk
                                 Request r = new Request(message, client);
                                 log.debug(r.getType() + " message received: " + r);
+
+                                myKey.interestOps(SelectionKey.OP_WRITE); // TODO
                                 handleRequest(r);
                             } else if (requestType == RequestType.SET) {
                                 // We may need to wait for the second line in the SET request.
@@ -118,6 +121,7 @@ public class LoadBalancer implements Runnable {
                                 //log.debug("Got a part of SET request [" + Util.unEscapeString(message) + "], waiting for more.");
                             }
                         } else {
+                            log.debug("ADDING STUFF TO KEY: " + myKey);
                             // If we have something already from this connection
                             String updatedMessage = requestMessageBuffer.get(myKey) + message;
                             requestMessageBuffer.put(myKey, updatedMessage);
@@ -126,10 +130,12 @@ public class LoadBalancer implements Runnable {
                         // If we already have the whole message, we can create a Request.
                         if(requestMessageBuffer.containsKey(myKey) &&
                                 Request.isCompleteSetRequest(requestMessageBuffer.get(myKey))) {
+                            log.debug("KEY IS COMPLETE: " + myKey);
                             String fullMessage = requestMessageBuffer.get(myKey);
                             requestMessageBuffer.remove(myKey);
                             Request r = new Request(fullMessage, client);
                             log.debug(r.getType() + " message received: " + r);
+                            myKey.interestOps(SelectionKey.OP_WRITE); // TODO
                             handleRequest(r);
                         }
 
