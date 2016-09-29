@@ -11,6 +11,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.CharacterCodingException;
+import java.util.Arrays;
 import java.util.Date;
 
 enum RequestType {GET, SET, DELETE, UNKNOWN};
@@ -33,6 +34,7 @@ public class Request {
         this.requestRaw = request;
         this.client = client;
         type = getRequestType(request);
+        log.debug(Arrays.toString(requestRaw.split("\\s+", 3)));
         key = requestRaw.split("\\s+", 3)[1];
     }
 
