@@ -126,8 +126,6 @@ public class LoadBalancer implements Runnable {
                         // If we already have the whole message, we can create a Request.
                         if(requestMessageBuffer.containsKey(myKey) &&
                                 Request.isCompleteSetRequest(requestMessageBuffer.get(myKey))) {
-                            log.debug(Util.unEscapeString(requestMessageBuffer.get(myKey)) + " is a full SET message? " + Request.isCompleteSetRequest(requestMessageBuffer.get(myKey)));
-                            log.debug(myKey + "is in buffer? " + requestMessageBuffer.containsKey(myKey));
                             String fullMessage = requestMessageBuffer.get(myKey);
                             requestMessageBuffer.remove(myKey);
                             Request r = new Request(fullMessage, client);

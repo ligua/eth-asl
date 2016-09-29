@@ -119,13 +119,7 @@ public class Request {
             String[] firstLineParts = firstLine.split("\\s+");
             Integer numCharsDeclared = Integer.parseInt(firstLineParts[4]);
             Integer numCharsActual = secondLine.length();
-
-            log.debug(String.format("request should have %d chars, has %d", numCharsDeclared, numCharsActual));
-            for(int i=0; i<secondLine.length();i++) {
-                //log.debug("character number " + i + ": " + secondLine.charAt(i));
-            }
-            log.debug("Request length: " + request.length());
-
+            
             if (numCharsActual < numCharsDeclared) {
                 return false;
             } else {
