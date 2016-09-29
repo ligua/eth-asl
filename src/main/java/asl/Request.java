@@ -34,7 +34,6 @@ public class Request {
         this.requestRaw = request;
         this.client = client;
         type = getRequestType(request);
-        log.debug(Arrays.toString(requestRaw.split("\\s+", 3)));
         key = requestRaw.split("\\s+", 3)[1];
     }
 
