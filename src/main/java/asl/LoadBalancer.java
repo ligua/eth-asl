@@ -19,6 +19,9 @@ public class LoadBalancer implements Runnable {
     private static final Logger log = LogManager.getLogger(LoadBalancer.class);
     private static final String address = "localhost";
     private static final Integer port = 11212;
+    private static final Integer LOG_EVERY_N_REQUESTS = 1;
+
+    private Integer requestCounter;
 
     private List<MiddlewareComponent> middlewareComponents;
     private Hasher hasher;
@@ -29,6 +32,7 @@ public class LoadBalancer implements Runnable {
         this.middlewareComponents = middlewareComponents;
         this.hasher = hasher;
         this.requestMessageBuffer = new HashMap<>();
+        this.requestCounter = 0;
     }
 
     /**
@@ -44,6 +48,11 @@ public class LoadBalancer implements Runnable {
             mc.readQueue.add(request);
         } else {
             mc.writeQueue.add(request);     // DELETE requests also go to the write queue.
+        }
+
+        requestCounter++;
+        if(requestCounter > 0 && requestCounter % LOG_EVERY_N_REQUESTS == 0) {
+            log.info(String.format("Processed %5d requests so far.", requestCounter));
         }
     }
 
@@ -82,7 +91,7 @@ public class LoadBalancer implements Runnable {
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
 
-                    if (myKey.isAcceptable()) {
+                    if ((myKey.isValid() && myKey.isAcceptable())) {
                         // If this key's channel is ready to accept a new socket connection
                         SocketChannel client = serverSocketChannel.accept();
 
@@ -94,7 +103,7 @@ public class LoadBalancer implements Runnable {
                         log.debug("Connection accepted: " + client.getLocalAddress());
 
 
-                    } else if (myKey.isReadable()) {
+                    } else if (myKey.isValid() && myKey.isReadable()) {
                         // If this key's channel is ready for reading
 
                         SocketChannel client = (SocketChannel) myKey.channel();
