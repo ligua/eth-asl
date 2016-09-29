@@ -77,7 +77,7 @@ public class Request {
             client.write(buffer);
 
             int result = client.write(buffer);
-            log.debug("Responding to request " + this + ": writing '" + response + "'; result: " + result);
+            log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
         }
 
         setTimeReturned();
@@ -106,9 +106,37 @@ public class Request {
         }
     }
 
+    /**
+     * Check if the given SET request is complete.
+     */
+    public static boolean isCompleteSetRequest(String request) {
+        String[] lines = request.split("\\r?\\n");
+        if(lines.length < 2) {
+            return false;
+        } else {
+            String firstLine = lines[0];
+            String secondLine = lines[1];
+            String[] firstLineParts = firstLine.split("\\s+");
+            Integer numCharsDeclared = Integer.parseInt(firstLineParts[4]);
+            Integer numCharsActual = secondLine.length();
+
+            log.debug(String.format("request should have %d chars, has %d", numCharsDeclared, numCharsActual));
+            for(int i=0; i<secondLine.length();i++) {
+                //log.debug("character number " + i + ": " + secondLine.charAt(i));
+            }
+            log.debug("Request length: " + request.length());
+
+            if (numCharsActual < numCharsDeclared) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
 
     @Override
     public String toString() {
-        return "'" + this.requestRaw + "'";
+        return "'" + Util.unEscapeString(this.requestRaw) + "'";
     }
 }

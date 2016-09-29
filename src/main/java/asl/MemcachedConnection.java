@@ -53,7 +53,7 @@ public class MemcachedConnection implements Closeable {
             InputStream socketIn = memcachedSocket.getInputStream();
 
             // Send request
-            socketOut.write(requestRaw + MiddlewareMain.LINE_END);
+            socketOut.write(requestRaw);
             socketOut.flush();
             r.setTimeForwarded();
 
@@ -61,7 +61,6 @@ public class MemcachedConnection implements Closeable {
             String response = "";
             byte[] buffer = new byte[1024];     // TODO how big buffer do I need?
             int read = socketIn.read(buffer);
-            log.info("first response asd");
 
             // If the message from memcached continued
             while(read != -1) {
