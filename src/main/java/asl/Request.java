@@ -72,6 +72,8 @@ public class Request {
         buffer.put(response.getBytes());
         buffer.flip();
 
+        log.debug("Trying to respond to client " + client);
+
         // Write buffer
         while(buffer.hasRemaining()) {
             client.write(buffer);
