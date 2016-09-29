@@ -47,12 +47,9 @@ class WriteWorker implements Runnable {
                         for(MemcachedConnection mc : connections.subList(1, connections.size())) {
                             mc.sendRequest(r, false);
                         }
-                        log.info("secondary written");
 
                         // Write to primary machine
                         connections.get(0).sendRequest(r);
-                        log.info("primary written");
-
 
                     } catch (InterruptedException ex) {
                         log.error(ex);
