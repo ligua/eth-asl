@@ -17,7 +17,6 @@ import java.util.*;
 public class LoadBalancer implements Runnable {
 
     private static final Logger log = LogManager.getLogger(LoadBalancer.class);
-    private static final String lineEnd = "\r\n";
     private static final String address = "localhost";
     private static final Integer port = 11212;
 
@@ -103,14 +102,12 @@ public class LoadBalancer implements Runnable {
                         client.read(buffer);
                         String message = new String(buffer.array()).trim();
 
-                        log.debug("receive from " + myKey);
-
                         // RequestType requestType = Request.getRequestType(message);
                         // log.debug(requestType + " message received: " + message);
 
                         if(writeRequestLineBuffer.containsKey(myKey)) {
                             // If we already have the whole SET request, we can create a Request.
-                            String fullMessage = writeRequestLineBuffer.get(myKey) + lineEnd + message + lineEnd;
+                            String fullMessage = writeRequestLineBuffer.get(myKey) + "\r\n" + message + "\r";
                             writeRequestLineBuffer.remove(myKey);
                             Request r = new Request(fullMessage, client);
                             log.debug(r.getType() + " message received: " + r.getRequestRaw());
@@ -125,26 +122,10 @@ public class LoadBalancer implements Runnable {
                             } else if(requestType == RequestType.SET) {
                                 // We need to wait for the second line in the SET request.
                                 writeRequestLineBuffer.put(myKey, message);
-                                log.debug("Got first line of SET request [" + message + "], waiting for second.");
+                                log.debug("Got first line of SET request [" + message + "], waiting for the second line.");
                             }
 
                         }
-                        /*
-                        if(requestType == RequestType.GET || requestType == RequestType.DELETE) {
-                            Request r = new Request(message, client);
-                            handleRequest(r);
-                        } else if(requestType == RequestType.SET) {
-                            if(!writeRequestLineBuffer.containsKey(myKey)) {
-                                // If we have just one line, we need to wait for the second line.
-                                writeRequestLineBuffer.put(myKey, message);
-                            } else {
-                                // If we already have the whole SET request, we can create a Request.
-                                String fullMessage = writeRequestLineBuffer.get(myKey) + message;
-                                log.debug(requestType + " message received: " + message);
-                                Request r = new Request(message, client);
-                                handleRequest(r);
-                            }
-                        }*/
                     }
                     selectionKeyIterator.remove();
                 }
