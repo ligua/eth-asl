@@ -102,9 +102,6 @@ public class LoadBalancer implements Runnable {
                         client.read(buffer);
                         String message = new String(buffer.array()).trim();
 
-                        // RequestType requestType = Request.getRequestType(message);
-                        // log.debug(requestType + " message received: " + message);
-
                         if(writeRequestLineBuffer.containsKey(myKey)) {
                             // If we already have the whole SET request, we can create a Request.
                             String fullMessage = writeRequestLineBuffer.get(myKey) + MiddlewareMain.LINE_END + message;
