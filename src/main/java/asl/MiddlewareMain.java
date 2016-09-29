@@ -16,6 +16,8 @@ public class MiddlewareMain {
 
     private static final Logger log = LogManager.getLogger(MiddlewareMain.class);
 
+    public static final String LINE_END = "\r\n";
+
     private Integer numMemcachedServers;            // N
     private Integer numReadThreadsPerServer;        // T
     private Integer replicationFactor;              // R

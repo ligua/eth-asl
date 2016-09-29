@@ -2,7 +2,6 @@ package main.java.asl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.net.server.InputStreamLogEventBridge;
 
 import java.io.*;
 import java.net.Socket;
@@ -54,7 +53,7 @@ public class MemcachedConnection implements Closeable {
             InputStream socketIn = memcachedSocket.getInputStream();
 
             // Send request
-            socketOut.write(requestRaw + "\n");
+            socketOut.write(requestRaw + MiddlewareMain.LINE_END);
             socketOut.flush();
             r.setTimeForwarded();
 
