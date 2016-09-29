@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.channels.ClosedChannelException;
 
 /**
  * One connection with a memcachedSocket instance.
@@ -77,7 +78,11 @@ public class MemcachedConnection implements Closeable {
 
             // Respond if necessary
             if(shouldRespond) {
-                r.respond(response);
+                try {
+                    r.respond(response);
+                } catch(ClosedChannelException ex) {
+                    log.error("Could not respond to request " + r + ": " + ex);
+                }
             }
 
         } catch (IOException ex) {
