@@ -20,4 +20,19 @@ public class RequestTest {
 
     }
 
+    @Test
+    public void isCompleteSetRequest() throws Exception {
+        String setRequest1 = "set mykey 0 60 5\r\nhello";
+        assertTrue(Request.isCompleteSetRequest(setRequest1));
+
+        String setRequest2 = "set mykey 0 60 5\r\nhell";
+        assertFalse(Request.isCompleteSetRequest(setRequest2));
+
+        String setRequest3 = "set mykey 0 60 5";
+        assertFalse(Request.isCompleteSetRequest(setRequest3));
+
+        String setRequest4 = "set mykey 0 60 5\r\n";
+        assertFalse(Request.isCompleteSetRequest(setRequest4));
+    }
+
 }
