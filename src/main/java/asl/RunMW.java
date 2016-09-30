@@ -22,7 +22,7 @@ public class RunMW {
 		// Start the Middleware
 		// -----------------------------------------------------------------------------
 
-		//new MiddlewareMain(myIp, myPort, mcAddresses, numThreadsPTP, writeToCount).run();
+		new MiddlewareMain(myIp, myPort, mcAddresses, numThreadsPTP, writeToCount).run();
 
 	}
 
