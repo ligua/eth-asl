@@ -6,6 +6,7 @@
     <tstamp/>
 
     <!-- set global properties for this build -->
+    <property name="nethzid" value="pungast"/>
     <property name="src.dir" location="src"/>
     <property name="build.dir" location="build"/>
     <property name="dist.dir" location="dist"/>
@@ -69,6 +70,30 @@
         <!-- Run the application -->
         <java jar="${jarfile}" fork="true"/>
     </target>
+
+
+    <target name="jar" depends="compile" description="generate the distribution">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist.dir}"/>
+
+        <!-- Copy resources to /build -->
+        <copydir src="${resources.dir}" dest="${build.dir}"/>
+
+        <!-- Manifest classpath -->
+        <manifestclasspath property="manifest.classpath" jarfile="${jarfile}">
+            <classpath refid="test-classpath"/>
+        </manifestclasspath>
+
+        <!-- Put everything in ${build} into the jar file -->
+        <jar jarfile="${dist.dir}/middleware-${nethzid}.jar" basedir="${build.dir}" compress="true">
+            <fileset dir="${src.dir}" includes="**/*.java"/>
+            <manifest>
+                <attribute name="Main-Class" value="ch.ethz.asltest.RunMW"/>
+                <attribute name="Class-Path" value="${manifest.classpath}"/>
+            </manifest>
+        </jar>
+    </target>
+
 
     <target name="test" depends="dist">
         <junit>
