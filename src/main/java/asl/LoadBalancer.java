@@ -152,6 +152,10 @@ public class LoadBalancer implements Runnable {
                         if(!requestMessageBuffer.containsKey(myKey)) {
                             log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
                             // If this is the first time we hear from this connection
+                            if(message.length() == 0) {
+                                client.close();         // TODO not sure if this is correct behaviour
+                                continue;
+                            }
                             RequestType requestType = Request.getRequestType(message);
 
                             if (requestType == RequestType.GET) {
