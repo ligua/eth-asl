@@ -27,6 +27,7 @@ public class LoadBalancer implements Runnable {
     private Integer port;
 
     private Map<SelectionKey, String> requestMessageBuffer;
+    private Map<SelectionKey, Request> keyToRequest;
 
     LoadBalancer(List<MiddlewareComponent> middlewareComponents, Hasher hasher, String address, Integer port) {
         this.middlewareComponents = middlewareComponents;
@@ -34,13 +35,18 @@ public class LoadBalancer implements Runnable {
         this.address = address;
         this.port = port;
         this.requestMessageBuffer = new HashMap<>();
+        this.keyToRequest = new HashMap<>();
         this.requestCounter = 0;
     }
 
     /**
      * Take one request and add it to the correct queue.
      */
-    void handleRequest(Request request) {
+    void handleRequest(Request request, SelectionKey selectionKey) {
+        keyToRequest.put(selectionKey, request);
+        selectionKey.interestOps(SelectionKey.OP_WRITE);    // TODO
+        log.debug("contains after putting? " + keyToRequest.containsKey(selectionKey));
+
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
@@ -93,6 +99,35 @@ public class LoadBalancer implements Runnable {
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
 
+                    log.debug("contains for writing? " + keyToRequest.containsKey(myKey));
+                    if(keyToRequest.containsKey(myKey) && keyToRequest.get(myKey).hasResponse()) {
+                        // If request has response, then write it.
+
+                        String response = keyToRequest.get(myKey).getResponse();
+                        keyToRequest.remove(myKey);
+
+                        SocketChannel client = (SocketChannel) myKey.channel();
+
+                        // Populate buffer
+                        ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
+                        buffer.put(response.getBytes());
+                        buffer.flip();
+
+                        log.debug("Trying to respond to client " + client);
+
+                        // Write buffer
+                        while(buffer.hasRemaining()) {
+                            client.write(buffer);
+
+                            int result = client.write(buffer);
+                            log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
+                        }
+
+                        client.close();
+
+                        continue;
+                    }
+
                     if ((myKey.isValid() && myKey.isAcceptable())) {
                         // If this key's channel is ready to accept a new socket connection
                         SocketChannel client = serverSocketChannel.accept();
@@ -124,8 +159,7 @@ public class LoadBalancer implements Runnable {
                                 Request r = new Request(message, client);
                                 log.debug(r.getType() + " message received: " + r);
 
-                                myKey.interestOps(SelectionKey.OP_WRITE); // TODO
-                                handleRequest(r);
+                                handleRequest(r, myKey);
                             } else if (requestType == RequestType.SET) {
                                 // We may need to wait for the second line in the SET request.
                                 requestMessageBuffer.put(myKey, message);
@@ -146,8 +180,7 @@ public class LoadBalancer implements Runnable {
                             requestMessageBuffer.remove(myKey);
                             Request r = new Request(fullMessage, client);
                             log.debug(r.getType() + " message received: " + r);
-                            myKey.interestOps(SelectionKey.OP_WRITE); // TODO
-                            handleRequest(r);
+                            handleRequest(r, myKey);
                         }
 
                     }

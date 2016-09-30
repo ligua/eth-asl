@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
 
@@ -18,6 +20,9 @@ public class Request {
     private String requestRaw;
     private String key;
     private SocketChannel client;
+
+    private boolean hasResponse;
+    private String response;
 
     private Date timeCreated;
     private Date timeForwarded;
@@ -43,6 +48,14 @@ public class Request {
         return key;
     }
 
+    public boolean hasResponse() {
+        return hasResponse;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
     private void setTimeCreated() {
         this.timeCreated = new Date();
     }
@@ -59,7 +72,9 @@ public class Request {
      * Respond to the request and close connection.
      */
     public void respond(String response) throws IOException {
-
+        this.response = response;
+        this.hasResponse = true;
+/*
         ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
 
         // Populate buffer
@@ -76,13 +91,14 @@ public class Request {
             log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
         }
 
+
         setTimeReturned();
 
         log.debug(String.format("Request took %dms to forward, %dms to return response.",
                 timeForwarded.getTime()-timeCreated.getTime(), timeReturned.getTime()-timeCreated.getTime()));
 
         // Close connection
-        client.close();     // TODO should I close anything else?
+        client.close();     // TODO should I close anything else?*/
     }
 
     /**
