@@ -1,20 +1,14 @@
 package main.java.asl;
 
-import com.sun.org.apache.bcel.internal.generic.Select;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.CharacterCodingException;
-import java.util.Arrays;
 import java.util.Date;
 
-enum RequestType {GET, SET, UNKNOWN};
+enum RequestType {GET, SET, UNKNOWN}
 
 public class Request {
 
@@ -120,11 +114,7 @@ public class Request {
             Integer numCharsDeclared = Integer.parseInt(firstLineParts[4]);
             Integer numCharsActual = secondLine.length();
 
-            if (numCharsActual < numCharsDeclared) {
-                return false;
-            } else {
-                return true;
-            }
+            return numCharsActual >= numCharsDeclared;
         }
     }
 
