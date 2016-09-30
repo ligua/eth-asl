@@ -18,6 +18,7 @@ public class MiddlewareMain implements Runnable {
     private static final Logger log = LogManager.getLogger(MiddlewareMain.class);
 
     public static final String LINE_END = "\r\n";
+    public static final Integer MAX_VALUE_SIZE = 1024;
 
     private String loadBalancerIp;
     private Integer loadBalancerPort;
