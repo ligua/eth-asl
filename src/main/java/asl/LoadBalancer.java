@@ -119,7 +119,7 @@ public class LoadBalancer implements Runnable {
                             // If this is the first time we hear from this connection
                             RequestType requestType = Request.getRequestType(message);
 
-                            if (requestType == RequestType.GET || requestType == RequestType.DELETE) {
+                            if (requestType == RequestType.GET) {
                                 // TODO assuming we get the whole GET or DELETE message in one chunk
                                 Request r = new Request(message, client);
                                 log.debug(r.getType() + " message received: " + r);
