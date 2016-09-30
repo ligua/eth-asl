@@ -14,7 +14,7 @@ import java.nio.charset.CharacterCodingException;
 import java.util.Arrays;
 import java.util.Date;
 
-enum RequestType {GET, SET, DELETE, UNKNOWN};
+enum RequestType {GET, SET, UNKNOWN};
 
 public class Request {
 
@@ -101,8 +101,6 @@ public class Request {
             return RequestType.SET;
         } else if (firstThreeChars.equals("get")) {
             return RequestType.GET;
-        } else if (firstThreeChars.equals("del")) {
-            return RequestType.DELETE;
         } else {
             return RequestType.UNKNOWN;
         }
