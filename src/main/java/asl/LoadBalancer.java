@@ -124,7 +124,8 @@ public class LoadBalancer implements Runnable {
                             log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
                         }
 
-                        client.close();
+                        myKey.interestOps(SelectionKey.OP_WRITE);
+                        //client.close();
                         continue;
                     }
 

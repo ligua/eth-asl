@@ -7,7 +7,7 @@ echo "Starting a memaslap client."
 # mem/libmemcached-1.0.18/clients/memaslap -s 127.0.0.1:11212 -T 64 -c 64 -o1 -S 1s -t 20s –F resources/smallvalue.cfg
 
 # Just 2 request generators
-mem/libmemcached-1.0.18/clients/memaslap -s 127.0.0.1:11212 -T 2 -c 2 -o1 -S 1s -t 20s –F resources/smallvalue.cfg
+mem/libmemcached-1.0.18/clients/memaslap -s 127.0.0.1:11212 -T 2 -c 2 -o1 -S 1s -t 10s –F resources/smallvalue.cfg
 
 
 
