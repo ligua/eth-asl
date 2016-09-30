@@ -63,7 +63,7 @@ public class MemcachedConnection implements Closeable {
 
             // Read response
             String response = "";
-            byte[] buffer = new byte[1024];     // TODO how big buffer do I need?
+            byte[] buffer = new byte[2 * MiddlewareMain.MAX_VALUE_SIZE];
             int read = socketIn.read(buffer);
 
             // If the message from memcached continued

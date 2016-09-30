@@ -47,6 +47,8 @@ public class LoadBalancer implements Runnable {
         selectionKey.interestOps(SelectionKey.OP_WRITE);    // TODO
         log.debug("contains after putting? " + keyToRequest.containsKey(selectionKey));
 
+        requestMessageBuffer.remove(selectionKey);
+
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
@@ -99,7 +101,6 @@ public class LoadBalancer implements Runnable {
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
 
-                    log.debug("contains for writing? " + keyToRequest.containsKey(myKey));
                     if(keyToRequest.containsKey(myKey) && keyToRequest.get(myKey).hasResponse()) {
                         // If request has response, then write it.
 
@@ -109,7 +110,7 @@ public class LoadBalancer implements Runnable {
                         SocketChannel client = (SocketChannel) myKey.channel();
 
                         // Populate buffer
-                        ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
+                        ByteBuffer buffer = ByteBuffer.allocate(2 * MiddlewareMain.MAX_VALUE_SIZE);
                         buffer.put(response.getBytes());
                         buffer.flip();
 
@@ -124,7 +125,6 @@ public class LoadBalancer implements Runnable {
                         }
 
                         client.close();
-
                         continue;
                     }
 
@@ -144,7 +144,7 @@ public class LoadBalancer implements Runnable {
                         // If this key's channel is ready for reading
 
                         SocketChannel client = (SocketChannel) myKey.channel();
-                        ByteBuffer buffer = ByteBuffer.allocate(256);           // TODO is this enough?
+                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.MAX_VALUE_SIZE);
                         client.read(buffer);
                         String message = new String(buffer.array());
                         message = message.substring(0, buffer.position());
@@ -177,7 +177,6 @@ public class LoadBalancer implements Runnable {
                                 Request.isCompleteSetRequest(requestMessageBuffer.get(myKey))) {
                             log.debug("KEY IS COMPLETE: " + myKey);
                             String fullMessage = requestMessageBuffer.get(myKey);
-                            requestMessageBuffer.remove(myKey);
                             Request r = new Request(fullMessage, client);
                             log.debug(r.getType() + " message received: " + r);
                             handleRequest(r, myKey);
