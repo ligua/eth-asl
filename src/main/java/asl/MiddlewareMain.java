@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,14 +30,20 @@ public class MiddlewareMain {
     private LoadBalancer loadBalancer;
 
     public MiddlewareMain() {
-        this(1, 1, 1);
+        this("localhost",
+                11212,
+                new ArrayList<String>(Arrays.asList("localhost:11211")),
+                1,
+                1);
     }
 
-    private MiddlewareMain(Integer numMemcachedServers, Integer numReadThreadsPerServer, Integer replicationFactor) {
+    MiddlewareMain(String loadBalancerIp, Integer loadBalancerPort, List<String> memcachedAddresses,
+                           Integer numReadThreadsPerServer, Integer replicationFactor) {
         log.info("Starting middleware...");
-        this.numMemcachedServers = numMemcachedServers;
+        this.numMemcachedServers = memcachedAddresses.size();
         this.numReadThreadsPerServer = numReadThreadsPerServer;
         this.replicationFactor = replicationFactor;
+        MemcachedConnection.memcachedAddresses = memcachedAddresses;
 
         this.hasher = new UniformHasher(numMemcachedServers, replicationFactor);
 
@@ -48,7 +55,7 @@ public class MiddlewareMain {
         }
 
         // Create load balancer
-        loadBalancer = new LoadBalancer(components, hasher);
+        loadBalancer = new LoadBalancer(components, hasher, loadBalancerIp, loadBalancerPort);
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(loadBalancer);
 
@@ -57,7 +64,6 @@ public class MiddlewareMain {
 
     public static void main(String[] args) {
 
-        //MiddlewareMain mwm = new MiddlewareMain(3, 5, 2);
         MiddlewareMain mwm = new MiddlewareMain();
 
     }

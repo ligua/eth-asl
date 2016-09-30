@@ -1,4 +1,4 @@
-package ch.ethz.asltest;
+package main.java.asl;
 
 import java.util.*;
 
@@ -22,7 +22,7 @@ public class RunMW {
 		// Start the Middleware
 		// -----------------------------------------------------------------------------
 
-		new MyMiddleware(myIp, myPort, mcAddresses, numThreadsPTP, writeToCount).run();
+		//new MiddlewareMain(myIp, myPort, mcAddresses, numThreadsPTP, writeToCount).run();
 
 	}
 
