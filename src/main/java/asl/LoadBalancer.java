@@ -17,7 +17,7 @@ import java.util.*;
 public class LoadBalancer implements Runnable {
 
     private static final Logger log = LogManager.getLogger(LoadBalancer.class);
-    private static final Integer LOG_EVERY_N_REQUESTS = 1;
+    private static final Integer LOG_EVERY_N_REQUESTS = 1000;
 
     private Integer requestCounter;
 
