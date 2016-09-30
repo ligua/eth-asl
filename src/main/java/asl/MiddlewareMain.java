@@ -13,12 +13,14 @@ import java.util.concurrent.Executors;
  * The class responsible for setting up and connecting everything in the middleware.
  * This will be run as the main class of the middleware.
  */
-public class MiddlewareMain {
+public class MiddlewareMain implements Runnable {
 
     private static final Logger log = LogManager.getLogger(MiddlewareMain.class);
 
     public static final String LINE_END = "\r\n";
 
+    private String loadBalancerIp;
+    private Integer loadBalancerPort;
     private Integer numMemcachedServers;            // N
     private Integer numReadThreadsPerServer;        // T
     private Integer replicationFactor;              // R
@@ -39,13 +41,20 @@ public class MiddlewareMain {
 
     MiddlewareMain(String loadBalancerIp, Integer loadBalancerPort, List<String> memcachedAddresses,
                            Integer numReadThreadsPerServer, Integer replicationFactor) {
-        log.info("Starting middleware...");
+
+        this.loadBalancerIp = loadBalancerIp;
+        this.loadBalancerPort = loadBalancerPort;
         this.numMemcachedServers = memcachedAddresses.size();
         this.numReadThreadsPerServer = numReadThreadsPerServer;
         this.replicationFactor = replicationFactor;
-        MemcachedConnection.memcachedAddresses = memcachedAddresses;
-
         this.hasher = new UniformHasher(numMemcachedServers, replicationFactor);
+
+        MemcachedConnection.memcachedAddresses = memcachedAddresses;
+    }
+
+    @Override
+    public void run() {
+        log.info("Starting middleware...");
 
         // Create all middleware components
         this.components = new ArrayList<>();
@@ -65,6 +74,7 @@ public class MiddlewareMain {
     public static void main(String[] args) {
 
         MiddlewareMain mwm = new MiddlewareMain();
+        mwm.run();
 
     }
 
