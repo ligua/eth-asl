@@ -111,6 +111,9 @@ public class LoadBalancer implements Runnable {
 
                         // Populate buffer
                         ByteBuffer buffer = ByteBuffer.allocate(2 * MiddlewareMain.MAX_VALUE_SIZE);
+                        log.debug("Buffer:" + buffer);
+                        log.debug("Response:" + response);
+                        log.debug("Response bytes:" + response.getBytes());
                         buffer.put(response.getBytes());
                         buffer.flip();
 
@@ -192,7 +195,7 @@ public class LoadBalancer implements Runnable {
             }
 
         } catch (Exception ex) {
-            log.error(ex);
+            log.error("an exception: ", ex);
             throw new RuntimeException(ex);
         }
     }
