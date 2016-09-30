@@ -3,7 +3,10 @@ package main.java.asl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.channels.ClosedChannelException;
 import java.util.List;
@@ -39,7 +42,7 @@ public class MemcachedConnection implements Closeable {
             throw new RuntimeException(ex);
         }
     }
-    
+
 
     public void sendRequest(Request r) {
         sendRequest(r, true);
