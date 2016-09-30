@@ -17,20 +17,22 @@ import java.util.*;
 public class LoadBalancer implements Runnable {
 
     private static final Logger log = LogManager.getLogger(LoadBalancer.class);
-    private static final String address = "localhost";
-    private static final Integer port = 11212;
     private static final Integer LOG_EVERY_N_REQUESTS = 1;
 
     private Integer requestCounter;
 
     private List<MiddlewareComponent> middlewareComponents;
     private Hasher hasher;
+    private String address;
+    private Integer port;
 
     private Map<SelectionKey, String> requestMessageBuffer;
 
-    LoadBalancer(List<MiddlewareComponent> middlewareComponents, Hasher hasher) {
+    LoadBalancer(List<MiddlewareComponent> middlewareComponents, Hasher hasher, String address, Integer port) {
         this.middlewareComponents = middlewareComponents;
         this.hasher = hasher;
+        this.address = address;
+        this.port = port;
         this.requestMessageBuffer = new HashMap<>();
         this.requestCounter = 0;
     }

@@ -28,8 +28,7 @@ class WriteWorker implements Runnable {
 
         connections = new ArrayList<>();
         for(Integer targetMachine : targetMachines) {
-            // TODO initialise the connection smartly so that we actually connect to different machines based on number
-            connections.add(new MemcachedConnection());
+            connections.add(new MemcachedConnection(targetMachine));
         }
     }
 

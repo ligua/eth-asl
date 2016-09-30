@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.*;
 import java.net.Socket;
 import java.nio.channels.ClosedChannelException;
+import java.util.List;
 
 /**
  * One connection with a memcachedSocket instance.
@@ -16,11 +17,18 @@ public class MemcachedConnection implements Closeable {
 
     private static final Logger log = LogManager.getLogger(MemcachedConnection.class);
 
+    public static List<String> memcachedAddresses;
+
     private String address;
     private Integer port;
     private Socket memcachedSocket;
 
-    public MemcachedConnection(String address, Integer port) {
+    public MemcachedConnection(Integer serverNumber) {
+        String addressString = memcachedAddresses.get(serverNumber);
+        String[] parts = addressString.split(":");
+        String address = parts[0];
+        Integer port = Integer.parseInt(parts[1]);
+
         this.address = address;
         this.port = port;
 
@@ -30,16 +38,8 @@ public class MemcachedConnection implements Closeable {
             log.error(ex);
             throw new RuntimeException(ex);
         }
-
     }
-
-    /**
-     * Convenience constructor for development.
-     */
-    public MemcachedConnection() {
-        this("localhost", 11211);
-    }
-
+    
 
     public void sendRequest(Request r) {
         sendRequest(r, true);

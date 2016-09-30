@@ -23,7 +23,7 @@ class ReadWorker implements Runnable {
         this.componentId = componentId;
         this.threadId = threadId;
         this.readQueue = readQueue;
-        this.connection = new MemcachedConnection();
+        this.connection = new MemcachedConnection(componentId);
     }
 
     @Override
