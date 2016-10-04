@@ -103,9 +103,9 @@ public class LoadBalancer implements Runnable {
 
                     if(keyToRequest.containsKey(myKey) && keyToRequest.get(myKey).hasResponse()) {
                         // If request has response, then write it.
+                        Request r = keyToRequest.get(myKey);
 
-
-                        String response = keyToRequest.get(myKey).getResponse();
+                        String response = r.getResponse();
                         keyToRequest.remove(myKey);
 
                         SocketChannel client = (SocketChannel) myKey.channel();
@@ -127,6 +127,9 @@ public class LoadBalancer implements Runnable {
                             int result = client.write(buffer);
                             log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
                         }
+
+                        r.setTimeReturned();
+                        r.logTimestamps();
 
                         myKey.interestOps(SelectionKey.OP_READ);
                         //client.close();

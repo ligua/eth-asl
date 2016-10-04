@@ -41,7 +41,7 @@ class ReadWorker implements Runnable {
                 }
             }
         } catch(Exception ex) {
-            log.error(ex);
+            log.error("Exception: ", ex);
             throw new RuntimeException(ex);
         }
     }
