@@ -20,3 +20,6 @@ mem/
 out/
 build/
 dist/
+
+# Log files
+log/

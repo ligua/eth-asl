@@ -4,9 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
 
@@ -15,6 +12,7 @@ enum RequestType {GET, SET, UNKNOWN}
 public class Request {
 
     private static final Logger log = LogManager.getLogger(Request.class);
+    private static final Logger csvLog = LogManager.getLogger("request_csv");
 
     private RequestType type;
     private String requestRaw;
@@ -64,7 +62,7 @@ public class Request {
         this.timeForwarded = new Date();
     }
 
-    private void setTimeReturned() {
+    public void setTimeReturned() {
         this.timeReturned = new Date();
     }
 
@@ -75,31 +73,6 @@ public class Request {
         this.response = response;
         log.debug("RESPONDING WITH '" + response + "'");
         this.hasResponse = true;
-/*
-        ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
-
-        // Populate buffer
-        buffer.put(response.getBytes());
-        buffer.flip();
-
-        log.debug("Trying to respond to client " + client);
-
-        // Write buffer
-        while(buffer.hasRemaining()) {
-            client.write(buffer);
-
-            int result = client.write(buffer);
-            log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
-        }
-
-
-        setTimeReturned();
-
-        log.debug(String.format("Request took %dms to forward, %dms to return response.",
-                timeForwarded.getTime()-timeCreated.getTime(), timeReturned.getTime()-timeCreated.getTime()));
-
-        // Close connection
-        client.close();     // TODO should I close anything else?*/
     }
 
     /**
@@ -133,6 +106,14 @@ public class Request {
 
             return numCharsActual >= numCharsDeclared;
         }
+    }
+
+    /**
+     * Write instrumentation timestamps to CSV.
+     */
+    public void logTimestamps() {
+        csvLog.info(String.format("%d,%d,%d",
+                timeCreated.getTime(), timeForwarded.getTime(), timeReturned.getTime()));
     }
 
 
