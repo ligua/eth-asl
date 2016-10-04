@@ -20,9 +20,12 @@ fi
 
 # TODO update, install java, upload jar, start middleware
 
+echo "--- Copying dependencies ---"
+ssh $username@$machine_ssh_address "mkdir -p ~/asl/lib ~/asl/dist"
+scp lib/* $username@$machine_ssh_address:~/asl/lib
+
 echo "--- Copying JAR ---"
-ssh $username@$machine_ssh_address "mkdir ~/asl"
-scp "dist/$jar_file_name" $username@$machine_ssh_address:~/asl
+scp dist/$jar_file_name $username@$machine_ssh_address:~/asl/dist
 
 
 ssh $username@$machine_ssh_address "
@@ -33,7 +36,7 @@ ssh $username@$machine_ssh_address "
     sudo apt-get install openjdk-7-jre
     echo '--- Copying JAR ---'
     cd ~/asl
-    java -jar $jar_file_name -l $machine_local_address -p $machine_listen_port -t $number_of_threads_in_pool -r $replication_factor -m $memcached_address_and_port
+    java -classpath lib/ -jar dist/$jar_file_name -l $machine_local_address -p $machine_listen_port -t $number_of_threads_in_pool -r $replication_factor -m $memcached_address_and_port
 "
 
 
