@@ -104,6 +104,7 @@ public class LoadBalancer implements Runnable {
                     if(keyToRequest.containsKey(myKey) && keyToRequest.get(myKey).hasResponse()) {
                         // If request has response, then write it.
 
+
                         String response = keyToRequest.get(myKey).getResponse();
                         keyToRequest.remove(myKey);
 
