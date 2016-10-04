@@ -88,7 +88,7 @@
         <jar jarfile="${dist.dir}/middleware-${nethzid}.jar" basedir="${build.dir}" compress="true">
             <fileset dir="${src.dir}" includes="**/*.java"/>
             <manifest>
-                <attribute name="Main-Class" value="ch.ethz.asltest.RunMW"/>
+                <attribute name="Main-Class" value="main.java.asl.RunMW"/>
                 <attribute name="Class-Path" value="${manifest.classpath}"/>
             </manifest>
         </jar>
