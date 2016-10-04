@@ -56,6 +56,11 @@ public class MiddlewareMain implements Runnable {
     @Override
     public void run() {
         log.info("Starting middleware...");
+        log.info("[load balancer IP]: " + loadBalancerIp);
+        log.info("[load balancer port]: " + loadBalancerPort);
+        log.info("[number of read threads per component]: " + numReadThreadsPerServer);
+        log.info("[replication factor]: " + replicationFactor);
+        log.info("[memcached addresses]: " + Arrays.toString(MemcachedConnection.memcachedAddresses.toArray()));
 
         // Create all middleware components
         this.components = new ArrayList<>();
