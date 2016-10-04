@@ -69,8 +69,9 @@ public class MemcachedConnection implements Closeable {
             // If the message from memcached continued
             while(read != -1) {
                 String output = new String(buffer, 0, read);
-                log.debug("Response: " + response);
+                log.debug("Response: '" + response + "'");
                 response += output;
+                log.debug("Response after addition: '" + response + "'");
                 if(socketIn.available() > 0) {      // TODO This is probably not a good way to do this?
                     read = socketIn.read(buffer);
                 } else {

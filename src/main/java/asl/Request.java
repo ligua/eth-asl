@@ -73,6 +73,7 @@ public class Request {
      */
     public void respond(String response) throws IOException {
         this.response = response;
+        log.debug("RESPONDING WITH '" + response + "'");
         this.hasResponse = true;
 /*
         ByteBuffer buffer = ByteBuffer.allocate(256);       // TODO is this buffer big enough? (check max message size)
