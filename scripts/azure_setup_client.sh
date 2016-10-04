@@ -12,14 +12,15 @@ exit 1
 fi
 
 ssh $username@$machine_ssh_address "
+    export DEBIAN_FRONTEND=noninteractive
     echo '--- Updating ---'
-    sudo apt-get update
+    sudo apt-get --assume-yes update
     echo '--- Installing required libraries ---'
-    sudo apt-get install build-essential libevent-dev
+    sudo apt-get --assume-yes install build-essential libevent-dev
 "
 
 echo "--- Building memaslap ---"
-if (ssh $username@$machine_ssh_address '[ -d clients/memaslap ]')
+if (ssh $username@$machine_ssh_address "[ -f libmemcached-1.0.18/clients/memaslap ]")
 then
 echo "Memaslap already built."
 else
@@ -34,8 +35,7 @@ ssh $username@$machine_ssh_address "
 fi
 
 ssh $username@$machine_ssh_address "
-    ./libmemcached-1.0.18/clients/memaslap –s $loadbalancer_address:$loadbalancer_port –T 64 –c 64 –o1 –S 1s –t 1s
+    ./libmemcached-1.0.18/clients/memaslap -s $loadbalancer_address:$loadbalancer_port -T 64 -c 64 -o1 -S 1s -t 1s
 "
-
 
 # sh scripts/azure_setup_client.sh pungast pungastforaslvms1.westeurope.cloudapp.azure.com 10.0.0.6 11211

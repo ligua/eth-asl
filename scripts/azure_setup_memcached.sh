@@ -12,10 +12,15 @@ exit 1
 fi
 
 ssh $username@$machine_address "
+    export DEBIAN_FRONTEND=noninteractive
     echo '--- Updating ---'
-    sudo apt-get update
+    sudo apt-get --assume-yes update
     echo '--- Installing required libraries ---'
-    sudo apt-get install build-essential libevent-dev memcached
+    sudo apt-get --assume-yes install build-essential libevent-dev memcached
     echo '--- Starting memcached ---'
     memcached -p $port -t 1
 "
+
+
+
+# sh scripts/azure_setup_memcached.sh pungast pungastforaslvms3.westeurope.cloudapp.azure.com 11211
