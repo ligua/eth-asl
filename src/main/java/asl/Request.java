@@ -112,8 +112,8 @@ public class Request {
      * Write instrumentation timestamps to CSV.
      */
     public void logTimestamps() {
-        csvLog.info(String.format("%d,%d,%d",
-                timeCreated.getTime(), timeForwarded.getTime(), timeReturned.getTime()));
+        csvLog.info(String.format("%s,%d,%d,%d",
+                type, timeCreated.getTime(), timeForwarded.getTime(), timeReturned.getTime()));
     }
 
 
