@@ -30,9 +30,9 @@ scp dist/$jar_file_name $username@$machine_ssh_address:~/asl/dist
 ssh $username@$machine_ssh_address "
     export DEBIAN_FRONTEND=noninteractive
     echo '--- Updating ---'
-    sudo apt-get update
+    sudo apt-get --assume-yes update
     echo '--- Installing OpenJDK ---'
-    sudo apt-get install openjdk-7-jre
+    sudo apt-get --assume-yes install openjdk-7-jre
     echo '--- Copying JAR ---'
     cd ~/asl
     java -classpath lib/ -jar dist/$jar_file_name -l $machine_local_address -p $machine_listen_port -t $number_of_threads_in_pool -r $replication_factor -m $memcached_address_and_port
@@ -42,4 +42,4 @@ ssh $username@$machine_ssh_address "
 
 
 
-# sh scripts/azure_setup_middleware.sh pungast pungastforaslvms3.westeurope.cloudapp.azure.com 10.0.0.6 11211 1 1 10.0.0.5:11212
+# sh scripts/azure_setup_middleware.sh pungast pungastforaslvms2.westeurope.cloudapp.azure.com 10.0.0.5 11212 1 1 10.0.0.6:11211
