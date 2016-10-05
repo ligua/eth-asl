@@ -23,3 +23,6 @@ dist/
 
 # Log files
 log/
+
+# Python
+scripts/__pycache__
