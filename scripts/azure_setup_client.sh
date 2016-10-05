@@ -35,7 +35,7 @@ ssh $username@$machine_ssh_address "
 fi
 
 ssh $username@$machine_ssh_address "
-    ./libmemcached-1.0.18/clients/memaslap -s $loadbalancer_address:$loadbalancer_port -T 64 -c 64 -o1 -S 1s -t 1s
+    ./libmemcached-1.0.18/clients/memaslap -s $loadbalancer_address:$loadbalancer_port -T 64 -c 64 -o1 -S 1s -t 1m
 "
 
-# sh scripts/azure_setup_client.sh pungast pungastforaslvms1.westeurope.cloudapp.azure.com 10.0.0.6 11211
+# sh scripts/azure_setup_client.sh pungast pungastforaslvms1.westeurope.cloudapp.azure.com 10.0.0.5 11212
