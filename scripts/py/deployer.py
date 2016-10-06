@@ -85,3 +85,19 @@ class Deployer(object):
         deletion_async_operation = self.destroy()
         deletion_async_operation.wait()
         self.log.info("Resource group {} destroyed.".format(self.resource_group))
+
+    @staticmethod
+    def kill(resource_group):
+        """Kill the given resource group."""
+        print("Killing resource group {}...".format(resource_group))
+        d = Deployer(None, None, None)
+        deletion_async_operation = d.client.resource_groups.delete(resource_group)
+        print("Started killing resource group {}.".format(resource_group))
+
+        return deletion_async_operation
+
+    @staticmethod
+    def kill_wait(resource_group):
+        deletion_async_operation = Deployer.kill(resource_group)
+        deletion_async_operation.wait()
+        print("Resource group {} destroyed.".format(resource_group))
