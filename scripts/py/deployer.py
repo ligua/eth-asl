@@ -1,53 +1,41 @@
 """A deployer class to deploy a template on Azure"""
-import os.path
 import json
-from haikunator import Haikunator
+import logging
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.resources.models import DeploymentMode
 from azure.common.credentials import UserPassCredentials
 
 
 class Deployer(object):
-    """ Initialize the deployer class with subscription, resource group and public key.
 
-    :raises IOError: If the public key path cannot be read (access or not exists)
-    :raises KeyError: If AZURE_CLIENT_ID, AZURE_CLIENT_SECRET or AZURE_TENANT_ID env
-        variables or not defined
-    """
-    name_generator = Haikunator()
-
-    def __init__(self, user_email, user_password, subscription_id, resource_group, template_path, pub_ssh_key_path):
+    def __init__(self, user_email, user_password, subscription_id, resource_group, template_path, parameters):
         self.resource_group = resource_group
         self.template_path = template_path
-        self.dns_label_prefix = self.name_generator.haikunate()
-
-        pub_ssh_key_path = os.path.expanduser(pub_ssh_key_path)
-        # Will raise if file not exists or not enough permissions
-        with open(pub_ssh_key_path, 'r') as pub_ssh_file_fd:
-            self.pub_ssh_key = pub_ssh_file_fd.read()
+        self.parameters = parameters
 
         self.credentials = UserPassCredentials(user_email, user_password)
         self.client = ResourceManagementClient(self.credentials, subscription_id)
 
+        LOG_FORMAT = '%(asctime)-15s %(message)s'
+        logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
+
     def deploy(self):
         """Deploy the template to a resource group."""
+
+        logging.info("Initializing Deployer class with resource group '{}' and template at '{}'."
+                      .format(self.resource_group, self.template_path))
+        logging.info("Parameters: " + str(self.parameters))
+
         self.client.resource_groups.create_or_update(
-            self.resource_group,
-            {
-                'location': 'westeurope'
-            }
+            self.resource_group, {'location': 'westeurope'}
         )
 
         with open(self.template_path, 'r') as template_file_fd:
             template = json.load(template_file_fd)
 
-        parameters = {
-            'sshKeyData': self.pub_ssh_key,
-            'vmName': 'azure-deployment-sample-vm',
-            'dnsLabelPrefix': self.dns_label_prefix
-        }
-        parameters = {k: {'value': v} for k, v in parameters.items()}
+        parameters = {k: {'value': v} for k, v in self.parameters.items()}
 
+        # TODO review deployment mode -- what do I want?
         deployment_properties = {
             'mode': DeploymentMode.incremental,
             'template': template,
@@ -56,11 +44,15 @@ class Deployer(object):
 
         deployment_async_operation = self.client.deployments.create_or_update(
             self.resource_group,
-            'azure-sample',
+            'azure-sample',         # TODO what is this parameter?
             deployment_properties
         )
         deployment_async_operation.wait()
 
+        logging.info("Deployment complete, resource group {} created.".format(self.resource_group))
+
     def destroy(self):
         """Destroy the given resource group"""
+        logging.info("Destroying resource group {}...".format(self.resource_group))
         self.client.resource_groups.delete(self.resource_group)
+        logging.info("Destroyed.")
