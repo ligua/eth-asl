@@ -30,8 +30,8 @@ parameters = {
 deployer = Deployer(my_email, my_password, my_subscription_id, my_resource_group, template_path, parameters)
 
 # Deploy the template
-my_deployment = deployer.deploy()
+my_deployment = deployer.deploy_wait()
 # endregion
 
 # Destroy the resource group which contains the deployment
-deployer.destroy()
+deployer.destroy_wait()
