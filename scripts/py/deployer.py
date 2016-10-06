@@ -10,6 +10,7 @@ class Deployer(object):
 
     def __init__(self, user_email, user_password, subscription_id, resource_group, template_path, parameters):
         self.resource_group = resource_group
+        self.deployment_name = "taivo_foo_deployment"
         self.template_path = template_path
         self.parameters = parameters
 
@@ -23,7 +24,7 @@ class Deployer(object):
         """Deploy the template to a resource group."""
 
         logging.info("Initializing Deployer class with resource group '{}' and template at '{}'."
-                      .format(self.resource_group, self.template_path))
+                     .format(self.resource_group, self.template_path))
         logging.info("Parameters: " + str(self.parameters))
 
         self.client.resource_groups.create_or_update(
@@ -35,16 +36,15 @@ class Deployer(object):
 
         parameters = {k: {'value': v} for k, v in self.parameters.items()}
 
-        # TODO review deployment mode -- what do I want?
         deployment_properties = {
-            'mode': DeploymentMode.incremental,
+            'mode': DeploymentMode.complete,    # Deployment modes: https://azure.microsoft.com/en-us/documentation/articles/resource-group-template-deploy/#incremental-and-complete-deployments
             'template': template,
             'parameters': parameters
         }
 
         deployment_async_operation = self.client.deployments.create_or_update(
             self.resource_group,
-            'azure-sample',         # TODO what is this parameter?
+            self.deployment_name,
             deployment_properties
         )
         deployment_async_operation.wait()
