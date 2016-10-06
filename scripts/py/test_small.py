@@ -1,4 +1,5 @@
 import os.path
+import logging
 from haikunator import Haikunator
 from deployer import Deployer
 
@@ -9,10 +10,10 @@ my_password = "4D0$1QcK5:Nsn:jd!'1j4Uw'j*"
 # endregion
 
 # region ---- Parameters ----
-my_resource_group = 'azure-python-deployment-test-small-1'
+my_resource_group = 'azure-python-deployment-test-small-4'
 my_pub_ssh_key_path = os.path.expanduser('~/.ssh/id_rsa.pub')
 template_path = "azure-templates/template3vms.json"
-dns_label_prefix = "pungast"
+dns_label_prefix = "pungast" + Haikunator().haikunate()
 
 pub_ssh_key_path = os.path.expanduser(my_pub_ssh_key_path)
 with open(pub_ssh_key_path, 'r') as pub_ssh_file_fd:
