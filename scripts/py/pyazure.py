@@ -1,19 +1,34 @@
-from azure.common.credentials import UserPassCredentials
-from azure.mgmt.resource import ResourceManagementClient
-from azure.mgmt.storage import StorageManagementClient
-from azure.storage import CloudStorageAccount
-from azure.storage.blob.models import ContentSettings
+import os.path
 from deployer import Deployer
 
-credentials = UserPassCredentials('sinep@sq42nahotmail.onmicrosoft.com', "4D0$1QcK5:Nsn:jd!'1j4Uw'j*")
-subscription_id = '0003c64e-455e-4794-8665-a59c04a8961b'
+# region ---- Credentials ----
+my_subscription_id = "0003c64e-455e-4794-8665-a59c04a8961b"
+my_email = "sinep@sq42nahotmail.onmicrosoft.com"
+my_password = "4D0$1QcK5:Nsn:jd!'1j4Uw'j*"
+my_pub_ssh_key_path = os.path.expanduser('~/.ssh/id_rsa.pub')  # the path to your rsa public key file
+# endregion
 
-resource_client = ResourceManagementClient(credentials, subscription_id)
-storage_client = StorageManagementClient(credentials, subscription_id)
+# region ---- Parameters ----
+my_resource_group = 'azure-python-deployment-sample'  # the resource group for deployment
+template_path = "azure-templates/test_template.json"
+# endregion
 
+# region ---- Deployment ----
+msg = "\nInitializing the Deployer class with subscription id: {}, resource group: {}" \
+      "\nand public key located at: {}...\n\n"
+msg = msg.format(my_subscription_id, my_resource_group, my_pub_ssh_key_path)
+print(msg)
 
-resource_group_name = "for_asl_py_test"
+# Initialize the deployer class
+deployer = Deployer(my_email, my_password, my_subscription_id, my_resource_group, template_path, my_pub_ssh_key_path)
 
-deployer = Deployer(resource_group_name)
-deployer.deploy()
+print("Beginning the deployment... \n\n")
+# Deploy the template
+my_deployment = deployer.deploy()
+
+print("Done deploying!!\n\nYou can connect via: `ssh azureSample@{}.westus.cloudapp.azure.com`".format(
+    deployer.dns_label_prefix))
+# endregion
+
+# Destroy the resource group which contains the deployment
 deployer.destroy()
