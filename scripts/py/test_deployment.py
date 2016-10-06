@@ -9,7 +9,7 @@ my_password = "4D0$1QcK5:Nsn:jd!'1j4Uw'j*"
 # endregion
 
 # region ---- Parameters ----
-my_resource_group = 'azure-python-deployment-sample-2'
+my_resource_group = 'azure-python-deployment-test'
 my_pub_ssh_key_path = os.path.expanduser('~/.ssh/id_rsa.pub')
 template_path = "azure-templates/test_template.json"
 dns_label_prefix = Haikunator().haikunate()
