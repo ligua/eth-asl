@@ -1,6 +1,7 @@
 """A deployer class to deploy a template on Azure"""
 import json
 import logging
+import sys
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.resources.models import DeploymentMode
 from azure.common.credentials import UserPassCredentials
@@ -17,16 +18,26 @@ class Deployer(object):
         self.credentials = UserPassCredentials(user_email, user_password)
         self.client = ResourceManagementClient(self.credentials, subscription_id)
 
+        # region ---- Set up logging ----
         LOG_FORMAT = '%(asctime)-15s %(message)s'
-        logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
+        LOG_LEVEL = logging.INFO
+        formatter = logging.Formatter(LOG_FORMAT)
+
+        ch = logging.StreamHandler()
+        ch.setLevel(LOG_LEVEL)
+        ch.setFormatter(formatter)
+
+        self.log = logging.getLogger(__name__)
+        self.log.setLevel(LOG_LEVEL)
+        self.log.addHandler(ch)
+        # endregion
 
     def deploy(self):
         """Deploy the template to a resource group."""
 
-        logging.info("Initializing Deployer class with resource group '{}' and template at '{}'."
+        self.log.info("Initializing Deployer class with resource group '{}' and template at '{}'."
                      .format(self.resource_group, self.template_path))
-        logging.info("Parameters: " + str(self.parameters))
-
+        self.log.info("Parameters: " + str(self.parameters))
         self.client.resource_groups.create_or_update(
             self.resource_group, {'location': 'westeurope'}
         )
@@ -49,14 +60,14 @@ class Deployer(object):
         )
         deployment_async_operation.wait()
 
-        logging.info("Deployment complete, resource group {} created.".format(self.resource_group))
+        self.log.info("Deployment complete, resource group {} created.".format(self.resource_group))
 
     def destroy(self):
         """Destroy the given resource group"""
-        logging.info("Destroying resource group {}...".format(self.resource_group))
-        logging.info("Does it exist? {}".format(
+        self.log.info("Destroying resource group {}...".format(self.resource_group))
+        self.log.info("Does it exist? {}".format(
             self.client.resource_groups.check_existence(self.resource_group))
         )
         deletion_async_operation = self.client.resource_groups.delete(self.resource_group)
         deletion_async_operation.wait()
-        logging.info("Destroyed.")
+        self.log.info("Destroyed.")
