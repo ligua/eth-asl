@@ -54,5 +54,9 @@ class Deployer(object):
     def destroy(self):
         """Destroy the given resource group"""
         logging.info("Destroying resource group {}...".format(self.resource_group))
-        self.client.resource_groups.delete(self.resource_group)
+        logging.info("Does it exist? {}".format(
+            self.client.resource_groups.check_existence(self.resource_group))
+        )
+        deletion_async_operation = self.client.resource_groups.delete(self.resource_group)
+        deletion_async_operation.wait()
         logging.info("Destroyed.")
