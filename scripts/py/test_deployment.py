@@ -31,8 +31,6 @@ deployer = Deployer(my_email, my_password, my_subscription_id, my_resource_group
 
 # Deploy the template
 my_deployment = deployer.deploy()
-
-print("Done deploying!\n\nConnect via: `ssh azureSample@{}.westeurope.cloudapp.azure.com`".format(dns_label_prefix))
 # endregion
 
 # Destroy the resource group which contains the deployment
