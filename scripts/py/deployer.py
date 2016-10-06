@@ -1,18 +1,17 @@
 """A deployer class to deploy a template on Azure"""
 import json
 import logging
-import sys
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.resources.models import DeploymentMode
 from azure.common.credentials import UserPassCredentials
 
 
 class Deployer(object):
-
     def __init__(self, resource_group, template_path, parameters,
                  user_email="sinep@sq42nahotmail.onmicrosoft.com",
                  user_password="4D0$1QcK5:Nsn:jd!'1j4Uw'j*",
                  subscription_id="0003c64e-455e-4794-8665-a59c04a8961b"):
+        # region ---- Set instance fields ----
         self.resource_group = resource_group
         self.deployment_name = "taivo_foo_deployment"
         self.template_path = template_path
@@ -20,6 +19,7 @@ class Deployer(object):
 
         self.credentials = UserPassCredentials(user_email, user_password)
         self.client = ResourceManagementClient(self.credentials, subscription_id)
+        # endregion
 
         # region ---- Set up logging ----
         LOG_FORMAT = '%(asctime)-15s %(message)s'
@@ -39,7 +39,7 @@ class Deployer(object):
         """Deploy the template to a resource group."""
 
         self.log.info("Initializing Deployer class with resource group '{}' and template at '{}'."
-                     .format(self.resource_group, self.template_path))
+                      .format(self.resource_group, self.template_path))
         self.log.info("Parameters: " + str(self.parameters))
         self.client.resource_groups.create_or_update(
             self.resource_group, {'location': 'westeurope'}
@@ -51,7 +51,8 @@ class Deployer(object):
         parameters = {k: {'value': v} for k, v in self.parameters.items()}
 
         deployment_properties = {
-            'mode': DeploymentMode.complete,    # Deployment modes: https://azure.microsoft.com/en-us/documentation/articles/resource-group-template-deploy/#incremental-and-complete-deployments
+            'mode': DeploymentMode.complete,
+        # Deployment modes: https://azure.microsoft.com/en-us/documentation/articles/resource-group-template-deploy/#incremental-and-complete-deployments
             'template': template,
             'parameters': parameters
         }

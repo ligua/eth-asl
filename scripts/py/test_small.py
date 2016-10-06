@@ -1,5 +1,4 @@
 import os.path
-import logging
 from haikunator import Haikunator
 from deployer import Deployer
 
