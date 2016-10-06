@@ -58,16 +58,27 @@ class Deployer(object):
             self.deployment_name,
             deployment_properties
         )
-        deployment_async_operation.wait()
 
+        self.log.info("Started deployment of resource group {}.".format(self.resource_group))
+
+        return deployment_async_operation
+
+    def deploy_wait(self):
+        """Convenience method that blocks until deployment is done."""
+        deployment_async_operation = self.deploy()
+        deployment_async_operation.wait()
         self.log.info("Deployment complete, resource group {} created.".format(self.resource_group))
 
     def destroy(self):
         """Destroy the given resource group"""
         self.log.info("Destroying resource group {}...".format(self.resource_group))
-        self.log.info("Does it exist? {}".format(
-            self.client.resource_groups.check_existence(self.resource_group))
-        )
         deletion_async_operation = self.client.resource_groups.delete(self.resource_group)
+        self.log.info("Started deletion of resource group {}.".format(self.resource_group))
+
+        return deletion_async_operation
+
+    def destroy_wait(self):
+        """Convenience method that blocks until deletion is done."""
+        deletion_async_operation = self.destroy()
         deletion_async_operation.wait()
-        self.log.info("Destroyed.")
+        self.log.info("Resource group {} destroyed.".format(self.resource_group))
