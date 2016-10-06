@@ -9,7 +9,10 @@ from azure.common.credentials import UserPassCredentials
 
 class Deployer(object):
 
-    def __init__(self, user_email, user_password, subscription_id, resource_group, template_path, parameters):
+    def __init__(self, resource_group, template_path, parameters,
+                 user_email="sinep@sq42nahotmail.onmicrosoft.com",
+                 user_password="4D0$1QcK5:Nsn:jd!'1j4Uw'j*",
+                 subscription_id="0003c64e-455e-4794-8665-a59c04a8961b"):
         self.resource_group = resource_group
         self.deployment_name = "taivo_foo_deployment"
         self.template_path = template_path
