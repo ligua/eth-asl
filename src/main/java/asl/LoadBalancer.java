@@ -121,7 +121,7 @@ public class LoadBalancer implements Runnable {
                         SocketChannel client = (SocketChannel) myKey.channel();
 
                         // Populate buffer
-                        ByteBuffer buffer = ByteBuffer.allocate(2 * MiddlewareMain.MAX_VALUE_SIZE);
+                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.BUFFER_SIZE);
                         log.debug("Buffer:" + buffer);
                         log.debug("Response:" + response);
                         log.debug("Response bytes:" + response.getBytes());
@@ -161,7 +161,7 @@ public class LoadBalancer implements Runnable {
                         // If this key's channel is ready for reading
 
                         SocketChannel client = (SocketChannel) myKey.channel();
-                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.MAX_VALUE_SIZE);
+                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.BUFFER_SIZE);
                         client.read(buffer);
                         String message = new String(buffer.array());
                         message = message.substring(0, buffer.position());
