@@ -37,8 +37,6 @@ class Memcached(object):
         self.log.addHandler(ch)
         # endregion
 
-        # TODO connect to server, make sure everything is installed properly, start memcached
-
     def update_and_install(self):
         """Update packages and install memcached."""
         with fa.settings(**self.fab_settings):
@@ -49,9 +47,10 @@ class Memcached(object):
     def start(self):
         """Start memcached."""
         with fa.settings(**self.fab_settings):
-            fa.run("nohup memcached -p {} -t 1 > /dev/null 2>&1 &".format(self.serve_port), pty=False)
+            command = "memcached -p {} -t 1".format(self.serve_port)
+            fa.run("nohup {} > /dev/null 2>&1 &".format(command), pty=False)
 
-            self.log.info("memcached started.")
+            self.log.info("Memcached started.")
 
     def stop(self):
         """Stops all memcached processes running on that machine."""
