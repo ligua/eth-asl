@@ -66,7 +66,7 @@ class Memcached(object):
 
 # Testing
 if __name__ == "__main__":
-    m = Memcached(12345, "pungastforaslvms1.westeurope.cloudapp.azure.com")
+    m = Memcached(11211, "pungastforaslvms1.westeurope.cloudapp.azure.com")
     # m.update_and_install()
     m.start()
     input("kil?")
