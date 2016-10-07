@@ -39,6 +39,9 @@ deployer.deploy_wait()
 logging.info("Virtual network: {}".format(
     deployer.network_client.virtual_networks.get(resource_group_name, virtual_network_name))
 )
+logging.info("Virtual network subnets[0]: {}".format(
+    deployer.network_client.virtual_networks.get(resource_group_name, virtual_network_name).subnets[0])
+) # TODO here can maybe find out the VMs' local IPs
 
 vms = deployer.compute_client.virtual_machines.list(resource_group_name)
 for vm in vms:
@@ -47,13 +50,13 @@ for vm in vms:
     public_ip = deployer.network_client.public_ip_addresses.get(resource_group_name, vm.name)
     public_host_address = public_ip.dns_settings.fqdn
     logging.info("Public host name: {}".format(Colors.ok_green(public_host_address)))
-    logging.info("Private IP: {}".format(public_ip.ip_configuration.private_ip_address))
-    # logging.info("Network profile: {}".format(vm.network_profile))
-    # logging.info("Network interfaces: {}".format(vm.network_profile.network_interfaces))
+
+    #logging.info("Network profile: {}".format(vm.network_profile))
+    logging.info("Network interfaces[0]: {}".format(vm.network_profile.network_interfaces[0]))
     # TODO get machines' IPs in their internal networks
+    # TODO I think subnets approach (see above) leads to success
 
 
+#input("Write anything to start hibernation: ")
 
-input("Write anything to start hibernation: ")
-
-deployer.hibernate_wait()
+#deployer.hibernate_wait()
