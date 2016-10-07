@@ -26,11 +26,13 @@ parameters = {
 # Initialize the deployer class
 deployer = Deployer(my_resource_group, template_path, parameters)
 
+deployer.hibernate()
+
 # Deploy the template
-my_deployment = deployer.deploy_wait()
+# deployer.deploy_wait()
 # endregion
 
-input("Write anything to destroy the resource group: ")
+#input("Write anything to destroy the resource group: ")
 
 # Destroy the resource group which contains the deployment
-deployer.destroy_wait()
+#deployer.destroy_wait()
