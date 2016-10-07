@@ -17,9 +17,10 @@ import java.util.*;
 public class LoadBalancer implements Runnable {
 
     private static final Logger log = LogManager.getLogger(LoadBalancer.class);
-    private static final Integer LOG_EVERY_N_REQUESTS = 1000;
+    private static final Integer INFO_EVERY_N_REQUESTS = 1000;
 
-    private Integer requestCounter;
+    private long readRequestCounter;
+    private long writeRequestCounter;
 
     private List<MiddlewareComponent> middlewareComponents;
     private Hasher hasher;
@@ -36,7 +37,8 @@ public class LoadBalancer implements Runnable {
         this.port = port;
         this.requestMessageBuffer = new HashMap<>();
         this.keyToRequest = new HashMap<>();
-        this.requestCounter = 0;
+        this.readRequestCounter = 0;
+        this.writeRequestCounter = 0;
     }
 
     /**
@@ -54,15 +56,23 @@ public class LoadBalancer implements Runnable {
 
         log.debug("Sending request " + request + " to its primary machine #" + primaryMachine + ".");
 
+        request.setTimeEnqueued();
         if(request.getType().equals(RequestType.GET)) {
+            if(readRequestCounter % Request.LOG_SAMPLING_FREQUENCY == 0) {
+                request.setShouldLog(true);
+            }
             mc.readQueue.add(request);
+            readRequestCounter++;
         } else {
-            mc.writeQueue.add(request);     // DELETE requests also go to the write queue.
+            if(writeRequestCounter % Request.LOG_SAMPLING_FREQUENCY == 0) {
+                request.setShouldLog(true);
+            }
+            mc.writeQueue.add(request);
+            writeRequestCounter++;
         }
 
-        requestCounter++;
-        if(requestCounter > 0 && requestCounter % LOG_EVERY_N_REQUESTS == 0) {
-            log.info(String.format("Processed %5d requests so far.", requestCounter));
+        if((readRequestCounter + writeRequestCounter) % INFO_EVERY_N_REQUESTS == 0) {
+            log.info(String.format("Processed %5d reads and %5d writes so far.", readRequestCounter, writeRequestCounter));
         }
     }
 
