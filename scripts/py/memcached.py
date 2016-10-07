@@ -14,13 +14,13 @@ class Memcached(object):
         self.sudo_password = sudo_password
         self.host_string = "{}@{}".format(self.ssh_username, self.ssh_hostname)
         self.serve_port = serve_port
-        self.PID = None
 
         self.fab_settings = dict(
             user=self.ssh_username,
             host_string=self.host_string,
             key_filename=self.ssh_key_filename,
-            sudo_password=self.sudo_password
+            sudo_password=self.sudo_password,
+            warn_only=True
         )
 
         # region ---- Set up logging ----
@@ -49,18 +49,19 @@ class Memcached(object):
     def start(self):
         """Start memcached."""
         with fa.settings(**self.fab_settings):
-            result = fa.run("nohup memcached -p {} -t 1 > /dev/null 2>&1 & echo $!".format(self.serve_port))
-            self.PID = int(result)
-            self.log.info("memcached started, process ID: {}".format(self.PID))
-            #fa.run("ps axf | grep memcached")
+            fa.run("nohup memcached -p {} -t 1 > /dev/null 2>&1 &".format(self.serve_port), pty=False)
+
+            self.log.info("memcached started.")
 
     def stop(self):
-        """Stop memcached."""
+        """Stops all memcached processes running on that machine."""
         with fa.settings(**self.fab_settings):
-            if self.PID:
-                fa.run("kill {}".format(self.PID))
-            else:
-                self.log.info("memcached PID is not set, cannot stop it.")
+            result = fa.run("pgrep memcached")
+            pids = result.split()
+
+            for pid in pids:
+                self.log.info("Killing PID={}".format(pid))
+                fa.run("kill {}".format(pid))
 
 
 
