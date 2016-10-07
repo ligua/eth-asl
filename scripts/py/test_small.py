@@ -3,14 +3,14 @@ from haikunator import Haikunator
 from deployer import Deployer
 
 # region ---- Parameters ----
-my_resource_group = 'azure-python-deployment-test-small-1'
-my_pub_ssh_key_path = '~/.ssh/id_rsa.pub'
+my_resource_group = 'azure-python-deployment-test-small-4'
+my_pub_ssh_key_path = '~/.ssh/id_rsa_asl.pub'
 template_path = "azure-templates/template3vms.json"
 dns_label_prefix = "pungast" + Haikunator().haikunate()
 
 pub_ssh_key_path = os.path.expanduser(my_pub_ssh_key_path)
 with open(pub_ssh_key_path, 'r') as pub_ssh_file_fd:
-    pub_ssh_key = pub_ssh_file_fd.read()
+    pub_ssh_key = pub_ssh_file_fd.read().strip()
 
 parameters = {
     # "virtualMachines_name": "foraslvms",
