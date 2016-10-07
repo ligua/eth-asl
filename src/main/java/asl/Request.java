@@ -14,6 +14,8 @@ public class Request {
     private static final Logger log = LogManager.getLogger(Request.class);
     private static final Logger csvLog = LogManager.getLogger("request_csv");
 
+    public static final int LOG_SAMPLING_FREQUENCY = 100;
+
     private RequestType type;
     private String requestRaw;
     private String key;
@@ -22,9 +24,15 @@ public class Request {
     private boolean hasResponse;
     private String response;
 
-    private Date timeCreated;
-    private Date timeForwarded;
-    private Date timeReturned;
+    private long timeCreated;
+    private long timeEnqueued;
+    private long timeDequeued;
+    private long timeForwarded;
+    private long timeReturned;
+
+    private boolean shouldLog;
+
+    private String successFlag = "N/A";
 
     public Request(String request, SocketChannel client) {
         setTimeCreated();
@@ -32,6 +40,7 @@ public class Request {
         this.client = client;
         type = getRequestType(request);
         key = requestRaw.split("\\s+", 3)[1];
+        shouldLog = false;
     }
 
     public RequestType getType() {
@@ -55,15 +64,27 @@ public class Request {
     }
 
     private void setTimeCreated() {
-        this.timeCreated = new Date();
+        this.timeCreated = System.currentTimeMillis();
+    }
+
+    public void setTimeEnqueued() {
+        this.timeEnqueued = System.currentTimeMillis();
+    }
+
+    public void setTimeDequeued() {
+        this.timeDequeued = System.currentTimeMillis();
     }
 
     void setTimeForwarded() {
-        this.timeForwarded = new Date();
+        this.timeForwarded = System.currentTimeMillis();
     }
 
     public void setTimeReturned() {
-        this.timeReturned = new Date();
+        this.timeReturned = System.currentTimeMillis();
+    }
+
+    public void setShouldLog(boolean shouldLog) {
+        this.shouldLog = shouldLog;
     }
 
     /**
@@ -112,8 +133,10 @@ public class Request {
      * Write instrumentation timestamps to CSV.
      */
     public void logTimestamps() {
-        csvLog.info(String.format("%s,%d,%d,%d",
-                type, timeCreated.getTime(), timeForwarded.getTime(), timeReturned.getTime()));
+        if(shouldLog) {
+            csvLog.info(String.format("%s,%s,%d,%d,%d,%d,%d",
+                    type, successFlag, timeCreated, timeEnqueued, timeDequeued, timeForwarded, timeReturned));
+        }
     }
 
 
