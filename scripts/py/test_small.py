@@ -13,10 +13,10 @@ with open(pub_ssh_key_path, 'r') as pub_ssh_file_fd:
     pub_ssh_key = pub_ssh_file_fd.read().strip()
 
 parameters = {
-    # "virtualMachines_name": "foraslvms",
+    "virtualMachines_name": "foraslvms",
     "virtualMachines_adminPassword": "U6Mh=be:vma+&>R'pcMwFVls?=",
-    # "networkInterfaces_name": "MyNetworkInterface",
-    # "virtualNetworks_testeth_vnet_name": "MyVNet",
+    "networkInterfaces_name": "MyNetworkInterface",
+    "virtualNetworks_testeth_vnet_name": "MyVNet",
     "key": pub_ssh_key,
     "uniquedns": dns_label_prefix
 }
