@@ -94,7 +94,7 @@ class Middleware(object):
 # Testing
 if __name__ == "__main__":
     m = Middleware("pungastforaslvms3.westeurope.cloudapp.azure.com", "10.0.0.4", 11212, 1, 1, ["10.0.0.6:11211"])
-    m.update_and_install()
+    #m.update_and_install()
     m.start()
     input("kil?")
     m.stop()
