@@ -1,9 +1,11 @@
 """A deployer class to deploy a template on Azure"""
 import json
 import logging
+from colors import Colors
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.resources.models import DeploymentMode
 from azure.common.credentials import UserPassCredentials
+from azure.mgmt.resource.resources.operations import ResourceGroupsOperations
 
 
 class Deployer(object):
@@ -52,10 +54,20 @@ class Deployer(object):
 
         deployment_properties = {
             'mode': DeploymentMode.complete,
-        # Deployment modes: https://azure.microsoft.com/en-us/documentation/articles/resource-group-template-deploy/#incremental-and-complete-deployments
             'template': template,
             'parameters': parameters
         }
+
+        already_exists = self.client.resource_groups.check_existence(self.resource_group)
+        if already_exists:
+            self.log.info("Resource group already exists:")
+            resources = self.client.resource_groups.list_resources(self.resource_group)
+            for res in resources:
+                self.log.info(Deployer.stringify_resource_group(res))
+        else:
+            self.log.info("Resource group does not exist yet.")
+
+        input("waiting")
 
         deployment_async_operation = self.client.deployments.create_or_update(
             self.resource_group,
@@ -102,3 +114,24 @@ class Deployer(object):
         deletion_async_operation = Deployer.kill(resource_group)
         deletion_async_operation.wait()
         print("Resource group {} destroyed.".format(resource_group))
+
+    @staticmethod
+    def stringify_properties(props):
+        """Print a ResourceGroup properties instance."""
+        s = ""
+        if props and props.provisioning_state:
+            s += "\tProperties:\n"
+            s += "\t\tProvisioning State: {}\n".format(props.provisioning_state)
+        s += "\n"
+        return s
+
+    @staticmethod
+    def stringify_resource_group(group):
+        """Print a ResourceGroup instance."""
+        s = ""
+        s += "\tName: {}\n".format(Colors.ok_blue(Colors.bold(group.name)))
+        s += "\tId: {}\n".format(group.id)
+        s += "\tLocation: {}\n".format(group.location)
+        s += "\tTags: {}\n".format(group.tags)
+        s += Deployer.stringify_properties(group.properties)
+        return s
