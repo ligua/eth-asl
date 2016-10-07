@@ -39,6 +39,7 @@ class WriteWorker implements Runnable {
                 if (!writeQueue.isEmpty()) {
                     try {
                         Request r = writeQueue.take();
+                        r.setTimeDequeued();
                         log.debug(getName() + " processing request " + r);
 
                         // Write to all secondary machines

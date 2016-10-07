@@ -23,15 +23,14 @@ public class MiddlewareComponent {
 
     private Integer componentId;
 
-    MiddlewareComponent(Integer componentId, Integer numReadThreads, List<Integer> targetMachines) {
+    MiddlewareComponent(Integer componentId, Integer numReadThreads, List<Integer> targetMachines,
+                        ExecutorService executor) {
 
         this.componentId = componentId;
 
         // Initialise queues
         readQueue = new LinkedBlockingQueue<>();
         writeQueue = new LinkedBlockingQueue<>(); // TODO use non-blocking queue here?
-
-        ExecutorService executor = Executors.newCachedThreadPool(); // TODO read about newCachedThreadPool()
 
         // Initialise and start write thread
         WriteWorker writeWorker = new WriteWorker(componentId, targetMachines, writeQueue);
