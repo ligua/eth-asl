@@ -1,7 +1,7 @@
 import fabric.api
 import os
 
-class Memcached(object):
+class Memaslap(object):
     def __init__(self, serve_port, ssh_hostname,
                  ssh_key_filename=os.path.expanduser("~/.ssh/id_rsa_asl"),
                  ssh_username="pungast",
