@@ -1,5 +1,7 @@
-import fabric.api
+import fabric.api as fa
 import os
+import logging
+
 
 class Memcached(object):
     def __init__(self, serve_port, ssh_hostname,
@@ -14,37 +16,58 @@ class Memcached(object):
         self.serve_port = serve_port
         self.PID = None
 
-        fab_settings = dict(
+        self.fab_settings = dict(
             user=self.ssh_username,
             host_string=self.host_string,
             key_filename=self.ssh_key_filename,
             sudo_password=self.sudo_password
         )
 
-        with fabric.api.settings(**fab_settings):
-            print(fabric.api.env)
-            print("taivo")
-            output = fabric.api.run("ls -la")
-            print("taivo2")
-            print(type(output))
-        print("taivo3")
+        # region ---- Set up logging ----
+        LOG_FORMAT = '%(asctime)-15s %(message)s'
+        LOG_LEVEL = logging.INFO
+        formatter = logging.Formatter(LOG_FORMAT)
+
+        ch = logging.StreamHandler()
+        ch.setLevel(LOG_LEVEL)
+        ch.setFormatter(formatter)
+
+        self.log = logging.getLogger(__name__)
+        self.log.setLevel(LOG_LEVEL)
+        self.log.addHandler(ch)
+        # endregion
 
         # TODO connect to server, make sure everything is installed properly, start memcached
 
     def update_and_install(self):
         """Update packages and install memcached."""
-        # TODO
+        with fa.settings(**self.fab_settings):
+            fa.run("export DEBIAN_FRONTEND=noninteractive")
+            fa.run("sudo apt-get --assume-yes update")
+            fa.run("sudo apt-get --assume-yes install build-essential libevent-dev memcached")
 
     def start(self):
         """Start memcached."""
-        # TODO
-        # TODO also PID variable so we can kill the process later.
+        with fa.settings(**self.fab_settings):
+            result = fa.run("nohup memcached -p {} -t 1 > /dev/null 2>&1 & echo $!".format(self.serve_port))
+            self.PID = int(result)
+            self.log.info("memcached started, process ID: {}".format(self.PID))
+            #fa.run("ps axf | grep memcached")
 
     def stop(self):
         """Stop memcached."""
-        # TODO
+        with fa.settings(**self.fab_settings):
+            if self.PID:
+                fa.run("kill {}".format(self.PID))
+            else:
+                self.log.info("memcached PID is not set, cannot stop it.")
+
 
 
 # Testing
 if __name__ == "__main__":
     m = Memcached(12345, "pungastforaslvms1.westeurope.cloudapp.azure.com")
+    # m.update_and_install()
+    m.start()
+    input("kil?")
+    m.stop()
