@@ -62,16 +62,17 @@ public class MiddlewareMain implements Runnable {
         log.info("[replication factor]: " + replicationFactor);
         log.info("[memcached addresses]: " + Arrays.toString(MemcachedConnection.memcachedAddresses.toArray()));
 
+        ExecutorService executor = Executors.newFixedThreadPool(numMemcachedServers * (numReadThreadsPerServer + 1) + 1);
+
         // Create all middleware components
         this.components = new ArrayList<>();
         for(int id=0; id<numMemcachedServers; id++) {
             List<Integer> targetMachines = hasher.getTargetMachines(id);
-            components.add(new MiddlewareComponent(id, numReadThreadsPerServer, targetMachines));
+            components.add(new MiddlewareComponent(id, numReadThreadsPerServer, targetMachines, executor));
         }
 
         // Create load balancer
         loadBalancer = new LoadBalancer(components, hasher, loadBalancerIp, loadBalancerPort);
-        ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(loadBalancer);
 
         log.info("Middleware initialised.");
