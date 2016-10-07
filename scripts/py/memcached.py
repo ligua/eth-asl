@@ -47,4 +47,4 @@ class Memcached(object):
 
 # Testing
 if __name__ == "__main__":
-    m = Memcached(12345, "pungastfragrant-night-2601foraslvms1.westeurope.cloudapp.azure.com")
+    m = Memcached(12345, "pungastforaslvms1.westeurope.cloudapp.azure.com")
