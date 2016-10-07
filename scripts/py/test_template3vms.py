@@ -26,7 +26,11 @@ parameters = {
 # Initialize the deployer class
 deployer = Deployer(my_resource_group, template_path, parameters)
 
-deployer.hibernate()
+deployer.deploy_wait()
+
+input("Write anything to start hibernation: ")
+
+deployer.hibernate_wait()
 
 # Deploy the template
 # deployer.deploy_wait()

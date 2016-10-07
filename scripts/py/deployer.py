@@ -26,7 +26,7 @@ class Deployer(object):
                  subscription_id="0003c64e-455e-4794-8665-a59c04a8961b"):
         # region ---- Set instance fields ----
         self.resource_group_name = resource_group_name
-        self.deployment_name = "taivo_foo_deployment"
+        self.deployment_name = "taivo_python_deployment"
         self.template_path = template_path
         self.parameters = parameters
 
@@ -64,7 +64,7 @@ class Deployer(object):
         # endregion
         pass
 
-    def deploy(self):
+    def _deploy(self):
         """Deploy the template to a resource group."""
 
         self.log.info("Deploying with resource group '{}' and template at '{}'."
@@ -97,11 +97,26 @@ class Deployer(object):
 
     def deploy_wait(self):
         """Convenience method that blocks until deployment is done."""
-        deployment_async_operation = self.deploy()
+        # region ---- Creating all resources -----
+        deployment_async_operation = self._deploy()
         deployment_async_operation.wait()
+        # endregion
+
+        # region ---- Un-hibernating all VMs ----
+        async_ops = []
+        resources = self.resource_client.resource_groups.list_resources(self.resource_group_name)
+        for resource in resources:
+            if resource.type == Deployer.TYPE_VIRTUAL_MACHINE:
+                self.log.info("Starting virtual machine {}...".format(resource.name))
+                async_op = self.compute_client.virtual_machines.start(self.resource_group_name, resource.name)
+                async_ops.append(async_op)
+
+        self.wait_for_all_ops(async_ops)
+        # endregion
+
         self.log.info("Deployment complete, resource group {} created.".format(self.resource_group_name))
 
-    def hibernate(self):
+    def hibernate_wait(self):
         """Shut down all virtual machines in the resource group and delete all other resources."""
         self.log.info("Hibernating resource group {}.".format(self.resource_group_name))
         resources = self.resource_client.resource_groups.list_resources(self.resource_group_name)
@@ -136,22 +151,7 @@ class Deployer(object):
             else:
                 self.log.info("Not deleting unknown resource {} [{}].".format(resource.name, resource.type))
 
-        self.log.info("Waiting for everyone to finish...")
-
-        # region ---- Wait for all operations to finish ----
-        start_time = time.time()
-        while async_ops:
-            if time.time() - start_time > 5:  # Print every 5 seconds
-                start_time = time.time()
-                self.log.info("{} operations still not done.".format(len(async_ops)))
-            for op in async_ops:
-                if op.done():
-                    "Async operation done. Result: {}".format(op.result())
-                    async_ops.remove(op)
-                    break
-        # endregion
-
-        self.log.info("All operations done.")
+        self.wait_for_all_ops(async_ops)
 
     def destroy(self):
         """Destroy the given resource group"""
@@ -204,3 +204,20 @@ class Deployer(object):
         s += "\tTags: {}\n".format(res.tags)
         s += Deployer.stringify_properties(res.properties)
         return s
+
+    def wait_for_all_ops(self, async_ops, log_every_n_seconds=5):
+        """Wait for all operations in the list to finish"""
+        self.log.info("Waiting for {} operations to finish...".format(len(async_ops)))
+
+        start_time = time.time()
+        while async_ops:
+            if time.time() - start_time > log_every_n_seconds:
+                start_time = time.time()
+                self.log.info("{} operations still not done.".format(len(async_ops)))
+            for op in async_ops:
+                if op.done():
+                    "Async operation done. Result: {}".format(op.result())
+                    async_ops.remove(op)
+                    break
+
+        self.log.info("All operations done.")
