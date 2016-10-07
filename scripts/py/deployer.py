@@ -153,7 +153,7 @@ class Deployer(object):
 
         self.wait_for_all_ops(async_ops)
 
-    def destroy(self):
+    def _destroy(self):
         """Destroy the given resource group"""
         self.log.info("Destroying resource group {}...".format(self.resource_group_name))
         deletion_async_operation = self.resource_client.resource_groups.delete(self.resource_group_name)
@@ -163,9 +163,26 @@ class Deployer(object):
 
     def destroy_wait(self):
         """Convenience method that blocks until deletion is done."""
-        deletion_async_operation = self.destroy()
+        deletion_async_operation = self._destroy()
         deletion_async_operation.wait()
         self.log.info("Resource group {} destroyed.".format(self.resource_group_name))
+
+    def wait_for_all_ops(self, async_ops, log_every_n_seconds=5):
+        """Wait for all operations in the list to finish"""
+        self.log.info("Waiting for {} operations to finish...".format(len(async_ops)))
+
+        start_time = time.time()
+        while async_ops:
+            if time.time() - start_time > log_every_n_seconds:
+                start_time = time.time()
+                self.log.info("{} operations still not done.".format(len(async_ops)))
+            for op in async_ops:
+                if op.done():
+                    "Async operation done. Result: {}".format(op.result())
+                    async_ops.remove(op)
+                    break
+
+        self.log.info("All operations done.")
 
     @staticmethod
     def kill(resource_group):
@@ -204,20 +221,3 @@ class Deployer(object):
         s += "\tTags: {}\n".format(res.tags)
         s += Deployer.stringify_properties(res.properties)
         return s
-
-    def wait_for_all_ops(self, async_ops, log_every_n_seconds=5):
-        """Wait for all operations in the list to finish"""
-        self.log.info("Waiting for {} operations to finish...".format(len(async_ops)))
-
-        start_time = time.time()
-        while async_ops:
-            if time.time() - start_time > log_every_n_seconds:
-                start_time = time.time()
-                self.log.info("{} operations still not done.".format(len(async_ops)))
-            for op in async_ops:
-                if op.done():
-                    "Async operation done. Result: {}".format(op.result())
-                    async_ops.remove(op)
-                    break
-
-        self.log.info("All operations done.")
