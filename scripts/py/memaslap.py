@@ -82,9 +82,8 @@ class Memaslap(object):
 
 # Testing
 if __name__ == "__main__":
-    m = Memaslap("pungastforaslvms2.westeurope.cloudapp.azure.com",
-                 "pungastforaslvms1.westeurope.cloudapp.azure.com", 12345)
-    #m.update_and_install()
+    m = Memaslap("pungastforaslvms2.westeurope.cloudapp.azure.com", "10.0.0.4", 11212)
+    m.update_and_install()
     m.start()
-    #input("kil?")
-    #m.stop()
+    input("kil?")
+    m.stop()
