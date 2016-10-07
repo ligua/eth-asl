@@ -1,8 +1,10 @@
-import fabric.api
+import fabric.api as fa
 import os
+import logging
+
 
 class Memaslap(object):
-    def __init__(self, serve_port, ssh_hostname,
+    def __init__(self, ssh_hostname, memcached_hostname, memcached_port,
                  ssh_key_filename=os.path.expanduser("~/.ssh/id_rsa_asl"),
                  ssh_username="pungast",
                  sudo_password="4D0$1QcK5:Nsn:jd!'1j4Uw'j*"):
@@ -11,40 +13,78 @@ class Memaslap(object):
         self.ssh_username = ssh_username
         self.sudo_password = sudo_password
         self.host_string = "{}@{}".format(self.ssh_username, self.ssh_hostname)
-        self.serve_port = serve_port
-        self.PID = None
+        self.memcached_hostname = memcached_hostname
+        self.memcached_port = memcached_port
 
-        fab_settings = dict(
+        self.fab_settings = dict(
             user=self.ssh_username,
             host_string=self.host_string,
             key_filename=self.ssh_key_filename,
-            sudo_password=self.sudo_password
+            sudo_password=self.sudo_password,
+            warn_only=True
         )
 
-        with fabric.api.settings(**fab_settings):
-            print(fabric.api.env)
-            print("taivo")
-            output = fabric.api.run("ls -la")
-            print("taivo2")
-            print(type(output))
-        print("taivo3")
+        # region ---- Set up logging ----
+        LOG_FORMAT = '%(asctime)-15s %(message)s'
+        LOG_LEVEL = logging.INFO
+        formatter = logging.Formatter(LOG_FORMAT)
 
-        # TODO connect to server, make sure everything is installed properly, start memcached
+        ch = logging.StreamHandler()
+        ch.setLevel(LOG_LEVEL)
+        ch.setFormatter(formatter)
+
+        self.log = logging.getLogger(__name__)
+        self.log.setLevel(LOG_LEVEL)
+        self.log.addHandler(ch)
+        # endregion
 
     def update_and_install(self):
-        """Update packages and install memcached."""
-        # TODO
+        """Update packages and build memaslap."""
+        with fa.settings(**self.fab_settings):
+            fa.run("export DEBIAN_FRONTEND=noninteractive")
+            fa.run("sudo apt-get --assume-yes update")
+            fa.run("sudo apt-get --assume-yes install build-essential libevent-dev")
+
+            result = fa.run("ls libmemcached-1.0.18/clients/memaslap")
+            if result.return_code:
+                self.log.info("Memaslap not found, building...")
+                fa.run("wget https://Launchpad.net/libmemcached/1.0/1.0.18/+download/libmemcached-1.0.18.tar.gz")
+                fa.run("tar xvf libmemcached-1.0.18.tar.gz")
+                fa.run("cd libmemcached-1.0.18; " +
+                       "export LDFLAGS=-lpthread; " +
+                       "./configure --enable-memaslap && make clients/memaslap; " +
+                       "cd ..")
+            else:
+                self.log.info("Memaslap already built.")
+
 
     def start(self):
-        """Start memcached."""
-        # TODO
-        # TODO also PID variable so we can kill the process later.
+        """Start memaslap."""
+        with fa.settings(**self.fab_settings):
+            fa.run("mkdir logs")
+            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T 64 -c 64 -o1 -S 1s -t 1m"\
+                .format(self.memcached_hostname, self.memcached_port)
+            fa.run("nohup {} > logs/memaslap.out 2>&1 &".format(command), pty=False)
+
+            self.log.info("Memaslap started.")
 
     def stop(self):
-        """Stop memcached."""
-        # TODO
+        """Stops all memaslap processes running on that machine."""
+        with fa.settings(**self.fab_settings):
+            result = fa.run("pgrep memaslap")
+            pids = result.split()
+
+            for pid in pids:
+                self.log.info("Killing PID={}".format(pid))
+                fa.run("kill {}".format(pid))
+
 
 
 # Testing
 if __name__ == "__main__":
-    m = Memcached(12345, "pungastfragrant-night-2601foraslvms1.westeurope.cloudapp.azure.com")
+    m = Memaslap("pungastforaslvms2.westeurope.cloudapp.azure.com",
+                 "pungastforaslvms1.westeurope.cloudapp.azure.com", 12345)
+    #m.update_and_install()
+    m.start()
+    #input("kil?")
+    #m.stop()
