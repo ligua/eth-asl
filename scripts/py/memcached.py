@@ -24,7 +24,7 @@ class Memcached(object):
         )
 
         # region ---- Set up logging ----
-        LOG_FORMAT = '%(asctime)-15s %(message)s'
+        LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
         LOG_LEVEL = logging.INFO
         formatter = logging.Formatter(LOG_FORMAT)
 
@@ -39,6 +39,7 @@ class Memcached(object):
 
     def update_and_install(self):
         """Update packages and install memcached."""
+        self.log.info("Updating and installing memcached.")
         with fa.settings(**self.fab_settings):
             fa.run("export DEBIAN_FRONTEND=noninteractive")
             fa.run("sudo apt-get --assume-yes update")

@@ -39,7 +39,7 @@ class Deployer(object):
         # endregion
 
         # region ---- Set up logging ----
-        LOG_FORMAT = '%(asctime)-15s %(message)s'
+        LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
         LOG_LEVEL = logging.INFO
         formatter = logging.Formatter(LOG_FORMAT)
 
