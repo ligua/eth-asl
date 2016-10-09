@@ -5,10 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 /**
  * The class responsible for queueing for one memcached instance.
@@ -29,8 +26,8 @@ public class MiddlewareComponent {
         this.componentId = componentId;
 
         // Initialise queues
-        readQueue = new LinkedBlockingQueue<>();
-        writeQueue = new LinkedBlockingQueue<>(); // TODO use non-blocking queue here?
+        readQueue = new ArrayBlockingQueue<>(MiddlewareMain.QUEUE_SIZE);
+        writeQueue = new ArrayBlockingQueue<>(MiddlewareMain.QUEUE_SIZE);
 
         // Initialise and start write thread
         WriteWorker writeWorker = new WriteWorker(componentId, targetMachines, writeQueue);

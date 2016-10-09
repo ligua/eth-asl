@@ -19,6 +19,7 @@ public class MiddlewareMain implements Runnable {
 
     public static final String LINE_END = "\r\n";
     public static final Integer BUFFER_SIZE = 2048;
+    public static final Integer QUEUE_SIZE = 200;
 
     private String loadBalancerIp;
     private Integer loadBalancerPort;
