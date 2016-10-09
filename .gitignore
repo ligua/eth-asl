@@ -26,3 +26,6 @@ log/
 
 # Python
 scripts/__pycache__
+
+# Results directory
+results/
