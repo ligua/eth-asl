@@ -62,7 +62,7 @@ class Memaslap(object):
                 self.log.info("Memaslap already built.")
 
     def start(self, concurrency=64, stats_freq="1s", runtime="10s", log_filename="memaslap.out",
-              workload_filename="smallvalue.cfg"):
+              workload_filename="xlargevalue.cfg"):
         """Start memaslap."""
         with fa.settings(**self.fab_settings):
             fa.run("mkdir logs")
