@@ -118,7 +118,7 @@ for i in range(0, len(ms_concurrencies)):
         if ms_concurrencies[i] > 1:
             memaslap_server2.start(concurrency=concurrency_per_client, runtime=EXPERIMENT_RUNTIME_STRING,
                                    stats_freq=STATS_FREQUENCY,
-                                   log_filename=log_filename_base.format(1, ms_concurrencies[i], rep))
+                                   log_filename=log_filename_base.format(2, ms_concurrencies[i], rep))
         time.sleep(EXPERIMENT_RUNTIME + 5)
         memcached_server.stop()
 # endregion
