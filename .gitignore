@@ -32,3 +32,6 @@ results/
 
 # Random crap
 tmp/
+
+# R
+.Rhistory
