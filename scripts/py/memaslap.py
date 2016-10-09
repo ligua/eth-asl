@@ -62,7 +62,7 @@ class Memaslap(object):
         """Start memaslap."""
         with fa.settings(**self.fab_settings):
             fa.run("mkdir logs")
-            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T 64 -c 64 -o1 -S 1s -t 1m"\
+            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T 64 -c 64 -o0.9 -S 1s -t 1m"\
                 .format(self.memcached_hostname, self.memcached_port)
             fa.run("nohup {} > logs/memaslap.out 2>&1 &".format(command), pty=False)
 
