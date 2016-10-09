@@ -8,8 +8,10 @@ from colors import Colors
 from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
-EXPERIMENT_RUNTIME = 10  # seconds
+NUM_REPETITIONS = 1
+EXPERIMENT_RUNTIME = 30  # seconds
 EXPERIMENT_RUNTIME_STRING = "{}s".format(EXPERIMENT_RUNTIME)
+STATS_FREQUENCY = "10m"
 
 # region ---- Logging ----
 LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
@@ -93,35 +95,34 @@ if UPDATE_AND_INSTALL:
 memaslap_server1.clear_logs()
 memaslap_server2.clear_logs()
 
-ms_concurrencies = [1, 2, 4] # + list(range(8, 129, 8))
+log_filename_base = "baseline_memaslap{}_conc{:03}_rep{:02}.out"
+ms_concurrencies = [1, 2, 4] #+ list(range(8, 129, 8))
 
 for i in range(0, len(ms_concurrencies)):
-    log.info("Starting experiment at concurrency {}.".format(ms_concurrencies[i]))
-    memcached_server.start()
-    time.sleep(1)
-    memaslap_server1.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
-                           log_filename="baseline_client{}_conc{:03}.out".format(1, ms_concurrencies[i]))
-    if ms_concurrencies[i] > 1:
-        memaslap_server2.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
-                               log_filename="baseline_client{}_conc{:03}.out".format(2, ms_concurrencies[i]))
-    time.sleep(EXPERIMENT_RUNTIME + 5)
+    for rep in range(NUM_REPETITIONS):
+        log.info("Starting experiment at concurrency {}, repetition {}.".format(ms_concurrencies[i], rep))
+        memcached_server.start()
+        time.sleep(1)
 
+        # There should be just one client if concurrency=1, otherwise two clients
+        concurrency_per_client = ms_concurrencies[i]
+        if concurrency_per_client > 1:
+            concurrency_per_client /= 2
 
-
-
-
-
-memcached_server.start()
-memaslap_server1.start()
-memaslap_server2.start()
+        memaslap_server1.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
+                               stats_freq=STATS_FREQUENCY,
+                               log_filename=log_filename_base.format(1, concurrency_per_client, rep))
+        if ms_concurrencies[i] > 1:
+            memaslap_server2.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
+                                   stats_freq=STATS_FREQUENCY,
+                                   log_filename=log_filename_base.format(1, concurrency_per_client, rep))
+        time.sleep(EXPERIMENT_RUNTIME + 5)
+        memcached_server.stop()
 # endregion
 
-# Wait until experiment is done
-time.sleep(12)  # TODO change this -- perhaps ask memaslap servers whether the process still exists
-
-
-# region ---- Stop memcached ----
-memcached_server.stop()
+# region ---- Gather logs ----
+memaslap_server1.download_logs()
+memaslap_server2.download_logs()
 # endregion
 
 #input("Write anything to start hibernation: ")
