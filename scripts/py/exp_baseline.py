@@ -7,7 +7,9 @@ from memcached import Memcached
 from colors import Colors
 from deployer import Deployer
 
-UPDATE_AND_INSTALL = True
+UPDATE_AND_INSTALL = False
+EXPERIMENT_RUNTIME = 10  # seconds
+EXPERIMENT_RUNTIME_STRING = "{}s".format(EXPERIMENT_RUNTIME)
 
 # region ---- Logging ----
 LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
@@ -86,14 +88,36 @@ if UPDATE_AND_INSTALL:
 
 # endregion
 
-# region ---- Start experiment ----
+# region ---- Experiment ----
+# Clear logs
+memaslap_server1.clear_logs()
+memaslap_server2.clear_logs()
+
+ms_concurrencies = [1, 2, 4] # + list(range(8, 129, 8))
+
+for i in range(0, len(ms_concurrencies)):
+    log.info("Starting experiment at concurrency {}.".format(ms_concurrencies[i]))
+    memcached_server.start()
+    time.sleep(1)
+    memaslap_server1.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
+                           log_filename="baseline_client{}_conc{:03}.out".format(1, ms_concurrencies[i]))
+    if ms_concurrencies[i] > 1:
+        memaslap_server2.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
+                               log_filename="baseline_client{}_conc{:03}.out".format(2, ms_concurrencies[i]))
+    time.sleep(EXPERIMENT_RUNTIME + 5)
+
+
+
+
+
+
 memcached_server.start()
 memaslap_server1.start()
 memaslap_server2.start()
 # endregion
 
 # Wait until experiment is done
-time.sleep(12) # TODO change this -- perhaps ask memaslap servers whether the process still exists
+time.sleep(12)  # TODO change this -- perhaps ask memaslap servers whether the process still exists
 
 
 # region ---- Stop memcached ----
