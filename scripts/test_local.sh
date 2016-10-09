@@ -13,12 +13,12 @@ MIDDLEWARE_PID=$!
 
 sleep 5s
 
-mem/libmemcached-1.0.18/clients/memaslap -s 127.0.0.1:11212 -T 1 -c 1 -o0.9 -S 1s -t 10s -F resources/xlargevalue.cfg > $LOG_DIR/memaslap.out &
+mem/libmemcached-1.0.18/clients/memaslap -s 127.0.0.1:11212 -T 64 -c 64 -o0.9 -S 1s -t 10s -F resources/xlargevalue.cfg > $LOG_DIR/memaslap.out &
 MEMASLAP_PID=$!
 
 echo "memcached $MEMCACHED_PID, middleware $MIDDLEWARE_PID, memaslap $MEMASLAP_PID"
 
-sleep 12s
+sleep 20s
 
 echo `tail -n 1 $LOG_DIR/memaslap.out` | grep --color -e 'TPS: \d\{1,10\}'
 
