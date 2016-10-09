@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "virtualMachines_name": {
-      "defaultValue": "foraslvms",
+      "defaultValue": "foraslvms7.",
       "type": "string"
     },
     "virtualMachines_adminPassword": {
@@ -11,11 +11,11 @@
       "type": "securestring"
     },
     "networkInterfaces_name": {
-      "defaultValue": "MyNetworkInterface",
+      "defaultValue": "MyNetworkInterface7.",
       "type": "string"
     },
     "virtualNetworks_testeth_vnet_name": {
-      "defaultValue": "MyVNet",
+      "defaultValue": "MyVNet7.",
       "type": "string"
     },
     "key": {
@@ -23,7 +23,7 @@
       "type": "string"
     },
     "uniquedns": {
-      "defaultValue": "your_nethz",
+      "defaultValue": "your_nethz7",
       "type": "string"
     }
   },
