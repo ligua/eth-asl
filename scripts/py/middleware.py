@@ -84,7 +84,7 @@ class Middleware(object):
 
             for pid in pids:
                 self.log.info("Killing PID={}".format(pid))
-                fa.run("kill {}".format(pid))
+                fa.run("sudo kill {}".format(pid))
 
     @staticmethod
     def make_memcached_list_string(host_strings):
