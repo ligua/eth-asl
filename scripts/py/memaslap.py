@@ -85,6 +85,15 @@ class Memaslap(object):
                 self.log.info("Killing PID={}".format(pid))
                 fa.run("sudo kill {}".format(pid))
 
+    def download_logs(self, local_path="results/baseline"):
+        """Download memaslap logs to specified local directory."""
+        self.log.info("Downloading memaslap logs from machine {} to {}.".format(self.ssh_hostname, local_path))
+        with fa.settings(**self.fab_settings):
+            fa.local("mkdir -p {}".format(local_path))
+            fa.local("scp -i {} {}:~/logs/*.out {}"
+                     .format(self.ssh_key_filename, self.host_string, local_path))
+
+
     def clear_logs(self):
         """Clear logs directory."""
         self.log.info("Clearing memaslap logs on machine {}.".format(self.ssh_hostname))
