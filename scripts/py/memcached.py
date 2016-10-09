@@ -61,7 +61,7 @@ class Memcached(object):
 
             for pid in pids:
                 self.log.info("Killing PID={}".format(pid))
-                fa.run("kill {}".format(pid))
+                fa.run("sudo kill {}".format(pid))
 
 
 
