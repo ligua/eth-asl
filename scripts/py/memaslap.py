@@ -55,15 +55,20 @@ class Memaslap(object):
                        "export LDFLAGS=-lpthread; " +
                        "./configure --enable-memaslap && make clients/memaslap; " +
                        "cd ..")
+                fa.run("mkdir -p ~/resources")
+                fa.local("scp -i {} resources/*.cfg {}:~/resources"
+                         .format(self.ssh_key_filename, self.host_string))
             else:
                 self.log.info("Memaslap already built.")
 
-    def start(self, concurrency=64, stats_freq="1s", runtime="10s", log_filename="memaslap.out"):
+    def start(self, concurrency=64, stats_freq="1s", runtime="10s", log_filename="memaslap.out",
+              workload_filename="smallvalue.cfg"):
         """Start memaslap."""
         with fa.settings(**self.fab_settings):
             fa.run("mkdir logs")
-            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T {} -c {} -o0.9 -S {} -t {}"\
-                .format(self.memcached_hostname, self.memcached_port, concurrency, concurrency, stats_freq, runtime)
+            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T {} -c {} -o0.9 -S {} -t {} -F ~/resources/{}"\
+                .format(self.memcached_hostname, self.memcached_port, concurrency, concurrency, stats_freq, runtime,
+                        workload_filename)
             fa.run("nohup {} > logs/{} 2>&1 &".format(command, log_filename), pty=False)
 
             self.log.info("Memaslap started.")
