@@ -39,7 +39,7 @@ class Memcached(object):
 
     def update_and_install(self):
         """Update packages and install memcached."""
-        self.log.info("Updating and installing memcached.")
+        self.log.info("Updating and installing memcached on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             fa.run("export DEBIAN_FRONTEND=noninteractive")
             fa.run("sudo apt-get --assume-yes update")
@@ -47,6 +47,7 @@ class Memcached(object):
 
     def start(self):
         """Start memcached."""
+        self.log.info("Starting memcached on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             command = "memcached -p {} -t 1".format(self.serve_port)
             fa.run("nohup {} > /dev/null 2>&1 &".format(command), pty=False)
@@ -55,6 +56,7 @@ class Memcached(object):
 
     def stop(self):
         """Stops all memcached processes running on that machine."""
+        self.log.info("Stopping memcached on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             result = fa.run("pgrep memcached")
             pids = result.split()

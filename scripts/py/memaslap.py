@@ -40,7 +40,7 @@ class Memaslap(object):
 
     def update_and_install(self):
         """Update packages and build memaslap."""
-        self.log.info("Updating and installing memaslap.")
+        self.log.info("Updating and installing memaslap on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             fa.run("export DEBIAN_FRONTEND=noninteractive")
             fa.run("sudo apt-get --assume-yes update")
@@ -55,17 +55,18 @@ class Memaslap(object):
                        "export LDFLAGS=-lpthread; " +
                        "./configure --enable-memaslap && make clients/memaslap; " +
                        "cd ..")
-                fa.run("mkdir -p ~/resources")
+                fa.run("mkdir ~/logs")
+                fa.run("mkdir ~/resources")
                 fa.local("scp -i {} resources/*.cfg {}:~/resources"
                          .format(self.ssh_key_filename, self.host_string))
             else:
                 self.log.info("Memaslap already built.")
 
-    def start(self, concurrency=64, stats_freq="1s", runtime="10s", log_filename="memaslap.out",
+    def start(self, concurrency=64, stats_freq="10s", runtime="10s", log_filename="memaslap.out",
               workload_filename="xlargevalue.cfg"):
         """Start memaslap."""
+        self.log.info("Starting memaslap on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
-            fa.run("mkdir logs")
             command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T {} -c {} -o0.9 -S {} -t {} -F ~/resources/{}"\
                 .format(self.memcached_hostname, self.memcached_port, concurrency, concurrency, stats_freq, runtime,
                         workload_filename)
@@ -74,7 +75,8 @@ class Memaslap(object):
             self.log.info("Memaslap started.")
 
     def stop(self):
-        """Stops all memaslap processes running on that machine."""
+        """Stop all memaslap processes running on that machine."""
+        self.log.info("Stopping memaslap on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             result = fa.run("pgrep memaslap")
             pids = result.split()
@@ -83,7 +85,11 @@ class Memaslap(object):
                 self.log.info("Killing PID={}".format(pid))
                 fa.run("sudo kill {}".format(pid))
 
-
+    def clear_logs(self):
+        """Clear logs directory."""
+        self.log.info("Clearing memaslap logs on machine {}.".format(self.ssh_hostname))
+        with fa.settings(**self.fab_settings):
+            fa.run("rm ~/logs/*.out")
 
 # Testing
 if __name__ == "__main__":

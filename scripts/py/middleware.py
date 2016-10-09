@@ -47,6 +47,7 @@ class Middleware(object):
 
     def update_and_install(self):
         """Update packages, copy dependencies and JAR to Azure."""
+        self.log.info("Updating and installing middleware on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             fa.run("export DEBIAN_FRONTEND=noninteractive")
             fa.run("sudo apt-get --assume-yes update")
@@ -67,6 +68,7 @@ class Middleware(object):
 
     def start(self):
         """Start the middleware."""
+        self.log.info("Starting middleware on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             command = "java -classpath lib/ -jar dist/{} -l {} -p {} -t {} -r {} -m {}"\
                 .format(self.jar_file_name, self.serve_hostname, self.serve_port,
@@ -78,6 +80,7 @@ class Middleware(object):
 
     def stop(self):
         """Kill all middleware (Java) processes running on that machine."""
+        self.log.info("Stopping middleware on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             result = fa.run("pgrep java")
             pids = result.split()
