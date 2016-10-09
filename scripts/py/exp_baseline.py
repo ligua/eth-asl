@@ -106,16 +106,18 @@ for i in range(0, len(ms_concurrencies)):
 
         # There should be just one client if concurrency=1, otherwise two clients
         concurrency_per_client = ms_concurrencies[i]
-        if concurrency_per_client > 1:
-            concurrency_per_client /= 2
+        if concurrency_per_client == 1:
+            concurrency_per_client = 1
+        else:
+            concurrency_per_client = int(concurrency_per_client / 2)
 
-        memaslap_server1.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
+        memaslap_server1.start(concurrency=concurrency_per_client, runtime=EXPERIMENT_RUNTIME_STRING,
                                stats_freq=STATS_FREQUENCY,
-                               log_filename=log_filename_base.format(1, concurrency_per_client, rep))
+                               log_filename=log_filename_base.format(1, ms_concurrencies[i], rep))
         if ms_concurrencies[i] > 1:
-            memaslap_server2.start(concurrency=ms_concurrencies[i], runtime=EXPERIMENT_RUNTIME_STRING,
+            memaslap_server2.start(concurrency=concurrency_per_client, runtime=EXPERIMENT_RUNTIME_STRING,
                                    stats_freq=STATS_FREQUENCY,
-                                   log_filename=log_filename_base.format(1, concurrency_per_client, rep))
+                                   log_filename=log_filename_base.format(1, ms_concurrencies[i], rep))
         time.sleep(EXPERIMENT_RUNTIME + 5)
         memcached_server.stop()
 # endregion
