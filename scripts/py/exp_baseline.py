@@ -8,7 +8,7 @@ from colors import Colors
 from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
-NUM_REPETITIONS = 1
+NUM_REPETITIONS = 5
 EXPERIMENT_RUNTIME = 30  # seconds
 EXPERIMENT_RUNTIME_STRING = "{}s".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "10m"
@@ -96,7 +96,8 @@ memaslap_server1.clear_logs()
 memaslap_server2.clear_logs()
 
 log_filename_base = "baseline_memaslap{}_conc{:03}_rep{:02}.out"
-ms_concurrencies = [1, 2, 4] #+ list(range(8, 129, 8))
+ms_concurrencies = [1, 2, 4] + list(range(8, 129, 8))
+log.info("Running {} repetitions each at concurrencies {}".format(NUM_REPETITIONS, str(ms_concurrencies)))
 
 for i in range(0, len(ms_concurrencies)):
     for rep in range(NUM_REPETITIONS):
