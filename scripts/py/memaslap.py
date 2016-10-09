@@ -25,7 +25,7 @@ class Memaslap(object):
         )
 
         # region ---- Set up logging ----
-        LOG_FORMAT = '%(asctime)-15s %(message)s'
+        LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
         LOG_LEVEL = logging.INFO
         formatter = logging.Formatter(LOG_FORMAT)
 
@@ -40,6 +40,7 @@ class Memaslap(object):
 
     def update_and_install(self):
         """Update packages and build memaslap."""
+        self.log.info("Updating and installing memaslap.")
         with fa.settings(**self.fab_settings):
             fa.run("export DEBIAN_FRONTEND=noninteractive")
             fa.run("sudo apt-get --assume-yes update")
@@ -62,7 +63,7 @@ class Memaslap(object):
         """Start memaslap."""
         with fa.settings(**self.fab_settings):
             fa.run("mkdir logs")
-            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T 64 -c 64 -o0.9 -S 1s -t 1m"\
+            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T 64 -c 64 -o0.9 -S 1s -t 10s"\
                 .format(self.memcached_hostname, self.memcached_port)
             fa.run("nohup {} > logs/memaslap.out 2>&1 &".format(command), pty=False)
 
