@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
 
@@ -17,7 +18,8 @@ public class Request {
     public static final int LOG_SAMPLING_FREQUENCY = 100;
 
     private RequestType type;
-    private String requestRaw;
+    private ByteBuffer buffer;
+    private String requestText;
     private String key;
     private SocketChannel client;
 
@@ -34,21 +36,20 @@ public class Request {
 
     private String successFlag = "N/A";
 
-    public Request(String request, SocketChannel client) {
+    public Request(ByteBuffer buffer, SocketChannel client) {
         setTimeCreated();
-        this.requestRaw = request;
+        buffer.flip();
+        this.buffer = buffer;
         this.client = client;
-        type = getRequestType(request);
-        key = requestRaw.split("\\s+", 3)[1];
+        type = getRequestType(buffer);
+        String message = new String(buffer.array());
+        requestText = message.substring(0, buffer.position());
+        key = getKeyFromBuffer(buffer);
         shouldLog = false;
     }
 
     public RequestType getType() {
         return type;
-    }
-
-    public String getRequestRaw() {
-        return requestRaw;
     }
 
     public String getKey() {
@@ -87,6 +88,10 @@ public class Request {
         this.shouldLog = shouldLog;
     }
 
+    public ByteBuffer getBuffer() {
+        return buffer;
+    }
+
     /**
      * Respond to the request and close connection.
      */
@@ -112,10 +117,47 @@ public class Request {
     }
 
     /**
+     * Find if the request was a get or set.
+     */
+    public static RequestType getRequestType(ByteBuffer buffer) {
+        char firstChar = (char) buffer.get(0);
+
+        if (firstChar == 's') {
+            return RequestType.SET;
+        } else if (firstChar == 'g') {
+            return RequestType.GET;
+        } else {
+            return RequestType.UNKNOWN;
+        }
+    }
+
+    /**
+     * Get the key from a buffer.
+     */
+    public static String getKeyFromBuffer(ByteBuffer buffer) {
+        // TODO write tests for this method
+        String key = "";
+        int i = 4;  // We know the first 4 chars are 'get ' or 'set '
+        while(i < buffer.position()) {
+            char c = (char) buffer.get(i);
+            if(c == ' ') {
+                break;
+            }
+            key += c;
+            i++;
+        }
+        return key;
+    }
+
+
+    /**
      * Check if the given SET request is complete.
      */
-    public static boolean isCompleteSetRequest(String request) {
-        String[] lines = request.split("\\r?\\n");
+    public static boolean isCompleteSetRequest(ByteBuffer buffer) {
+        String message = new String(buffer.array());
+        message = message.substring(0, buffer.position());
+
+        String[] lines = message.split("\\r?\\n");
         if(lines.length < 2) {
             return false;
         } else {
@@ -142,6 +184,8 @@ public class Request {
 
     @Override
     public String toString() {
-        return "'" + Util.unEscapeString(this.requestRaw) + "'";
+        String message = new String(buffer.array());
+        message = message.substring(0, buffer.position());
+        return "'" + Util.unEscapeString(message) + "'";
     }
 }
