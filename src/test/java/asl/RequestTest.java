@@ -6,11 +6,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class RequestTest {
-    @Test
+    //@Test
     /**
      * Test whether the key is parsed correctly.
      */
-    public void getKey() throws Exception {
+    /*public void getKey() throws Exception {
 
         Request r1 = new Request("set mykey 0 60 5", null);
         assert(r1.getKey().equals("mykey"));
@@ -33,6 +33,6 @@ public class RequestTest {
 
         String setRequest4 = "set mykey 0 60 5\r\n";
         assertFalse(Request.isCompleteSetRequest(setRequest4));
-    }
+    }*/
 
 }

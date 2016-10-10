@@ -27,7 +27,7 @@ public class LoadBalancer implements Runnable {
     private String address;
     private Integer port;
 
-    private Map<SelectionKey, String> requestMessageBuffer;
+    private Map<SelectionKey, ByteBuffer> requestMessageBuffer2;
     private Map<SelectionKey, Request> keyToRequest;
 
     LoadBalancer(List<MiddlewareComponent> middlewareComponents, Hasher hasher, String address, Integer port) {
@@ -35,7 +35,7 @@ public class LoadBalancer implements Runnable {
         this.hasher = hasher;
         this.address = address;
         this.port = port;
-        this.requestMessageBuffer = new HashMap<>();
+        this.requestMessageBuffer2 = new HashMap<>();
         this.keyToRequest = new HashMap<>();
         this.readRequestCounter = 0;
         this.writeRequestCounter = 0;
@@ -49,7 +49,7 @@ public class LoadBalancer implements Runnable {
         selectionKey.interestOps(SelectionKey.OP_WRITE);    // TODO
         log.debug("contains after putting? " + keyToRequest.containsKey(selectionKey));
 
-        requestMessageBuffer.remove(selectionKey);
+        requestMessageBuffer2.remove(selectionKey);
 
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
@@ -161,45 +161,44 @@ public class LoadBalancer implements Runnable {
                         // If this key's channel is ready for reading
 
                         SocketChannel client = (SocketChannel) myKey.channel();
-                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.BUFFER_SIZE);
-                        client.read(buffer);
-                        String message = new String(buffer.array());
-                        message = message.substring(0, buffer.position());
 
-                        if(!requestMessageBuffer.containsKey(myKey)) {
+                        if(!requestMessageBuffer2.containsKey(myKey)) {
                             log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
+
+                            ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.BUFFER_SIZE);
+                            client.read(buffer);
+
                             // If this is the first time we hear from this connection
-                            if(message.length() == 0) {
+                            if(buffer.position() == 0) {
                                 client.close();         // TODO not sure if this is correct behaviour
                                 continue;
                             }
-                            RequestType requestType = Request.getRequestType(message);
+                            RequestType requestType = Request.getRequestType(buffer);
+
+                            log.debug("request type: " + requestType);
 
                             if (requestType == RequestType.GET) {
                                 // TODO assuming we get the whole GET or DELETE message in one chunk
-                                Request r = new Request(message, client);
-                                log.debug(r.getType() + " message received: " + r);
+                                Request r = new Request(buffer, client);
 
                                 handleRequest(r, myKey);
                             } else if (requestType == RequestType.SET) {
                                 // We may need to wait for the second line in the SET request.
-                                requestMessageBuffer.put(myKey, message);
+                                requestMessageBuffer2.put(myKey, buffer);
                                 //log.debug("Got a part of SET request [" + Util.unEscapeString(message) + "], waiting for more.");
                             }
                         } else {
                             log.debug("ADDING STUFF TO KEY: " + myKey);
                             // If we have something already from this connection
-                            String updatedMessage = requestMessageBuffer.get(myKey) + message;
-                            requestMessageBuffer.put(myKey, updatedMessage);
+                            ByteBuffer buffer = requestMessageBuffer2.get(myKey);
+                            client.read(buffer);
                         }
 
                         // If we already have the whole message, we can create a Request.
-                        if(requestMessageBuffer.containsKey(myKey) &&
-                                Request.isCompleteSetRequest(requestMessageBuffer.get(myKey))) {
+                        if(requestMessageBuffer2.containsKey(myKey) &&
+                                Request.isCompleteSetRequest(requestMessageBuffer2.get(myKey))) {
                             log.debug("KEY IS COMPLETE: " + myKey);
-                            String fullMessage = requestMessageBuffer.get(myKey);
-                            Request r = new Request(fullMessage, client);
-                            log.debug(r.getType() + " message received: " + r);
+                            Request r = new Request(requestMessageBuffer2.get(myKey), client);
                             handleRequest(r, myKey);
                         }
 

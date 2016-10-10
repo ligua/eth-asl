@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
+import java.nio.channels.WritableByteChannel;
 import java.util.List;
 
 /**
@@ -50,15 +52,13 @@ public class MemcachedConnection implements Closeable {
 
     public void sendRequest(Request r, boolean shouldRespond) {
         try {
-            String requestRaw = r.getRequestRaw();
 
             // Setup socket input and output streams
-            PrintWriter socketOut = new PrintWriter(memcachedSocket.getOutputStream(), true);
+            WritableByteChannel channel = Channels.newChannel(memcachedSocket.getOutputStream());
             InputStream socketIn = memcachedSocket.getInputStream();
 
             // Send request
-            socketOut.write(requestRaw);
-            socketOut.flush();
+            channel.write(r.getBuffer());
             r.setTimeForwarded();
 
             // Read response
