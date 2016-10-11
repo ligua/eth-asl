@@ -7,7 +7,7 @@
       "type": "string"
     },
     "virtualMachines_adminPassword": {
-      "defaultValue": "U6Mh=be:vma+&>R'pcMwFVls?=",
+      "defaultValue": null,
       "type": "securestring"
     },
     "networkInterfaces_name": {
