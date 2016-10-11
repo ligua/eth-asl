@@ -9,7 +9,7 @@ from middleware import Middleware
 from colors import Colors
 from deployer import Deployer
 
-UPDATE_AND_INSTALL = False
+UPDATE_AND_INSTALL = True
 EXPERIMENT_RUNTIME = 1  # minutes
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "10m"
@@ -124,7 +124,7 @@ log.info("Setting up middleware on machine {} ({}).".format(index_a4, vm_names[i
 mw_server = Middleware(public_hostnames[index_a4], private_hostnames[index_a4], middleware_port,
                        NUM_THREADS_IN_POOL, REPLICATION_FACTOR, mc_server_string_list)
 if UPDATE_AND_INSTALL:
-    mw_server.update_and_install()
+    threading.Thread(name="mw", target=mw_server.update_and_install())
 
 #mw_server.start()
 
@@ -135,7 +135,7 @@ for i in indices_smallmachines[3:]:
     ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port)
     ms_servers.append(ms_server)
     if UPDATE_AND_INSTALL:
-        t = threading.Thread(name="mc{}".format(i), target=ms_server.update_and_install())
+        t = threading.Thread(name="ms{}".format(i), target=ms_server.update_and_install())
 
 wait_for_all_threads()
 #for s in ms_servers:
