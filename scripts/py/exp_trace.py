@@ -9,12 +9,14 @@ from middleware import Middleware
 from colors import Colors
 from deployer import Deployer
 
-UPDATE_AND_INSTALL = True
+UPDATE_AND_INSTALL = False
 EXPERIMENT_RUNTIME = 1  # minutes
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "10m"
 NUM_THREADS_IN_POOL = 1
 REPLICATION_FACTOR = 1
+
+ssh_username = "pungast7"
 
 # region ---- Logging ----
 LOG_FORMAT = '%(asctime)-15s [%(name)s_(%(threadName)-4s)] - %(message)s'
@@ -108,23 +110,29 @@ mc_servers = []
 mc_server_string_list = []
 for i in indices_smallmachines[0:3]:
     log.info("Setting up memcached on machine {} ({}).".format(i, vm_names[i]))
-    mc_server = Memcached(memcached_port, public_hostnames[i])
+    mc_server = Memcached(memcached_port, public_hostnames[i], ssh_username=ssh_username)
     mc_servers.append(mc_server)
     mc_server_string_list.append("{}:{}".format(private_hostnames, memcached_port))
     if UPDATE_AND_INSTALL:
-        t = threading.Thread(name="mc{}".format(i), target=mc_server.update_and_install())
-
+        t = threading.Thread(name="mc{}".format(i), target=mc_server.update_and_install)
+        t.setDaemon(True)
+        t.start()
 wait_for_all_threads()
-#for s in mc_servers:
-#    s.start()
+for s in mc_servers:
+    s.start()
+input("kil?")
+for mc_server in mc_servers:
+    mc_server.stop()
+exit()
 
 # Set up middleware server
 middleware_port = 11212
 log.info("Setting up middleware on machine {} ({}).".format(index_a4, vm_names[index_a4]))
 mw_server = Middleware(public_hostnames[index_a4], private_hostnames[index_a4], middleware_port,
-                       NUM_THREADS_IN_POOL, REPLICATION_FACTOR, mc_server_string_list)
+                       NUM_THREADS_IN_POOL, REPLICATION_FACTOR, mc_server_string_list, ssh_username=ssh_username)
 if UPDATE_AND_INSTALL:
-    threading.Thread(name="mw", target=mw_server.update_and_install())
+    t = threading.Thread(name="mw", target=mw_server.update_and_install)
+    t.start()
 
 #mw_server.start()
 
@@ -132,10 +140,12 @@ if UPDATE_AND_INSTALL:
 ms_servers = []
 for i in indices_smallmachines[3:]:
     log.info("Setting up memaslap on machine {} ({}).".format(i, vm_names[i]))
-    ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port)
+    ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port, ssh_username=ssh_username)
     ms_servers.append(ms_server)
     if UPDATE_AND_INSTALL:
-        t = threading.Thread(name="ms{}".format(i), target=ms_server.update_and_install())
+        t = threading.Thread(name="ms{}".format(i), target=ms_server.update_and_install)
+        t.setDaemon(True)
+        t.start()
 
 wait_for_all_threads()
 #for s in ms_servers:
@@ -153,8 +163,8 @@ wait_for_all_threads()
 #mw_server.stop()
 
 # Memcached
-#for mc_server in mc_servers:
-#    mc_server.stop()
+for mc_server in mc_servers:
+    mc_server.stop()
 
 # endregion
 
