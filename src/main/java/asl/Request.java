@@ -154,6 +154,45 @@ public class Request {
      * Check if the given SET request is complete.
      */
     public static boolean isCompleteSetRequest(ByteBuffer buffer) {
+        int i = 0;
+        int newLineStart = Integer.MAX_VALUE;
+        int bufferPosition = buffer.position();
+        int passedSpaces = 0;
+        String messageLengthString = "";
+        while(i < buffer.limit()) {
+            char c = (char) buffer.get(i);
+            log.debug("char: '" + c + "'");
+            i++;
+
+            if(c == ' ') {
+                passedSpaces++;
+                continue;
+            }
+
+            if(c == '\n') {
+                newLineStart = i + 1;
+                break;
+            }
+
+            log.debug("passed spaces: " + passedSpaces);
+            if(passedSpaces == 4) {
+                messageLengthString += c;
+            }
+            log.debug("messageLengthString: " + messageLengthString.trim());
+
+
+        }
+        int declaredValueLength = Integer.parseInt(messageLengthString.trim());
+        log.debug("Bufferposition: " + bufferPosition + ", newLineStart: " + newLineStart);
+        int actualValueLength = bufferPosition - newLineStart; // TODO buffer.limit() is 2048, what else can I get? :(
+
+        if (declaredValueLength == actualValueLength -1 ) { // Subtract 1 because there's also a newline
+            return true;
+        }
+
+        log.debug(String.format("Declared %d chars in message, got %d.", declaredValueLength, actualValueLength));
+        return false;
+        /*
         String message = new String(buffer.array());
         message = message.substring(0, buffer.position());
 
@@ -168,7 +207,7 @@ public class Request {
             Integer numCharsActual = secondLine.length();
 
             return numCharsActual >= numCharsDeclared;
-        }
+        }*/
     }
 
     /**
