@@ -7,7 +7,7 @@
       "type": "string"
     },
     "virtualMachines_adminPassword": {
-      "defaultValue": null,
+      "defaultValue": "U6Mh=be:vma+&>R'pcMwFVls?=",
       "type": "securestring"
     },
     "networkInterfaces_name": {
@@ -19,11 +19,11 @@
       "type": "string"
     },
     "key": {
-      "defaultValue": "your_public_SSH_key",
+      "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGoWAm6akvexY/EhauDoAwCcJTSwuIbiElevgWj9f/AfbYFJopY1jprCgmrIdCMwEuQtqffwuZKsxkcOY9RPBDXy4yNp9nOl5Pe++AWy/huRrxfB2B2Nq/dnTN1iK1S5hywImqRfKDu2mTKtTRxzcAs5GBRgeXK2xBu7pc54e9hvyjbf02Ruqvl0WhOM+njt6ZkGWMWVTwaHYc/7OSUKzSSzUN6+LpBGPGPBpY01C3QZJg/p5yuHeg20+o9sUtklz61dYZjtlzvgHn1W6HnAIeshv25fLw1ulNPF0cHkiwjZrmo7iHdyFFGsnt+uTLpHTQ6NGoO3NdKV2loWZhFrzJ",
       "type": "string"
     },
     "uniquedns": {
-      "defaultValue": "your_nethz7",
+      "defaultValue": "pungast7",
       "type": "string"
     }
   },
