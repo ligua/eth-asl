@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
@@ -80,9 +81,9 @@ class ReadWorker implements Runnable {
                             }
                         }
 
-                        String response = new String(buffer, 0, readTotal);
+                        //String response = new String(buffer, 0, readTotal);
                         try {
-                            r.respond(response);
+                            r.respond(ByteBuffer.wrap(buffer));
                         } catch(ClosedChannelException ex) {
                             log.error("Could not respond to request " + r + ": " + ex);
                         }

@@ -115,27 +115,28 @@ public class LoadBalancer implements Runnable {
                         // If request has response, then write it.
                         Request r = keyToRequest.get(myKey);
 
-                        String response = r.getResponse();
+                        //String response = r.getResponse();
+                        ByteBuffer responseBuffer = r.getResponseBuffer();
                         keyToRequest.remove(myKey);
 
                         SocketChannel client = (SocketChannel) myKey.channel();
 
                         // Populate buffer
-                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.BUFFER_SIZE);
+                        /*ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.BUFFER_SIZE);
                         log.debug("Buffer:" + buffer);
                         log.debug("Response:" + response);
                         log.debug("Response bytes:" + response.getBytes());
                         buffer.put(response.getBytes());
-                        buffer.flip();
+                        buffer.flip();*/
 
                         log.debug("Trying to respond to client " + client);
 
                         // Write buffer
-                        while(buffer.hasRemaining()) {
-                            client.write(buffer);
+                        while(responseBuffer.hasRemaining()) {
+                            client.write(responseBuffer);
 
-                            int result = client.write(buffer);
-                            log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
+                            //int result = client.write(buffer);
+                            //log.debug("Responding to request " + this + ": writing '" + Util.unEscapeString(response) + "'; result: " + result);
                         }
 
                         r.setTimeReturned();
