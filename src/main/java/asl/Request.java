@@ -19,12 +19,10 @@ public class Request {
 
     private RequestType type;
     private ByteBuffer buffer;
-    private String requestText;
+    private ByteBuffer responseBuffer;
     private String key;
-    private SocketChannel client;
 
     private boolean hasResponse;
-    private String response;
 
     private long timeCreated;
     private long timeEnqueued;
@@ -40,10 +38,8 @@ public class Request {
         setTimeCreated();
         buffer.flip();
         this.buffer = buffer;
-        this.client = client;
         type = getRequestType(buffer);
         String message = new String(buffer.array());
-        requestText = message.substring(0, buffer.position());
         key = getKeyFromBuffer(buffer);
         shouldLog = false;
     }
@@ -58,10 +54,6 @@ public class Request {
 
     public boolean hasResponse() {
         return hasResponse;
-    }
-
-    public String getResponse() {
-        return response;
     }
 
     private void setTimeCreated() {
@@ -88,6 +80,10 @@ public class Request {
         this.shouldLog = shouldLog;
     }
 
+    public ByteBuffer getResponseBuffer() {
+        return responseBuffer;
+    }
+
     public ByteBuffer getBuffer() {
         return buffer;
     }
@@ -95,9 +91,9 @@ public class Request {
     /**
      * Respond to the request and close connection.
      */
-    public void respond(String response) throws IOException {
-        this.response = response;
-        log.debug("RESPONDING WITH '" + response + "'");
+    public void respond(ByteBuffer buffer) throws IOException {
+        this.responseBuffer = buffer;
+        //log.debug("RESPONDING WITH '" + response + "'");
         this.hasResponse = true;
     }
 
