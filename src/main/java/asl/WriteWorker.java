@@ -98,7 +98,7 @@ class WriteWorker implements Runnable {
                     //log.debug(String.format("Server %d.", targetMachine));
 
                     if (myKey.isValid() && myKey.isWritable() && outQueues.get(targetMachine).size() > 0) {
-                        log.info(String.format("Server %d is writable.", targetMachine));
+                        log.debug(String.format("Server %d is writable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
                         Request r = outQueues.get(targetMachine).remove();
                         inQueues.get(targetMachine).add(r);
@@ -112,7 +112,7 @@ class WriteWorker implements Runnable {
                         buffer.rewind();  // TODO not sure if this resets everything properly
 
                     } else if (myKey.isValid() && myKey.isReadable()  && inQueues.get(targetMachine).size() > 0) {
-                        log.info(String.format("Server %d is readable.", targetMachine));
+                        log.debug(String.format("Server %d is readable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
                         Request r = inQueues.get(targetMachine).remove();
 
