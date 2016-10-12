@@ -97,6 +97,14 @@ class Middleware(object):
             fa.local("scp -i {} {}:~/asl/log/*.log {}"
                      .format(self.ssh_key_filename, self.host_string, local_path))
 
+    def is_running(self):
+        """Check if middleware is running on this machine."""
+        with fa.settings(**self.fab_settings):
+            result = fa.run("lsof -i:{}".format(self.serve_port))
+            if result.return_code:
+                return True
+        return False
+
     @staticmethod
     def make_memcached_list_string(host_strings):
         """Turn a Python list into the properly formatted string for RunMW to parse."""
