@@ -39,9 +39,9 @@ public class MiddlewareMain implements Runnable {
     public MiddlewareMain() {
         this("localhost",
                 11212,
-                new ArrayList<String>(Arrays.asList("localhost:11211")),
+                new ArrayList<String>(Arrays.asList("localhost:11211", "localhost:11210")),
                 1,
-                1);
+                2);
     }
 
     MiddlewareMain(String loadBalancerIp, Integer loadBalancerPort, List<String> memcachedAddresses,
