@@ -6,9 +6,10 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.Date;
 
 enum RequestType {GET, SET, UNKNOWN}
+
+enum ResponseFlag {NA, STORED, NOT_STORED, UNKNOWN}
 
 public class Request {
 
@@ -32,7 +33,7 @@ public class Request {
 
     private boolean shouldLog;
 
-    private String successFlag = "N/A";
+    private ResponseFlag responseFlag = ResponseFlag.NA;
 
     public Request(ByteBuffer buffer, SocketChannel client) {
         setTimeCreated();
@@ -88,8 +89,30 @@ public class Request {
         return buffer;
     }
 
+    public ResponseFlag getResponseFlag() {
+        return responseFlag;
+    }
+
+    public void setResponseFlag(ResponseFlag responseFlag) {
+        this.responseFlag = responseFlag;
+    }
+
+    public void setResponseBuffer(ByteBuffer responseBuffer) {
+        this.responseBuffer = responseBuffer;
+    }
+
     /**
-     * Respond to the request and close connection.
+     * Respond to the request.
+     */
+    public void respond() throws IOException {
+        if(this.responseBuffer == null) {
+            throw new RuntimeException("Can't respond with an empty buffer!");
+        }
+        this.hasResponse = true;
+    }
+
+    /**
+     * Respond to the request.
      */
     public void respond(ByteBuffer buffer) throws IOException {
         this.responseBuffer = buffer;
@@ -157,7 +180,7 @@ public class Request {
         String messageLengthString = "";
         while(i < buffer.limit()) {
             char c = (char) buffer.get(i);
-            log.debug("char: '" + c + "'");
+            //log.debug("char: '" + c + "'");
             i++;
 
             if(c == ' ') {
@@ -170,16 +193,16 @@ public class Request {
                 break;
             }
 
-            log.debug("passed spaces: " + passedSpaces);
+            //log.debug("passed spaces: " + passedSpaces);
             if(passedSpaces == 4) {
                 messageLengthString += c;
             }
-            log.debug("messageLengthString: " + messageLengthString.trim());
+            //log.debug("messageLengthString: " + messageLengthString.trim());
 
 
         }
         int declaredValueLength = Integer.parseInt(messageLengthString.trim());
-        log.debug("Bufferposition: " + bufferPosition + ", newLineStart: " + newLineStart);
+        //log.debug("Bufferposition: " + bufferPosition + ", newLineStart: " + newLineStart);
         int actualValueLength = bufferPosition - newLineStart; // TODO buffer.limit() is 2048, what else can I get? :(
 
         if (declaredValueLength == actualValueLength -1 ) { // Subtract 1 because there's also a newline
@@ -188,22 +211,22 @@ public class Request {
 
         log.debug(String.format("Declared %d chars in message, got %d.", declaredValueLength, actualValueLength));
         return false;
-        /*
-        String message = new String(buffer.array());
-        message = message.substring(0, buffer.position());
+    }
 
-        String[] lines = message.split("\\r?\\n");
-        if(lines.length < 2) {
-            return false;
-        } else {
-            String firstLine = lines[0];
-            String secondLine = lines[1];
-            String[] firstLineParts = firstLine.split("\\s+");
-            Integer numCharsDeclared = Integer.parseInt(firstLineParts[4]);
-            Integer numCharsActual = secondLine.length();
-
-            return numCharsActual >= numCharsDeclared;
-        }*/
+    /**
+     * Get the response flag, given a set-request response buffer.
+     */
+    public static ResponseFlag getResponseFlag(ByteBuffer buffer) {
+        char firstChar = (char) buffer.get(0);
+        char fifthChar = (char) buffer.get(4);
+        if(firstChar == 'S') {
+            return ResponseFlag.STORED;
+        } else if(firstChar == 'N') {
+            if(fifthChar == 'S') {
+                return ResponseFlag.NOT_STORED;
+            }
+        }
+        return ResponseFlag.UNKNOWN;
     }
 
     /**
@@ -212,7 +235,7 @@ public class Request {
     public void logTimestamps() {
         if(shouldLog) {
             csvLog.info(String.format("%s,%s,%d,%d,%d,%d,%d",
-                    type, successFlag, timeCreated, timeEnqueued, timeDequeued, timeForwarded, timeReturned));
+                    type, responseFlag, timeCreated, timeEnqueued, timeDequeued, timeForwarded, timeReturned));
         }
     }
 

@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -63,7 +62,7 @@ public class MemcachedConnection implements Closeable {
             r.setTimeForwarded();
 
             // Read response
-            byte[] buffer = new byte[MiddlewareMain.BUFFER_SIZE]; // TODO use ByteBuffer here?
+            byte[] buffer = new byte[MiddlewareMain.FULL_BUFFER_SIZE]; // TODO use ByteBuffer here?
             int readTotal = 0;
             int read = socketIn.read(buffer);
 

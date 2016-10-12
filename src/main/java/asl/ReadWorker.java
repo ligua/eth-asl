@@ -67,7 +67,7 @@ class ReadWorker implements Runnable {
                         r.setTimeForwarded();
 
                         // Read response
-                        byte[] buffer = new byte[MiddlewareMain.BUFFER_SIZE]; // TODO use ByteBuffer here?
+                        byte[] buffer = new byte[MiddlewareMain.FULL_BUFFER_SIZE]; // TODO use ByteBuffer here?
                         int readTotal = 0;
                         int read = streamIn.read(buffer);
 
