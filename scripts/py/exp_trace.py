@@ -10,12 +10,13 @@ from colors import Colors
 from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
-EXPERIMENT_RUNTIME = 65  # minutes
-RUNTIME_BUFFER = 5 * 60     # seconds
+UPDATE_AND_INSTALL_ONLY_MIDDLEWARE = True
+EXPERIMENT_RUNTIME = 1  # minutes
+RUNTIME_BUFFER = 60     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "30s"
 NUM_THREADS_IN_POOL = 5
-REPLICATION_FACTOR = 1
+REPLICATION_FACTOR = 3
 
 ssh_username = "pungast7"
 results_dir = "results/trace"
@@ -130,7 +131,7 @@ middleware_port = 11212
 log.info("Setting up middleware on machine {} ({}).".format(index_a4, vm_names[index_a4]))
 mw_server = Middleware(public_hostnames[index_a4], private_hostnames[index_a4], middleware_port,
                        NUM_THREADS_IN_POOL, REPLICATION_FACTOR, mc_server_string_list, ssh_username=ssh_username)
-if UPDATE_AND_INSTALL:
+if UPDATE_AND_INSTALL or UPDATE_AND_INSTALL_ONLY_MIDDLEWARE:
     mw_server.update_and_install()
 
 mw_server.clear_logs()
