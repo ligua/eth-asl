@@ -77,8 +77,6 @@ public class MemcachedConnection implements Closeable {
                 }
             }
 
-            //String response = new String(buffer, 0, readTotal);
-
             log.debug("Got response to " + r + ".");
 
             // Respond if necessary
