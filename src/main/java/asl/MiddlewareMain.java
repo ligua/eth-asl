@@ -21,6 +21,8 @@ public class MiddlewareMain implements Runnable {
     public static final Integer BUFFER_SIZE = 2048;
     public static final Integer QUEUE_SIZE = 200;
 
+    public static List<String> memcachedAddresses;
+
     private String loadBalancerIp;
     private Integer loadBalancerPort;
     private Integer numMemcachedServers;            // N
@@ -52,6 +54,7 @@ public class MiddlewareMain implements Runnable {
         this.hasher = new UniformHasher(numMemcachedServers, replicationFactor);
 
         MemcachedConnection.memcachedAddresses = memcachedAddresses;
+        this.memcachedAddresses = memcachedAddresses;
     }
 
     @Override
