@@ -17,7 +17,7 @@ data1 <- requests %>%
   select(dtAll)
 
 g1 = ggplot(data1, aes(x=dtAll)) +
-  geom_histogram(aes(y=..count../sum(..count..))) +
+  geom_histogram(aes(y=..count../sum(..count..)), fill=color_dark) +
   xlab("Time from receiving request to responding (ms)") +
   ylab("Proportion of requests") +
   asl_theme
@@ -32,14 +32,21 @@ data2 <- requests %>%
   mutate(timeReturned=origin+timeReturned/1000) %>%
   mutate(timeReturned=as.numeric(difftime(timeReturned, min(timeReturned), units="mins")))
 
-min_val <- min(data2$timeReturned)
-max_val <- max(data2$timeReturned)
-total_time_in_minutes <- (max_val-min_val)
-num_bins = 30
-binwidth_in_minutes = total_time_in_minutes / num_bins
 
+num_bins = 60
 h <- hist(data2$timeReturned, plot=FALSE, breaks=num_bins)
-tps_values <- h$counts / binwidth_in_minutes * 100 / 60
+binwidth_in_minutes = h$breaks[2] - h$breaks[1]
+tps_values <- h$counts / binwidth_in_minutes / 60 * 100
+
+data2p <- data.frame(h$mids, tps_values) %>%
+  rename(minute=h.mids)
+g2 <- ggplot(data2p) +
+  geom_line(aes(x=minute, y=tps_values), color=color_dark, size=2) +
+  xlab("Time since start of experiment (min)") +
+  ylab("Throughput (requests / s)") +
+  asl_theme
+ggsave(paste0(result_dir_base, "/graphs/throughput.svg"), g3, width=8, height=5)
+
 
 
 
