@@ -10,7 +10,7 @@ from colors import Colors
 from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
-EXPERIMENT_RUNTIME = 5  # minutes
+EXPERIMENT_RUNTIME = 65  # minutes
 RUNTIME_BUFFER = 10     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "30s"
@@ -173,7 +173,7 @@ while True:
     time.sleep(60)
     already_slept += 60
     log.info("Waiting for the experiment to finish, {:.0f}/{} minutes elapsed ({:.0f}%)."
-             .format(already_slept/60, EXPERIMENT_RUNTIME, already_slept/60.0/EXPERIMENT_RUNTIME))
+             .format(already_slept/60, EXPERIMENT_RUNTIME, 100*already_slept/60.0/EXPERIMENT_RUNTIME))
     if already_slept >= EXPERIMENT_RUNTIME * 60:
         break
 
@@ -201,7 +201,7 @@ for ms_server in ms_servers:
 # endregion
 
 
-
+log.info("Done.")
 
 
 
