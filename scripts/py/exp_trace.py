@@ -10,17 +10,18 @@ from colors import Colors
 from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
-EXPERIMENT_RUNTIME = 1  # minutes
+EXPERIMENT_RUNTIME = 5  # minutes
+RUNTIME_BUFFER = 10     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
-STATS_FREQUENCY = "10m"
-NUM_THREADS_IN_POOL = 1
+STATS_FREQUENCY = "30s"
+NUM_THREADS_IN_POOL = 5
 REPLICATION_FACTOR = 1
 
 ssh_username = "pungast7"
 results_dir = "results/trace"
 
 # region ---- Logging ----
-LOG_FORMAT = '%(asctime)-15s [%(name)s_(%(threadName)-4s)] - %(message)s'
+LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
 LOG_LEVEL = logging.INFO
 formatter = logging.Formatter(LOG_FORMAT)
 
@@ -161,12 +162,22 @@ for i in indices_smallmachines[3:]:
 
 for s in ms_servers:
     s.clear_logs()
-    s.start(runtime=EXPERIMENT_RUNTIME_STRING, log_filename="memaslap{}.out".format(s.id_number))
+    s.start(runtime=EXPERIMENT_RUNTIME_STRING, log_filename="memaslap{}.out".format(s.id_number),
+            stats_freq=STATS_FREQUENCY)
 
 # endregion
 
-time.sleep(EXPERIMENT_RUNTIME * 60 + 10)  # Add a bit of time so we're sure memaslap is done
+log.info("Waiting for the experiment to finish, sleeping for {} minutes.".format(EXPERIMENT_RUNTIME))
+already_slept = 0
+while True:
+    time.sleep(60)
+    already_slept += 60
+    log.info("Waiting for the experiment to finish, {:.0f}/{} minutes elapsed ({:.0f}%)."
+             .format(already_slept/60, EXPERIMENT_RUNTIME, already_slept/60.0/EXPERIMENT_RUNTIME))
+    if already_slept >= EXPERIMENT_RUNTIME * 60:
+        break
 
+time.sleep(RUNTIME_BUFFER)
 
 # region ---- Kill everyone ----
 # Memaslap
