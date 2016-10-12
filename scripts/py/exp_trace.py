@@ -11,7 +11,7 @@ from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
 EXPERIMENT_RUNTIME = 65  # minutes
-RUNTIME_BUFFER = 10     # seconds
+RUNTIME_BUFFER = 5 * 60     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "30s"
 NUM_THREADS_IN_POOL = 5
@@ -177,6 +177,7 @@ while True:
     if already_slept >= EXPERIMENT_RUNTIME * 60:
         break
 
+log.info("Giving some extra time to memaslap, sleeping for {} seconds.".format(RUNTIME_BUFFER))
 time.sleep(RUNTIME_BUFFER)
 
 # region ---- Kill everyone ----
