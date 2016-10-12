@@ -108,8 +108,8 @@ class Middleware(object):
         with fa.settings(**self.fab_settings):
             result = fa.run("lsof -i:{}".format(self.serve_port))
             if result.return_code:
-                return True
-        return False
+                return False
+        return True
 
     @staticmethod
     def make_memcached_list_string(host_strings):
