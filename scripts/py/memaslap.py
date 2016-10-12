@@ -7,7 +7,8 @@ class Memaslap(object):
     def __init__(self, ssh_hostname, memcached_hostname, memcached_port,
                  ssh_key_filename=os.path.expanduser("~/.ssh/id_rsa_asl"),
                  ssh_username="pungast",
-                 sudo_password="4D0$1QcK5:Nsn:jd!'1j4Uw'j*"):
+                 sudo_password="4D0$1QcK5:Nsn:jd!'1j4Uw'j*",
+                 id_number=None):
         self.ssh_hostname = ssh_hostname
         self.ssh_key_filename = ssh_key_filename
         self.ssh_username = ssh_username
@@ -15,6 +16,7 @@ class Memaslap(object):
         self.host_string = "{}@{}".format(self.ssh_username, self.ssh_hostname)
         self.memcached_hostname = memcached_hostname
         self.memcached_port = memcached_port
+        self.id_number = id_number
 
         self.fab_settings = dict(
             user=self.ssh_username,

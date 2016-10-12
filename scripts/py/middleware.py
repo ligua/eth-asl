@@ -89,6 +89,14 @@ class Middleware(object):
                 self.log.info("Killing PID={}".format(pid))
                 fa.run("sudo kill {}".format(pid))
 
+    def download_logs(self, local_path="results/trace"):
+        """Download middleware logs to specified local directory."""
+        self.log.info("Downloading memaslap logs from machine {} to {}.".format(self.ssh_hostname, local_path))
+        with fa.settings(**self.fab_settings):
+            fa.local("mkdir -p {}".format(local_path))
+            fa.local("scp -i {} {}:~/asl/log/*.log {}"
+                     .format(self.ssh_key_filename, self.host_string, local_path))
+
     @staticmethod
     def make_memcached_list_string(host_strings):
         """Turn a Python list into the properly formatted string for RunMW to parse."""
