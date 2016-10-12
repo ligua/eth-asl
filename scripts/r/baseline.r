@@ -34,6 +34,6 @@ g2 <- ggplot(data2, aes(x=concurrency)) +
   geom_point(aes(y=t_mean)) + 
   geom_errorbar(aes(ymin=t_mean-t_std, ymax=t_mean+t_std)) +
   xlab("Concurrency") +
-  ylab("Mean response time (ms)") +
+  ylab("Mean response time (us)") +
   asl_theme
 ggsave("results/baseline/graphs/responsetime.svg", g2, width=8, height=5)
