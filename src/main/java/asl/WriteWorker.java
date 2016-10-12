@@ -4,13 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -23,19 +21,28 @@ class WriteWorker implements Runnable {
     private Integer componentId;
     private List<Integer> targetMachines;
     private BlockingQueue<Request> writeQueue;
-    private List<Queue<Request>> serverQueues;
-    private List<SocketChannel> serverSockets;
+    private List<Queue<Request>> outQueues;
+    private List<Queue<Request>> inQueues;
+    private List<SocketChannel> serverSocketChannels;
+    private Map<Request, Integer> numResponses;
+    private Selector selector;
 
     WriteWorker(Integer componentId, List<Integer> targetMachines, BlockingQueue<Request> writeQueue) {
         this.componentId = componentId;
         this.targetMachines = targetMachines;
         this.writeQueue = writeQueue;
-        this.serverQueues = new ArrayList<>();
-        this.serverSockets = new ArrayList<>();
+        this.outQueues = new ArrayList<>();
+        this.inQueues = new ArrayList<>();
+        this.serverSocketChannels = new ArrayList<>();
+        this.numResponses = new HashMap<>();
+
 
         try {
+            this.selector = Selector.open();
+
             for (Integer targetMachine : targetMachines) {
-                serverQueues.add(new LinkedList<Request>());
+                outQueues.add(new LinkedList<Request>());
+                inQueues.add(new LinkedList<Request>());
 
                 // TODO open connection to memcached server
                 String addressString = MiddlewareMain.memcachedAddresses.get(targetMachine);
@@ -47,17 +54,23 @@ class WriteWorker implements Runnable {
                 SocketChannel socketChannel = SocketChannel.open(inetSocketAddress);
                 socketChannel.configureBlocking(false);
 
-                this.serverSockets.add(socketChannel);
+                int ops = SelectionKey.OP_WRITE;
+                SelectionKey selectionKey = socketChannel.register(selector, ops, targetMachine); // TODO targetMachine is the extra payload (attachment)
+
+                this.serverSocketChannels.add(socketChannel);
             }
 
             // Wait for connection to all servers to finish
-            List<SocketChannel> notFinishedYet = new ArrayList<>(serverSockets);
+            List<SocketChannel> notFinishedYet = new ArrayList<>(serverSocketChannels);
             while (notFinishedYet.size() > 0) {
+                List<SocketChannel> toRemove = new ArrayList<>();
                 for(SocketChannel socketChannel : notFinishedYet) {
                     if (socketChannel.finishConnect()) {
-                        notFinishedYet.remove(socketChannel);
+                        log.info(String.format("Connected to server %s.", socketChannel.getRemoteAddress()));
+                        toRemove.add(socketChannel);
                     }
                 }
+                notFinishedYet.removeAll(toRemove);
             }
 
 
@@ -74,7 +87,65 @@ class WriteWorker implements Runnable {
             log.info(String.format("%s started; writing to machines: %s.", getName(), Util.collectionToString(targetMachines)));
 
             while (true) {
-                serverSockets.get(0);
+                selector.select();
+                Set<SelectionKey> selectedKeys = selector.selectedKeys();
+                Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
+
+                while (selectionKeyIterator.hasNext()) {
+                    SelectionKey myKey = selectionKeyIterator.next();
+                    Integer targetMachine = (Integer) myKey.attachment();
+
+                    //log.debug(String.format("Server %d.", targetMachine));
+
+                    if (myKey.isValid() && myKey.isWritable() && outQueues.get(targetMachine).size() > 0) {
+                        log.info(String.format("Server %d is writable.", targetMachine));
+                        SocketChannel socketChannel = (SocketChannel) myKey.channel();
+                        Request r = outQueues.get(targetMachine).remove();
+                        inQueues.get(targetMachine).add(r);
+                        numResponses.put(r, 0);
+
+                        ByteBuffer buffer = r.getBuffer();
+                        while(buffer.hasRemaining()) {
+                            socketChannel.write(buffer);
+                        }
+                        socketChannel.register(selector, SelectionKey.OP_READ, targetMachine);
+                        buffer.rewind();  // TODO not sure if this resets everything properly
+
+                    } else if (myKey.isValid() && myKey.isReadable()  && inQueues.get(targetMachine).size() > 0) {
+                        log.info(String.format("Server %d is readable.", targetMachine));
+                        SocketChannel socketChannel = (SocketChannel) myKey.channel();
+                        Request r = inQueues.get(targetMachine).remove();
+
+                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.RESPONSE_BUFFER_SIZE);
+                        int readTotal = 0;
+                        int read = socketChannel.read(buffer);
+
+                        // If the message from memcached continued
+                        while(read > 0) {  // TODO could also be 0 just temporarily b/c of network conditions or sth -- can cause problems!
+                            readTotal += read;
+                            read = socketChannel.read(buffer);
+                        }
+                        socketChannel.register(selector, SelectionKey.OP_WRITE, targetMachine);
+
+                        ResponseFlag responseFlag = Request.getResponseFlag(buffer);
+                        // Keep the worst response
+                        if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
+                            r.setResponseFlag(responseFlag);
+                            buffer.rewind();
+                            r.setResponseBuffer(buffer);
+                        }
+                        numResponses.put(r, numResponses.get(r) + 1);
+
+                        // If we've collected all responses
+                        log.debug(String.format("Have %d responses but %d machines.", numResponses.get(r), targetMachines.size()));
+                        if(numResponses.get(r) == targetMachines.size()) {
+                            log.debug("Collected all responses to request " + r + "");
+                            r.respond();
+                        }
+
+                    }
+
+                }
 
                 if (!writeQueue.isEmpty()) {
                     Request r = writeQueue.take();
@@ -82,13 +153,7 @@ class WriteWorker implements Runnable {
                     log.debug(getName() + " processing request " + r);
 
                     for(Integer targetMachine : targetMachines) {
-                        SocketChannel socketChannel = serverSockets.get(targetMachine);
-                        ByteBuffer buffer = r.getBuffer();
-                        while(buffer.hasRemaining()) {
-                            socketChannel.write(buffer);
-                        }
-                        buffer.position(0);
-
+                        outQueues.get(targetMachine).add(r);
                     }
 
                 }

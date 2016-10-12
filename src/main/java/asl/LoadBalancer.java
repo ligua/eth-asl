@@ -99,7 +99,7 @@ public class LoadBalancer implements Runnable {
             SelectionKey selectionKey = serverSocketChannel.register(selector, ops, null);
 
             while(true) {
-                log.debug("Waiting for a new connection...");
+                //log.debug("Waiting for a new connection...");
                 // Select a set of keys whose corresponding channels are ready for I/O operations
                 selector.select();
 
@@ -153,7 +153,7 @@ public class LoadBalancer implements Runnable {
                         if(!requestMessageBuffer2.containsKey(myKey)) {
                             log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
 
-                            ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.BUFFER_SIZE);
+                            ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.FULL_BUFFER_SIZE);
                             client.read(buffer);
 
                             // If this is the first time we hear from this connection
