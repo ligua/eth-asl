@@ -93,12 +93,26 @@ class Memaslap(object):
             fa.local("scp -i {} {}:~/logs/*.out {}"
                      .format(self.ssh_key_filename, self.host_string, local_path))
 
-
     def clear_logs(self):
         """Clear logs directory."""
         self.log.info("Clearing memaslap logs on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             fa.run("rm ~/logs/*.out")
+
+    def download_built_files(self, local_path="tmp/memaslap"):
+        """Download built memaslap files to specified local directory."""
+        self.log.info("Downloading built memaslap files from machine {} to {}.".format(self.ssh_hostname, local_path))
+        with fa.settings(**self.fab_settings):
+            fa.local("mkdir -p {}".format(local_path))
+            fa.local("scp -i {} {}:~/libmemcached-1.0.18 {}"
+                     .format(self.ssh_key_filename, self.host_string, local_path))
+
+    def upload_built_files(self, local_path="tmp/memaslap/libmemcached-1.0.18"):
+        """Upload built memaslap files from specified local directory."""
+        self.log.info("Uploading built memaslap files from {} to machine {}.".format(local_path, self.ssh_hostname))
+        with fa.settings(**self.fab_settings):
+            fa.local("scp -i {} {} {}:~/"
+                     .format(self.ssh_key_filename, local_path, self.host_string))
 
 # Testing
 if __name__ == "__main__":
