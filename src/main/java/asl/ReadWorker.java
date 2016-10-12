@@ -66,16 +66,13 @@ class ReadWorker implements Runnable {
                         r.setTimeForwarded();
 
                         // Read response
-                        String response = "";   // TODO I should read this straight into a buffer!!!
-                        byte[] buffer = new byte[MiddlewareMain.BUFFER_SIZE];
+                        byte[] buffer = new byte[MiddlewareMain.BUFFER_SIZE]; // TODO use ByteBuffer here?
+                        int readTotal = 0;
                         int read = streamIn.read(buffer);
 
                         // If the message from memcached continued
                         while(read != -1) {
-                            String output = new String(buffer, 0, read);
-                            log.debug("Response: '" + response + "'");
-                            response += output;
-                            log.debug("Response after addition: '" + response + "'");
+                            readTotal += read;
                             if(streamIn.available() > 0) {      // TODO This is probably not a good way to do this?
                                 read = streamIn.read(buffer);
                             } else {
@@ -83,6 +80,7 @@ class ReadWorker implements Runnable {
                             }
                         }
 
+                        String response = new String(buffer, 0, readTotal);
                         try {
                             r.respond(response);
                         } catch(ClosedChannelException ex) {
