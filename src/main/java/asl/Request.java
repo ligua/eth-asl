@@ -19,6 +19,7 @@ public class Request {
 
     private RequestType type;
     private ByteBuffer buffer;
+    private ByteBuffer responseBuffer;
     private String requestText;
     private String key;
     private SocketChannel client;
@@ -88,6 +89,10 @@ public class Request {
         this.shouldLog = shouldLog;
     }
 
+    public ByteBuffer getResponseBuffer() {
+        return responseBuffer;
+    }
+
     public ByteBuffer getBuffer() {
         return buffer;
     }
@@ -95,9 +100,9 @@ public class Request {
     /**
      * Respond to the request and close connection.
      */
-    public void respond(String response) throws IOException {
-        this.response = response;
-        log.debug("RESPONDING WITH '" + response + "'");
+    public void respond(ByteBuffer buffer) throws IOException {
+        this.responseBuffer = buffer;
+        //log.debug("RESPONDING WITH '" + response + "'");
         this.hasResponse = true;
     }
 

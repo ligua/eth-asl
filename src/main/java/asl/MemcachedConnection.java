@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
@@ -62,16 +63,13 @@ public class MemcachedConnection implements Closeable {
             r.setTimeForwarded();
 
             // Read response
-            String response = "";
-            byte[] buffer = new byte[MiddlewareMain.BUFFER_SIZE];
+            byte[] buffer = new byte[MiddlewareMain.BUFFER_SIZE]; // TODO use ByteBuffer here?
+            int readTotal = 0;
             int read = socketIn.read(buffer);
 
             // If the message from memcached continued
             while(read != -1) {
-                String output = new String(buffer, 0, read);
-                log.debug("Response: '" + response + "'");
-                response += output;
-                log.debug("Response after addition: '" + response + "'");
+                readTotal += read;
                 if(socketIn.available() > 0) {      // TODO This is probably not a good way to do this?
                     read = socketIn.read(buffer);
                 } else {
@@ -79,12 +77,14 @@ public class MemcachedConnection implements Closeable {
                 }
             }
 
+            //String response = new String(buffer, 0, readTotal);
+
             log.debug("Got response to " + r + ".");
 
             // Respond if necessary
             if(shouldRespond) {
                 try {
-                    r.respond(response);
+                    r.respond(ByteBuffer.wrap(buffer));
                 } catch(ClosedChannelException ex) {
                     log.error("Could not respond to request " + r + ": " + ex);
                 }
