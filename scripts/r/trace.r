@@ -9,6 +9,7 @@ library(ggplot2, lib.loc=library_location)
 source("scripts/r/common.r")
 
 requests <- read.csv("results/trace/request.log", header=TRUE, sep=",")
+result_dir_base <- "results/trace"
 
 # ---- Distribution of response times
 data1 <- requests %>%
@@ -20,7 +21,7 @@ g1 = ggplot(data1, aes(x=dtAll)) +
   xlab("Time from receiving request to responding (ms)") +
   ylab("Proportion of requests") +
   asl_theme
-ggsave("results/trace/graphs/dist_tAll.svg", g1, width=8, height=5)
+ggsave(paste0(result_dir_base, "/graphs/dist_tAll.svg"), g1, width=8, height=5)
 
 
 # ---- Throughput over time
@@ -31,15 +32,18 @@ data2 <- requests %>%
   mutate(timeReturned=origin+timeReturned/1000) %>%
   mutate(timeReturned=as.numeric(difftime(timeReturned, min(timeReturned), units="mins")))
 
-total_experiment_time_in_minutes <-
-  (max(requests$timeReturned)-min(requests$timeCreated)) / 60 / 1000
+min_val <- min(data2$timeReturned)
+max_val <- max(data2$timeReturned)
+total_time_in_minutes <- (max_val-min_val)
 num_bins = 30
-binwidth_in_minutes = total_experiment_time_in_minutes / num_bins
-ggplot(data2, aes(x=timeReturned)) +
-  geom_histogram(binwidth=binwidth_in_minutes) +
-  xlab("Time since the first request was returned (min)") +
-  ylab("100 requests") +  # TODO
-  asl_theme
+binwidth_in_minutes = total_time_in_minutes / num_bins
+
+h <- hist(data2$timeReturned, plot=FALSE, breaks=num_bins)
+tps_values <- h$counts / binwidth_in_minutes * 100 / 60
+
+
+
+#ggsave(paste0(result_dir_base, "/graphs/throughput_over_time.svg"), g2, width=8, height=5)
 
 # ---- Time spent in different parts of the system
 data3 <- requests %>%
@@ -50,9 +54,10 @@ data3 <- requests %>%
   select(type, tLoadBalancer:tMemcachedAndReturn) %>%
   melt(id.vars=c("type"))
 
-ggplot(data3) +
+g3 <- ggplot(data3) +
   geom_histogram(aes(x=value, fill=type)) +
   facet_wrap(~variable) +
   xlab("Time spent (ms)") +
   ylab("Number of requests") +
   asl_theme
+ggsave(paste0(result_dir_base, "/graphs/time_breakdown.svg"), g3, width=8, height=5)
