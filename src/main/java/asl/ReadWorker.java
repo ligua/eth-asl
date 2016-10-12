@@ -3,6 +3,12 @@ package main.java.asl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.Socket;
+import java.nio.channels.Channels;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -13,7 +19,10 @@ class ReadWorker implements Runnable {
     private Integer componentId;
     private Integer threadId;
     private BlockingQueue<Request> readQueue;
-    private MemcachedConnection connection;
+    //private MemcachedConnection connection;
+    private Socket memcachedSocket;
+    private WritableByteChannel channelOut;
+    private InputStream streamIn;
 
     private static final Logger log = LogManager.getLogger(ReadWorker.class);
 
@@ -21,7 +30,23 @@ class ReadWorker implements Runnable {
         this.componentId = componentId;
         this.threadId = threadId;
         this.readQueue = readQueue;
-        this.connection = new MemcachedConnection(componentId);
+
+        // Setup connection to memcached
+        String addressString = MiddlewareMain.memcachedAddresses.get(componentId);
+        String[] parts = addressString.split(":");
+        String address = parts[0];
+        Integer port = Integer.parseInt(parts[1]);
+
+        try {
+            memcachedSocket = new Socket(address, port);
+            channelOut = Channels.newChannel(memcachedSocket.getOutputStream());
+            streamIn = this.memcachedSocket.getInputStream();
+        } catch (IOException ex) {
+            log.error(ex);
+            throw new RuntimeException(ex);
+        }
+
+        //this.connection = new MemcachedConnection(componentId);
     }
 
     @Override
@@ -35,7 +60,36 @@ class ReadWorker implements Runnable {
                         Request r = readQueue.take();
                         r.setTimeDequeued();
                         log.debug(getName() + " processing request " + r);
-                        connection.sendRequest(r);
+
+                        // Write request
+                        channelOut.write(r.getBuffer());
+                        r.setTimeForwarded();
+
+                        // Read response
+                        String response = "";   // TODO I should read this straight into a buffer!!!
+                        byte[] buffer = new byte[MiddlewareMain.BUFFER_SIZE];
+                        int read = streamIn.read(buffer);
+
+                        // If the message from memcached continued
+                        while(read != -1) {
+                            String output = new String(buffer, 0, read);
+                            log.debug("Response: '" + response + "'");
+                            response += output;
+                            log.debug("Response after addition: '" + response + "'");
+                            if(streamIn.available() > 0) {      // TODO This is probably not a good way to do this?
+                                read = streamIn.read(buffer);
+                            } else {
+                                read = -1;
+                            }
+                        }
+
+                        try {
+                            r.respond(response);
+                        } catch(ClosedChannelException ex) {
+                            log.error("Could not respond to request " + r + ": " + ex);
+                        }
+
+                        log.debug("Got response to " + r + ".");
                     } catch (InterruptedException ex) {
                         log.error(ex);
                     }
