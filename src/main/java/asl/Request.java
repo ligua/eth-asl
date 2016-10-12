@@ -20,12 +20,9 @@ public class Request {
     private RequestType type;
     private ByteBuffer buffer;
     private ByteBuffer responseBuffer;
-    private String requestText;
     private String key;
-    private SocketChannel client;
 
     private boolean hasResponse;
-    private String response;
 
     private long timeCreated;
     private long timeEnqueued;
@@ -41,10 +38,8 @@ public class Request {
         setTimeCreated();
         buffer.flip();
         this.buffer = buffer;
-        this.client = client;
         type = getRequestType(buffer);
         String message = new String(buffer.array());
-        requestText = message.substring(0, buffer.position());
         key = getKeyFromBuffer(buffer);
         shouldLog = false;
     }
@@ -59,10 +54,6 @@ public class Request {
 
     public boolean hasResponse() {
         return hasResponse;
-    }
-
-    public String getResponse() {
-        return response;
     }
 
     private void setTimeCreated() {
