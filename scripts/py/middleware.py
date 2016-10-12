@@ -97,6 +97,12 @@ class Middleware(object):
             fa.local("scp -i {} {}:~/asl/log/*.log {}"
                      .format(self.ssh_key_filename, self.host_string, local_path))
 
+    def clear_logs(self):
+        """Clear logs directory."""
+        self.log.info("Clearing middleware logs on machine {}.".format(self.ssh_hostname))
+        with fa.settings(**self.fab_settings):
+            fa.run("rm ~/asl/log/*.log")
+
     def is_running(self):
         """Check if middleware is running on this machine."""
         with fa.settings(**self.fab_settings):

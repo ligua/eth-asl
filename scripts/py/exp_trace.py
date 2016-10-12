@@ -28,9 +28,14 @@ ch = logging.StreamHandler()
 ch.setLevel(LOG_LEVEL)
 ch.setFormatter(formatter)
 
+ch2 = logging.FileHandler("{}/deployment.log".format(results_dir))
+ch2.setLevel(LOG_LEVEL)
+ch2.setFormatter(formatter)
+
 log = logging.getLogger(__name__)
 log.setLevel(LOG_LEVEL)
 log.addHandler(ch)
+log.addHandler(ch2)
 # endregion
 
 # region ---- Parameters ----
@@ -127,7 +132,14 @@ mw_server = Middleware(public_hostnames[index_a4], private_hostnames[index_a4], 
 if UPDATE_AND_INSTALL:
     mw_server.update_and_install()
 
+mw_server.clear_logs()
 mw_server.start()
+
+# Sleep a bit so middleware has time to start
+if not mw_server.is_running():
+    sleep_for = 5
+    log.info("Sleeping for {} seconds so middleware can start...".format(sleep_for))
+    time.sleep(sleep_for)
 
 # Set up memaslap servers
 ms_servers = []
@@ -135,7 +147,7 @@ first_memaslap = True
 for i in indices_smallmachines[3:]:
     log.info("Setting up memaslap on machine {} ({}).".format(i, vm_names[i]))
     ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port, ssh_username=ssh_username,
-                         id_number=i)
+                         id_number=i+1) # i is zero-indexed
     ms_servers.append(ms_server)
     if UPDATE_AND_INSTALL:
         if not first_memaslap:
@@ -148,11 +160,12 @@ for i in indices_smallmachines[3:]:
             first_memaslap = False
 
 for s in ms_servers:
-    s.start(log_filename="memaslap{}.out".format(s.id_number))
+    s.clear_logs()
+    s.start(runtime=EXPERIMENT_RUNTIME_STRING, log_filename="memaslap{}.out".format(s.id_number))
 
 # endregion
 
-time.sleep(EXPERIMENT_RUNTIME * 60)
+time.sleep(EXPERIMENT_RUNTIME * 60 + 10)  # Add a bit of time so we're sure memaslap is done
 
 
 # region ---- Kill everyone ----
