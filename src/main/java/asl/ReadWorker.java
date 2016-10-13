@@ -20,7 +20,6 @@ class ReadWorker implements Runnable {
     private Integer componentId;
     private Integer threadId;
     private BlockingQueue<Request> readQueue;
-    //private MemcachedConnection connection;
     private Socket memcachedSocket;
     private WritableByteChannel channelOut;
     private InputStream streamIn;
@@ -46,8 +45,6 @@ class ReadWorker implements Runnable {
             log.error(ex);
             throw new RuntimeException(ex);
         }
-
-        //this.connection = new MemcachedConnection(componentId);
     }
 
     @Override
