@@ -71,7 +71,7 @@ class ReadWorker implements Runnable {
 
                         // If the message from memcached continued
                         while(read != -1) {
-                            log.debug(readTotal + " bytes read");
+                            //log.debug(readTotal + " bytes read");
                             readTotal += read;
 
                             if(readTotal == 5) {
@@ -81,7 +81,7 @@ class ReadWorker implements Runnable {
                             }
 
                             if(readTotal > 0) {
-                                if(buffer[readTotal-6] == 'E' && buffer[readTotal-5] == 'N' && buffer[readTotal-4] == 'D') {
+                                if(buffer[readTotal-5] == 'E' && buffer[readTotal-4] == 'N' && buffer[readTotal-3] == 'D') {
                                     break;
                                 }
                             }
