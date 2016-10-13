@@ -81,7 +81,7 @@ public class MemcachedConnection implements Closeable {
             // Respond if necessary
             if(shouldRespond) {
                 try {
-                    r.respond(ByteBuffer.wrap(buffer));
+                    r.respond();
                 } catch(ClosedChannelException ex) {
                     log.error("Could not respond to request " + r + ": " + ex);
                 }

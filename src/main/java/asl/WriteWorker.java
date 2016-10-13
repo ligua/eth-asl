@@ -66,7 +66,7 @@ class WriteWorker implements Runnable {
                 List<SocketChannel> toRemove = new ArrayList<>();
                 for(SocketChannel socketChannel : notFinishedYet) {
                     if (socketChannel.finishConnect()) {
-                        log.info(String.format("Connected to server %s.", socketChannel.getRemoteAddress()));
+                        log.info(String.format("%s connected to server %s.", getName(), socketChannel.getRemoteAddress()));
                         toRemove.add(socketChannel);
                     }
                 }
@@ -102,12 +102,12 @@ class WriteWorker implements Runnable {
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
                         Request r = outQueues.get(targetMachine).remove();
                         inQueues.get(targetMachine).add(r);
-                        numResponses.put(r, 0);
 
                         ByteBuffer buffer = r.getBuffer();
                         while(buffer.hasRemaining()) {
                             socketChannel.write(buffer);
                         }
+                        r.setTimeForwarded();  // This will have the value of the latest write
                         socketChannel.register(selector, SelectionKey.OP_READ, targetMachine);
                         buffer.rewind();  // TODO not sure if this resets everything properly
 
@@ -128,6 +128,7 @@ class WriteWorker implements Runnable {
                         socketChannel.register(selector, SelectionKey.OP_WRITE, targetMachine);
 
                         ResponseFlag responseFlag = Request.getResponseFlag(buffer);
+                        log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
                         // Keep the worst response
                         if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
                             r.setResponseFlag(responseFlag);
@@ -137,7 +138,7 @@ class WriteWorker implements Runnable {
                         numResponses.put(r, numResponses.get(r) + 1);
 
                         // If we've collected all responses
-                        log.debug(String.format("Have %d responses but %d machines.", numResponses.get(r), targetMachines.size()));
+                        //log.debug(String.format("Have %d responses but %d machines.", numResponses.get(r), targetMachines.size()));
                         if(numResponses.get(r) == targetMachines.size()) {
                             log.debug("Collected all responses to request " + r + "");
                             r.respond();
@@ -154,6 +155,7 @@ class WriteWorker implements Runnable {
 
                     for(Integer targetMachine : targetMachines) {
                         outQueues.get(targetMachine).add(r);
+                        numResponses.put(r, 0);
                     }
 
                 }

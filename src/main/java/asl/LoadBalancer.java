@@ -142,7 +142,7 @@ public class LoadBalancer implements Runnable {
 
                         // Operation-set bit for read operations
                         client.register(selector, SelectionKey.OP_READ);
-                        log.debug("Connection accepted: " + client.getLocalAddress());
+                        //log.debug("Connection accepted: " + client.getLocalAddress());
 
 
                     } else if (myKey.isValid() && myKey.isReadable()) {
@@ -163,7 +163,7 @@ public class LoadBalancer implements Runnable {
                             }
                             RequestType requestType = Request.getRequestType(buffer);
 
-                            log.debug("request type: " + requestType);
+                            //log.debug("request type: " + requestType);
 
                             if (requestType == RequestType.GET) {
                                 // TODO assuming we get the whole GET or DELETE message in one chunk
