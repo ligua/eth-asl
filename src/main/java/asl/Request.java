@@ -206,6 +206,19 @@ public class Request {
     }
 
     /**
+     * Check if buffer contains GET miss message.
+     */
+    public static boolean isGetMiss(ByteBuffer buffer) {
+        String correctString = "END\r\n";
+        for(int i=0; i<correctString.length(); i++) {
+            if(correctString.charAt(i) != (char) buffer.get(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Get the response flag, given a set-request response buffer.
      */
     public static ResponseFlag getResponseFlag(ByteBuffer buffer) {
