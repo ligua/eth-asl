@@ -54,7 +54,6 @@ public class MiddlewareMain implements Runnable {
         this.replicationFactor = replicationFactor;
         this.hasher = new UniformHasher(numMemcachedServers, replicationFactor);
 
-        MemcachedConnection.memcachedAddresses = memcachedAddresses;
         this.memcachedAddresses = memcachedAddresses;
     }
 
@@ -65,7 +64,7 @@ public class MiddlewareMain implements Runnable {
         log.info("[load balancer port]: " + loadBalancerPort);
         log.info("[number of read threads per component]: " + numReadThreadsPerServer);
         log.info("[replication factor]: " + replicationFactor);
-        log.info("[memcached addresses]: " + Arrays.toString(MemcachedConnection.memcachedAddresses.toArray()));
+        log.info("[memcached addresses]: " + Arrays.toString(MiddlewareMain.memcachedAddresses.toArray()));
 
         ExecutorService executor = Executors.newFixedThreadPool(numMemcachedServers * (numReadThreadsPerServer + 1) + 1);
 
