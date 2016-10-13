@@ -80,9 +80,8 @@ class ReadWorker implements Runnable {
 
                         ByteBuffer wrapped = ByteBuffer.wrap(buffer);
                         r.setResponseBuffer(wrapped);
-                        if(Request.getResponseFlag(wrapped) == ResponseFlag.GET_MISS) {
-                            r.setResponseFlag(ResponseFlag.GET_MISS);
-                        }
+                        ResponseFlag responseFlag = Request.getResponseFlag(wrapped);
+                        r.setResponseFlag(responseFlag);
                         r.respond();
 
                         log.debug(String.format("Got response to " + r + ", %d bytes.", readTotal));
