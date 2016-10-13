@@ -103,9 +103,11 @@ class WriteWorker implements Runnable {
                         inQueues.get(targetMachine).add(r);
 
                         ByteBuffer buffer = r.getBuffer();
+                        buffer.rewind();
                         while(buffer.hasRemaining()) {
                             socketChannel.write(buffer);
                         }
+
                         r.setTimeForwarded();  // This will have the value of the latest write
                         socketChannel.register(selector, SelectionKey.OP_READ, targetMachine);
                         buffer.rewind();  // TODO not sure if this resets everything properly
@@ -127,6 +129,7 @@ class WriteWorker implements Runnable {
                         socketChannel.register(selector, SelectionKey.OP_WRITE, targetMachine);
 
                         ResponseFlag responseFlag = Request.getResponseFlag(buffer);
+                        //log.debug(String.format("Response from server %d: %s.", targetMachine, Util.bufferToString(buffer)));
                         log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
                         // Keep the worst response
                         if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {

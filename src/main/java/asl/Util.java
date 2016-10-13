@@ -1,5 +1,6 @@
 package main.java.asl;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -37,6 +38,13 @@ public class Util {
                 default: sb.append(s.charAt(i));
             }
         return sb.toString();
+    }
+
+    /**
+     * Turn a bytebuffer into a string.
+     */
+    public static String bufferToString(ByteBuffer buffer) {
+        return new String(buffer.array());
     }
 
 }
