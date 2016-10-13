@@ -107,6 +107,8 @@ public class LoadBalancer implements Runnable {
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
 
+                //log.debug("Read queue 0 has " + middlewareComponents.get(0).readQueue.size() + " elements.");
+                //log.debug("Write queue 0 has " + middlewareComponents.get(0).writeQueue.size() + " elements.");
 
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
@@ -120,9 +122,10 @@ public class LoadBalancer implements Runnable {
 
                         SocketChannel client = (SocketChannel) myKey.channel();
 
-                        log.debug("Trying to respond to client " + client);
+                        log.debug("Responding to request " + r + ", response: " + Util.unEscapeString(Util.bufferToString(responseBuffer)));
 
                         // Write buffer
+                        responseBuffer.rewind();
                         while(responseBuffer.hasRemaining()) {
                             client.write(responseBuffer);
                         }

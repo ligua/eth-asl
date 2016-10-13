@@ -149,9 +149,9 @@ public class Request {
         // TODO write tests for this method
         String key = "";
         int i = 4;  // We know the first 4 chars are 'get ' or 'set '
-        while(i < buffer.position()) {
+        while(i < buffer.limit()) {
             char c = (char) buffer.get(i);
-            if(c == ' ') {
+            if(c == ' ' || c == '\r' || c == '\n') {
                 break;
             }
             key += c;
@@ -244,6 +244,6 @@ public class Request {
     public String toString() {
         String message = new String(buffer.array());
         message = message.trim();
-        return "'" + Util.unEscapeString(message) + "'";
+        return "'" + key + "' => '" + Util.unEscapeString(message) + "'";
     }
 }

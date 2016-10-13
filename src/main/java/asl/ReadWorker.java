@@ -60,6 +60,7 @@ class ReadWorker implements Runnable {
                         log.debug(getName() + " processing request " + r);
 
                         // Write request
+                        r.getBuffer().rewind();
                         channelOut.write(r.getBuffer());
                         r.setTimeForwarded();
 
