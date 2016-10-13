@@ -1,5 +1,6 @@
 package main.java.asl;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -124,6 +125,9 @@ public class LoadBalancer implements Runnable {
                         SocketChannel client = (SocketChannel) myKey.channel();
 
                         log.debug("Responding to request " + r + ", response: " + Util.unEscapeString(Util.bufferToString(responseBuffer)));
+                        if(Request.isGetMiss(r.getResponseBuffer())) {
+                            log.warn("GET MISS! " + r);
+                        }
 
                         // Write buffer
                         responseBuffer.rewind();
