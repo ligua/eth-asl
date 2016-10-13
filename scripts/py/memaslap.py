@@ -70,7 +70,7 @@ class Memaslap(object):
         self.log.info("Starting memaslap on machine {}.".format(self.ssh_hostname))
         verbose_string = " -b" if verbose else ""
         with fa.settings(**self.fab_settings):
-            command = "./libmemcached-1.0.18/clients/memaslap {} -s {}:{} -T {} -c {} -o0.9 -S {} -t {} -F ~/resources/{}"\
+            command = "./libmemcached-1.0.18/clients/memaslap{} -s {}:{} -T {} -c {} -o0.9 -S {} -t {} -F ~/resources/{}"\
                 .format(verbose_string, self.memcached_hostname, self.memcached_port, concurrency, concurrency, stats_freq,
                         runtime, workload_filename)
             fa.run("nohup {} > logs/{} 2>&1 &".format(command, log_filename), pty=False)
