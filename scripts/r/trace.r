@@ -11,13 +11,22 @@ source("scripts/r/common.r")
 requests <- read.csv("results/trace/request.log", header=TRUE, sep=",")
 result_dir_base <- "results/trace"
 
+# ---- Filter out beginning and end
+CUT_BEGINNING = 2 # minutes
+CUT_END = 1 # minutes
+min_time = min(requests$timeReturned) + 1e3 * 60 * CUT_BEGINNING
+max_time = max(requests$timeReturned) - 1e3 * 60 * CUT_END
+requests <- requests %>%
+  filter(timeReturned > min_time & timeReturned < max_time)
+
 # ---- Distribution of response times
 data1 <- requests %>%
   mutate(dtAll=timeReturned-timeCreated) %>%
-  select(dtAll)
+  select(dtAll, type)
 
 g1 = ggplot(data1, aes(x=dtAll)) +
   geom_histogram(aes(y=..count../sum(..count..)), fill=color_dark) +
+  facet_wrap(~type, nrow=2, scales="free") +
   xlab("Time from receiving request to responding (ms)") +
   ylab("Proportion of requests") +
   asl_theme
@@ -45,7 +54,7 @@ g2 <- ggplot(data2p) +
   xlab("Time since start of experiment (min)") +
   ylab("Throughput (requests / s)") +
   asl_theme
-ggsave(paste0(result_dir_base, "/graphs/throughput.svg"), g3, width=8, height=5)
+ggsave(paste0(result_dir_base, "/graphs/throughput.svg"), g2, width=8, height=5)
 
 
 
