@@ -9,7 +9,7 @@ import java.nio.channels.SocketChannel;
 
 enum RequestType {GET, SET, UNKNOWN}
 
-enum ResponseFlag {NA, STORED, NOT_STORED, GET_MISS, UNKNOWN}
+enum ResponseFlag {NA, STORED, NOT_STORED, GET_MISS, GET_SUCCESS, UNKNOWN}
 
 public class Request {
 
@@ -43,6 +43,7 @@ public class Request {
         String message = new String(buffer.array());
         key = getKeyFromBuffer(buffer);
         shouldLog = false;
+        hasResponse = false;
     }
 
     public RequestType getType() {
@@ -222,6 +223,8 @@ public class Request {
             if(secondChar == 'N' && thirdChar == 'D') {
                 return ResponseFlag.GET_MISS;
             }
+        } else if(firstChar == 'V') {
+            return ResponseFlag.GET_SUCCESS;
         }
         return ResponseFlag.UNKNOWN;
     }
