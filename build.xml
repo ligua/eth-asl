@@ -27,7 +27,7 @@
 
 
 
-    <target name="init">
+    <target name="init" depends="clean">
         <!-- Create the time stamp -->
         <!-- Create the build directory structure used by compile -->
         <mkdir dir="${build.dir}"/>
