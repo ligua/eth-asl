@@ -81,12 +81,12 @@ class ReadWorker implements Runnable {
                             }
                         }
 
-                        //String response = new String(buffer, 0, readTotal);
-                        try {
-                            r.respond(ByteBuffer.wrap(buffer));
-                        } catch(ClosedChannelException ex) {
-                            log.error("Could not respond to request " + r + ": " + ex);
+                        ByteBuffer wrapped = ByteBuffer.wrap(buffer);
+                        r.setResponseBuffer(wrapped);
+                        if(Request.getResponseFlag(wrapped) == ResponseFlag.GET_MISS) {
+                            r.setResponseFlag(ResponseFlag.GET_MISS);
                         }
+                        r.respond();
 
                         log.debug("Got response to " + r + ".");
                     } catch (InterruptedException ex) {

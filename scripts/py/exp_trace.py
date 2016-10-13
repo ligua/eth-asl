@@ -96,15 +96,6 @@ for vm in vms:
 
 
 # region ---- Set up all machines ----
-def wait_for_all_threads():
-    log.info("Waiting for all threads to finish...")
-    for t in threading.enumerate():
-        if t is threading.current_thread():
-            continue
-        log.info('Joining thread %s', t.getName())
-        t.join()
-
-
 index_a4 = vm_types.index("Basic_A4")
 indices_smallmachines = list(range(7))
 indices_smallmachines.remove(index_a4)
@@ -202,6 +193,7 @@ for ms_server in ms_servers:
 
 # endregion
 
+# deployer.hibernate_wait()
 
 log.info("Done.")
 

@@ -9,7 +9,7 @@ import java.nio.channels.SocketChannel;
 
 enum RequestType {GET, SET, UNKNOWN}
 
-enum ResponseFlag {NA, STORED, NOT_STORED, UNKNOWN}
+enum ResponseFlag {NA, STORED, NOT_STORED, GET_MISS, UNKNOWN}
 
 public class Request {
 
@@ -108,15 +108,6 @@ public class Request {
         if(this.responseBuffer == null) {
             throw new RuntimeException("Can't respond with an empty buffer!");
         }
-        this.hasResponse = true;
-    }
-
-    /**
-     * Respond to the request.
-     */
-    public void respond(ByteBuffer buffer) throws IOException {
-        this.responseBuffer = buffer;
-        //log.debug("RESPONDING WITH '" + response + "'");
         this.hasResponse = true;
     }
 
@@ -225,6 +216,12 @@ public class Request {
             if(fifthChar == 'S') {
                 return ResponseFlag.NOT_STORED;
             }
+        } else if(firstChar == 'E') {
+            char secondChar = (char) buffer.get(1);
+            char thirdChar = (char) buffer.get(2);
+            if(secondChar == 'N' && thirdChar == 'D') {
+                return ResponseFlag.GET_MISS;
+            }
         }
         return ResponseFlag.UNKNOWN;
     }
@@ -243,7 +240,7 @@ public class Request {
     @Override
     public String toString() {
         String message = new String(buffer.array());
-        message = message.substring(0, buffer.position());
+        message = message.trim();
         return "'" + Util.unEscapeString(message) + "'";
     }
 }
