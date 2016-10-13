@@ -85,7 +85,7 @@ class ReadWorker implements Runnable {
                         }
                         r.respond();
 
-                        log.debug("Got response to " + r + ".");
+                        log.debug(String.format("Got response to " + r + ", %d bytes.", readTotal));
                     } catch (InterruptedException ex) {
                         log.error(ex);
                     }
