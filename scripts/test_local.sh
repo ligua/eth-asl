@@ -15,7 +15,7 @@ MIDDLEWARE_PID=$!
 
 sleep 5s
 
-mem/libmemcached-1.0.18/clients/memaslap -s 127.0.0.1:11212 -T 64 -c 64 -o0.9 -S 1s -t 10s -F resources/xlargevalue.cfg > $LOG_DIR/memaslap.out &
+mem/libmemcached-1.0.18/clients/memaslap --verbose -s 127.0.0.1:11212 -v 1 -T 64 -c 64 -o0.9 -S 1s -t 10s -F resources/xlargevalue.cfg > $LOG_DIR/memaslap.out 2>&1 &
 MEMASLAP_PID=$!
 
 echo "memcached $MEMCACHED_PID1 $MEMCACHED_PID2, middleware $MIDDLEWARE_PID, memaslap $MEMASLAP_PID"
