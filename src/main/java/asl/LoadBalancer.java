@@ -46,13 +46,14 @@ public class LoadBalancer implements Runnable {
      */
     void handleRequest(Request request, SelectionKey selectionKey) {
         keyToRequest.put(selectionKey, request);
-        selectionKey.interestOps(SelectionKey.OP_WRITE);    // TODO
-        log.debug("contains after putting? " + keyToRequest.containsKey(selectionKey));
+        selectionKey.interestOps(SelectionKey.OP_WRITE);
 
         requestMessageBuffer2.remove(selectionKey);
 
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
+
+        //request.getBuffer().flip();
 
         log.debug("Sending request " + request + " to its primary machine #" + primaryMachine + ".");
 
