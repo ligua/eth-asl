@@ -71,11 +71,24 @@ class ReadWorker implements Runnable {
 
                         // If the message from memcached continued
                         while(read != -1) {
+                            log.debug(readTotal + " bytes read");
                             readTotal += read;
-                            if(streamIn.available() > 0) {      // TODO This is probably not a good way to do this?
+
+                            if(readTotal == 5) {
+                                if(buffer[0] == 'E') {// END
+                                    break;
+                                }
+                            }
+
+                            if(readTotal > 0) {
+                                if(buffer[readTotal-6] == 'E' && buffer[readTotal-5] == 'N' && buffer[readTotal-4] == 'D') {
+                                    break;
+                                }
+                            }
+                            if(streamIn.available() > 0) {
                                 read = streamIn.read(buffer);
                             } else {
-                                read = -1;
+                                read = 0;
                             }
                         }
 

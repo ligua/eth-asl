@@ -97,10 +97,10 @@ class WriteWorker implements Runnable {
                     //log.debug(String.format("Server %d.", targetMachine));
 
                     if (myKey.isValid() && myKey.isWritable() && outQueues.get(targetMachine).size() > 0) {
-                        log.debug(String.format("Server %d is writable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
                         Request r = outQueues.get(targetMachine).remove();
                         inQueues.get(targetMachine).add(r);
+                        log.debug(String.format("Server %d is writable, writing %s.", targetMachine, Util.unEscapeString(Util.bufferToString(r.getBuffer()))));
 
                         ByteBuffer buffer = r.getBuffer();
                         buffer.rewind();
@@ -130,7 +130,7 @@ class WriteWorker implements Runnable {
 
                         ResponseFlag responseFlag = Request.getResponseFlag(buffer);
                         //log.debug(String.format("Response from server %d: %s.", targetMachine, Util.bufferToString(buffer)));
-                        log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
+                        log.debug(String.format("Response flag from server %d: %s [%s].", targetMachine, responseFlag, Util.bufferToString(buffer)));
                         // Keep the worst response
                         if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
                             r.setResponseFlag(responseFlag);
