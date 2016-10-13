@@ -21,8 +21,8 @@ class WriteWorker implements Runnable {
     private Integer componentId;
     private List<Integer> targetMachines;
     private BlockingQueue<Request> writeQueue;
-    private List<Queue<Request>> outQueues;
-    private List<Queue<Request>> inQueues;
+    private Map<Integer, Queue<Request>> outQueues;
+    private Map<Integer, Queue<Request>> inQueues;
     private List<SocketChannel> serverSocketChannels;
     private Map<Request, Integer> numResponses;
     private Selector selector;
@@ -31,18 +31,18 @@ class WriteWorker implements Runnable {
         this.componentId = componentId;
         this.targetMachines = targetMachines;
         this.writeQueue = writeQueue;
-        this.outQueues = new ArrayList<>();
-        this.inQueues = new ArrayList<>();
-        this.serverSocketChannels = new ArrayList<>();
+        this.outQueues = new HashMap<>();
+        this.inQueues = new HashMap<>();
         this.numResponses = new HashMap<>();
+        this.serverSocketChannels = new ArrayList<>();
 
 
         try {
             this.selector = Selector.open();
 
             for (Integer targetMachine : targetMachines) {
-                outQueues.add(new LinkedList<Request>());
-                inQueues.add(new LinkedList<Request>());
+                outQueues.put(targetMachine, new LinkedList<Request>());
+                inQueues.put(targetMachine, new LinkedList<Request>());
 
                 // TODO open connection to memcached server
                 String addressString = MiddlewareMain.memcachedAddresses.get(targetMachine);
@@ -52,12 +52,11 @@ class WriteWorker implements Runnable {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(address, port);
 
                 SocketChannel socketChannel = SocketChannel.open(inetSocketAddress);
+                serverSocketChannels.add(socketChannel);
                 socketChannel.configureBlocking(false);
 
                 int ops = SelectionKey.OP_WRITE;
                 SelectionKey selectionKey = socketChannel.register(selector, ops, targetMachine); // TODO targetMachine is the extra payload (attachment)
-
-                this.serverSocketChannels.add(socketChannel);
             }
 
             // Wait for connection to all servers to finish
@@ -142,6 +141,7 @@ class WriteWorker implements Runnable {
                         if(numResponses.get(r) == targetMachines.size()) {
                             log.debug("Collected all responses to request " + r + "");
                             r.respond();
+                            numResponses.remove(r);
                         }
 
                     }
@@ -155,8 +155,9 @@ class WriteWorker implements Runnable {
 
                     for(Integer targetMachine : targetMachines) {
                         outQueues.get(targetMachine).add(r);
-                        numResponses.put(r, 0);
                     }
+
+                    numResponses.put(r, 0);
 
                 }
             }
