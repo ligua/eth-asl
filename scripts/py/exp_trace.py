@@ -17,6 +17,7 @@ EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "30s"
 NUM_THREADS_IN_POOL = 5
 REPLICATION_FACTOR = 3
+VERBOSE_MEMASLAP = True
 
 ssh_username = "pungast7"
 results_dir = "results/trace"
@@ -155,7 +156,7 @@ for i in indices_smallmachines[3:]:
 for s in ms_servers:
     s.clear_logs()
     s.start(runtime=EXPERIMENT_RUNTIME_STRING, log_filename="memaslap{}.out".format(s.id_number),
-            stats_freq=STATS_FREQUENCY)
+            stats_freq=STATS_FREQUENCY, verbose=VERBOSE_MEMASLAP)
 
 # endregion
 

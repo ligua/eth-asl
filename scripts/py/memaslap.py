@@ -65,13 +65,14 @@ class Memaslap(object):
                 self.log.info("Memaslap already built.")
 
     def start(self, concurrency=64, stats_freq="10s", runtime="10s", log_filename="memaslap.out",
-              workload_filename="xlargevalue.cfg"):
+              workload_filename="xlargevalue.cfg", verbose=False):
         """Start memaslap."""
         self.log.info("Starting memaslap on machine {}.".format(self.ssh_hostname))
+        verbose_string = " -b" if verbose else ""
         with fa.settings(**self.fab_settings):
-            command = "./libmemcached-1.0.18/clients/memaslap -s {}:{} -T {} -c {} -o0.9 -S {} -t {} -F ~/resources/{}"\
-                .format(self.memcached_hostname, self.memcached_port, concurrency, concurrency, stats_freq, runtime,
-                        workload_filename)
+            command = "./libmemcached-1.0.18/clients/memaslap {} -s {}:{} -T {} -c {} -o0.9 -S {} -t {} -F ~/resources/{}"\
+                .format(verbose_string, self.memcached_hostname, self.memcached_port, concurrency, concurrency, stats_freq,
+                        runtime, workload_filename)
             fa.run("nohup {} > logs/{} 2>&1 &".format(command, log_filename), pty=False)
 
             self.log.info("Memaslap started.")
