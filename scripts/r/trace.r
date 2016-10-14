@@ -72,7 +72,7 @@ data3 <- requests %>%
 
 g3 <- ggplot(data3) +
   geom_histogram(aes(x=value, fill=type)) +
-  facet_wrap(~variable) +
+  facet_wrap(~variable + type, ncol=2, scales="free") +
   xlab("Time spent (ms)") +
   ylab("Number of requests") +
   asl_theme
