@@ -61,7 +61,7 @@ class ReadWorker implements Runnable {
 
                         // Write request
                         r.getBuffer().rewind();
-                        channelOut.write(r.getBuffer()); // TODO maybe this doesn't get written? (or blocks until written?)
+                        channelOut.write(r.getBuffer());
                         r.setTimeForwarded();
 
                         // Read response
@@ -71,7 +71,6 @@ class ReadWorker implements Runnable {
 
                         // If the message from memcached continued
                         while(read != -1) {
-                            //log.debug(readTotal + " bytes read");
                             readTotal += read;
 
                             if(readTotal == 5) {
@@ -93,7 +92,6 @@ class ReadWorker implements Runnable {
                         }
 
                         ByteBuffer wrapped = ByteBuffer.wrap(buffer);
-                        //log.debug(String.format("Setting buffer limit from %d to %d.", wrapped.limit(), readTotal));
                         wrapped.limit(readTotal);
                         r.setResponseBuffer(wrapped);
                         ResponseFlag responseFlag = Request.getResponseFlag(wrapped);

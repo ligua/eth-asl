@@ -44,7 +44,6 @@ class WriteWorker implements Runnable {
                 outQueues.put(targetMachine, new LinkedList<Request>());
                 inQueues.put(targetMachine, new LinkedList<Request>());
 
-                // TODO open connection to memcached server
                 String addressString = MiddlewareMain.memcachedAddresses.get(targetMachine);
                 String[] parts = addressString.split(":");
                 String address = parts[0];
@@ -56,7 +55,7 @@ class WriteWorker implements Runnable {
                 socketChannel.configureBlocking(false);
 
                 int ops = SelectionKey.OP_WRITE;
-                SelectionKey selectionKey = socketChannel.register(selector, ops, targetMachine); // TODO targetMachine is the extra payload (attachment)
+                SelectionKey selectionKey = socketChannel.register(selector, ops, targetMachine);
             }
 
             // Wait for connection to all servers to finish
@@ -86,6 +85,23 @@ class WriteWorker implements Runnable {
             log.info(String.format("%s started; writing to machines: %s.", getName(), Util.collectionToString(targetMachines)));
 
             while (true) {
+
+                // region Take new element from write queue
+                if (!writeQueue.isEmpty()) {
+                    Request r = writeQueue.take();
+                    r.setTimeDequeued();
+                    log.debug(getName() + " processing request " + r);
+
+                    for(Integer targetMachine : targetMachines) {
+                        outQueues.get(targetMachine).add(r);
+                    }
+
+                    numResponses.put(r, 0);
+                }
+                // endregion
+
+
+                // region Communicate with memcached servers
                 selector.select();
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
@@ -94,13 +110,11 @@ class WriteWorker implements Runnable {
                     SelectionKey myKey = selectionKeyIterator.next();
                     Integer targetMachine = (Integer) myKey.attachment();
 
-                    //log.debug(String.format("Server %d.", targetMachine));
-
                     if (myKey.isValid() && myKey.isWritable() && outQueues.get(targetMachine).size() > 0) {
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
                         Request r = outQueues.get(targetMachine).remove();
                         inQueues.get(targetMachine).add(r);
-                        log.debug(String.format("Server %d is writable, writing %s.", targetMachine, Util.unEscapeString(Util.bufferToString(r.getBuffer()))));
+                        log.debug(String.format("Server %d is writable.", targetMachine));
 
                         ByteBuffer buffer = r.getBuffer();
                         buffer.rewind();
@@ -125,13 +139,11 @@ class WriteWorker implements Runnable {
                             readTotal += read;
                             read = socketChannel.read(buffer);
                         }
-                        //log.debug(String.format("Read %d bytes, setting buffer limit from %d to %d.", readTotal, buffer.limit(), readTotal));
                         buffer.limit(readTotal);
                         socketChannel.register(selector, SelectionKey.OP_WRITE, targetMachine);
 
                         ResponseFlag responseFlag = Request.getResponseFlag(buffer);
-                        //log.debug(String.format("Response from server %d: %s.", targetMachine, Util.bufferToString(buffer)));
-                        log.debug(String.format("Response flag from server %d: %s [%s].", targetMachine, responseFlag, Util.bufferToString(buffer)));
+                        log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
                         // Keep the worst response
                         if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
                             r.setResponseFlag(responseFlag);
@@ -140,7 +152,6 @@ class WriteWorker implements Runnable {
                         numResponses.put(r, numResponses.get(r) + 1);
 
                         // If we've collected all responses
-                        //log.debug(String.format("Have %d responses but %d machines.", numResponses.get(r), targetMachines.size()));
                         if(numResponses.get(r) == targetMachines.size()) {
                             log.debug("Collected all responses to request " + r + "");
                             r.respond();
@@ -148,21 +159,8 @@ class WriteWorker implements Runnable {
                         }
 
                     }
-
                 }
-
-                if (!writeQueue.isEmpty()) {
-                    Request r = writeQueue.take();
-                    r.setTimeDequeued();
-                    log.debug(getName() + " processing request " + r);
-
-                    for(Integer targetMachine : targetMachines) {
-                        outQueues.get(targetMachine).add(r);
-                    }
-
-                    numResponses.put(r, 0);
-
-                }
+                // endregion
             }
         } catch (Exception ex) {
             log.error(ex);

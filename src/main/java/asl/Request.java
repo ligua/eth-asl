@@ -22,6 +22,7 @@ public class Request {
     private ByteBuffer buffer;
     private ByteBuffer responseBuffer;
     private String key;
+    private String stringRepresentation;
 
     private boolean hasResponse;
 
@@ -255,8 +256,10 @@ public class Request {
 
     @Override
     public String toString() {
-        String message = new String(buffer.array());
-        message = message.trim();
-        return "'" + key + "' => '" + Util.unEscapeString(message) + "'";
+        if(stringRepresentation == null) {
+            String message = Util.getNonemptyString(buffer);
+            stringRepresentation = "'" + key + "' => '" + Util.unEscapeString(message) + "'";
+        }
+        return stringRepresentation;
     }
 }
