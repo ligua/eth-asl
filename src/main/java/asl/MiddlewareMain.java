@@ -19,7 +19,7 @@ public class MiddlewareMain implements Runnable {
 
     public static final String LINE_END = "\r\n";
     public static final Integer FULL_BUFFER_SIZE = 2048;
-    public static final Integer RESPONSE_BUFFER_SIZE = 128;
+    public static final Integer RESPONSE_BUFFER_SIZE = 1024;
     public static final Integer QUEUE_SIZE = 200;
 
     public static List<String> memcachedAddresses;

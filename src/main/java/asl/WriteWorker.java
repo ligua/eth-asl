@@ -2,6 +2,7 @@ package main.java.asl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.layout.StringBuilderEncoder;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -21,9 +22,10 @@ class WriteWorker implements Runnable {
     private Integer componentId;
     private List<Integer> targetMachines;
     private BlockingQueue<Request> writeQueue;
-    private Map<Integer, Queue<Request>> outQueues;
     private Map<Integer, Queue<Request>> inQueues;
+    private Map<Integer, ByteBuffer> inBuffers;
     private List<SocketChannel> serverSocketChannels;
+    private Map<Integer, SelectionKey> selectionKeys;
     private Map<Request, Integer> numResponses;
     private Selector selector;
 
@@ -31,8 +33,9 @@ class WriteWorker implements Runnable {
         this.componentId = componentId;
         this.targetMachines = targetMachines;
         this.writeQueue = writeQueue;
-        this.outQueues = new HashMap<>();
         this.inQueues = new HashMap<>();
+        this.inBuffers = new HashMap<>();
+        this.selectionKeys = new HashMap<>();
         this.numResponses = new HashMap<>();
         this.serverSocketChannels = new ArrayList<>();
 
@@ -41,7 +44,6 @@ class WriteWorker implements Runnable {
             this.selector = Selector.open();
 
             for (Integer targetMachine : targetMachines) {
-                outQueues.put(targetMachine, new LinkedList<Request>());
                 inQueues.put(targetMachine, new LinkedList<Request>());
 
                 String addressString = MiddlewareMain.memcachedAddresses.get(targetMachine);
@@ -56,6 +58,8 @@ class WriteWorker implements Runnable {
 
                 int ops = SelectionKey.OP_WRITE;
                 SelectionKey selectionKey = socketChannel.register(selector, ops, targetMachine);
+                selectionKeys.put(targetMachine, selectionKey);
+                this.inBuffers.put(targetMachine, ByteBuffer.allocate(MiddlewareMain.RESPONSE_BUFFER_SIZE));
             }
 
             // Wait for connection to all servers to finish
@@ -86,15 +90,37 @@ class WriteWorker implements Runnable {
 
             while (true) {
 
+                int numElements = writeQueue.size();
+                if(System.currentTimeMillis() % 1000 == 0 || numElements > 0) {
+                    //log.info("queue has elements: " + numElements);
+                }
+
                 // region Take new element from write queue
                 if (!writeQueue.isEmpty()) {
-                    Request r = writeQueue.take();
+                    log.info("Writequeue has " + writeQueue.size() + " elements.");
+                    Request r = writeQueue.remove();
+                    log.info(String.format("Took %s from queue...", r));
                     r.setTimeDequeued();
                     log.debug(getName() + " processing request " + r);
 
                     for(Integer targetMachine : targetMachines) {
-                        outQueues.get(targetMachine).add(r);
+
+                        SelectionKey myKey = selectionKeys.get(targetMachine);
+                        myKey.interestOps(SelectionKey.OP_WRITE);
+
+                        SocketChannel socketChannel = (SocketChannel) myKey.channel();
+                        log.debug(String.format("Server %d is writable.", targetMachine));
+
+                        ByteBuffer buffer = r.getBuffer();
+                        buffer.rewind();
+                        while(buffer.hasRemaining()) {
+                            socketChannel.write(buffer);
+                        }
+
+                        myKey.interestOps(SelectionKey.OP_READ);
+                        inQueues.get(targetMachine).add(r);
                     }
+                    r.setTimeForwarded();
 
                     numResponses.put(r, 0);
                 }
@@ -110,8 +136,8 @@ class WriteWorker implements Runnable {
                     SelectionKey myKey = selectionKeyIterator.next();
                     Integer targetMachine = (Integer) myKey.attachment();
 
-                    if (myKey.isValid() && myKey.isWritable() && outQueues.get(targetMachine).size() > 0) {
-                        SocketChannel socketChannel = (SocketChannel) myKey.channel();
+                    /*if (myKey.isValid() && myKey.isWritable() && outQueues.get(targetMachine).size() > 0) {
+                        /*SocketChannel socketChannel = (SocketChannel) myKey.channel();
                         Request r = outQueues.get(targetMachine).remove();
                         inQueues.get(targetMachine).add(r);
                         log.debug(String.format("Server %d is writable.", targetMachine));
@@ -125,39 +151,60 @@ class WriteWorker implements Runnable {
                         r.setTimeForwarded();  // This will have the value of the latest write
                         socketChannel.register(selector, SelectionKey.OP_READ, targetMachine);
 
-                    } else if (myKey.isValid() && myKey.isReadable()  && inQueues.get(targetMachine).size() > 0) {
+                    } else*/
+                    if (myKey.isValid() && myKey.isReadable() && inQueues.get(targetMachine).size() > 0) {
                         log.debug(String.format("Server %d is readable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
-                        Request r = inQueues.get(targetMachine).remove();
 
-                        ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.RESPONSE_BUFFER_SIZE);
-                        int readTotal = 0;
+                        ByteBuffer buffer = inBuffers.get(targetMachine);
                         int read = socketChannel.read(buffer);
 
-                        // If the message from memcached continued
-                        while(read > 0) {  // TODO could also be 0 just temporarily b/c of network conditions or sth -- can cause problems!
-                            readTotal += read;
-                            read = socketChannel.read(buffer);
-                        }
-                        buffer.limit(readTotal);
-                        socketChannel.register(selector, SelectionKey.OP_WRITE, targetMachine);
+                        if(read > 0 || inBuffers.get(targetMachine).position() > 0) {
+                            Integer firstLimit = Request.firstGetResponseLimit(buffer);
+                            if (firstLimit == 0) {
+                                continue;
+                            } else {
+                                Request r = inQueues.get(targetMachine).remove();
+                                Integer currentPosition = buffer.position();
+                                log.warn(String.format("Buffer position %d, limit %d, first request ends at %d.",
+                                        currentPosition, buffer.limit(), firstLimit));
 
-                        ResponseFlag responseFlag = Request.getResponseFlag(buffer);
-                        log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
-                        // Keep the worst response
-                        if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
-                            r.setResponseFlag(responseFlag);
-                            r.setResponseBuffer(buffer);
-                        }
-                        numResponses.put(r, numResponses.get(r) + 1);
+                                // Copy the first request from one buffer to the other
+                                byte[] array = new byte[firstLimit];
+                                for(int i=0; i<firstLimit; i++) {
+                                    array[i] = buffer.get(i);
+                                }
+                                log.warn(String.format("Buffer: %s [len %d]",
+                                        Util.getNonemptyString(buffer), Util.getNonemptyString(buffer).length()));
+                                ByteBuffer responseBuffer = ByteBuffer.wrap(array);
+                                Integer numExtraBytes = buffer.position() - firstLimit;
+                                Util.copyToBeginning(buffer, firstLimit, numExtraBytes);
+                                buffer.position(numExtraBytes);
+                                log.warn(String.format("Buffer now: %s [len %d]",
+                                        Util.getNonemptyString(buffer), Util.getNonemptyString(buffer).length()));
+                                log.warn(String.format("Buffer position now %d, limit %d.",
+                                        buffer.position(), buffer.limit()));
+                                ResponseFlag responseFlag = Request.getResponseFlag(responseBuffer);
+                                log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
+                                if(responseFlag == ResponseFlag.UNKNOWN) {
+                                    log.warn(String.format("Unknown response to %s: %s", r, Util.getNonemptyString(responseBuffer)));
+                                }
 
-                        // If we've collected all responses
-                        if(numResponses.get(r) == targetMachines.size()) {
-                            log.debug("Collected all responses to request " + r + "");
-                            r.respond();
-                            numResponses.remove(r);
-                        }
+                                // Keep the worst response
+                                if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
+                                    r.setResponseFlag(responseFlag);
+                                    r.setResponseBuffer(responseBuffer);
+                                }
+                                numResponses.put(r, numResponses.get(r) + 1);
 
+                                // If we've collected all responses
+                                if(numResponses.get(r) == targetMachines.size()) {
+                                    log.debug("Collected all responses to request " + r + "");
+                                    r.respond();
+                                    numResponses.remove(r);
+                                }
+                            }
+                        }
                     }
                 }
                 // endregion

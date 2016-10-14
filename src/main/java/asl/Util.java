@@ -63,11 +63,8 @@ public class Util {
     public static String getNonemptyString(ByteBuffer buffer) {
         String s = "";
         for(int i=0; i<buffer.limit(); i++) {
-            char c = (char) buffer.get(i);
-            if (c == '\n' || c == '\r') {
-                break;
-            } else {
-                s += c;
+            if(buffer.get(i) != 0) {
+                s += (char) buffer.get(i);
             }
         }
 
@@ -88,6 +85,22 @@ public class Util {
             }
         }
         return line;
+    }
+
+    /**
+     * Copy the contents of the buffer from [offset, offset + count] to [0, count] and set everything else to 0.
+     */
+    public static void copyToBeginning(ByteBuffer buffer, int offset, int count) {
+        byte[] array = buffer.array();
+        for(int i=0; i<offset+count; i++) {
+            if(offset + i > buffer.capacity() - 1) {
+                array[i] = 0;
+            } else if(i < count) {
+                array[i] = array[offset + i];
+            } else {
+                array[i] = 0;
+            }
+        }
     }
 
 }
