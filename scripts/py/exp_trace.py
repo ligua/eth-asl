@@ -1,8 +1,8 @@
 import os.path
 import logging
-import threading
 import time
 
+import fabric.api
 from extractor import Extractor
 from memaslap import Memaslap
 from memcached import Memcached
@@ -13,10 +13,10 @@ from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
 UPDATE_AND_INSTALL_ONLY_MIDDLEWARE = True
-EXPERIMENT_RUNTIME = 5  # minutes
-RUNTIME_BUFFER = 60     # seconds
+EXPERIMENT_RUNTIME = 60  # minutes
+RUNTIME_BUFFER = 3 * 60     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
-STATS_FREQUENCY = "30s"
+STATS_FREQUENCY = "10s"
 NUM_THREADS_IN_POOL = 5
 REPLICATION_FACTOR = 3
 MEMASLAP_VERBOSE = False
@@ -190,13 +190,16 @@ for mc_server in mc_servers:
 
 # endregion
 
-# region ---- Download logs and extract data ----
+# region ---- Download logs, extract data, plot ----
 mw_server.download_logs(local_path=results_dir)
 for ms_server in ms_servers:
     ms_server.download_logs(local_path=results_dir)
 
 e = Extractor()
 e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
+
+fabric.api.local("mkdir results/trace/graphs")
+fabric.api.local("Rscript scripts/r/trace.r")
 
 # endregion
 
