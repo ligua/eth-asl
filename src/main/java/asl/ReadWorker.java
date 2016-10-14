@@ -93,7 +93,7 @@ class ReadWorker implements Runnable {
                         }
 
                         ByteBuffer wrapped = ByteBuffer.wrap(buffer);
-                        log.debug(String.format("Setting buffer limit from %d to %d.", wrapped.limit(), readTotal));
+                        //log.debug(String.format("Setting buffer limit from %d to %d.", wrapped.limit(), readTotal));
                         wrapped.limit(readTotal);
                         r.setResponseBuffer(wrapped);
                         ResponseFlag responseFlag = Request.getResponseFlag(wrapped);

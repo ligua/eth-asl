@@ -125,7 +125,7 @@ class WriteWorker implements Runnable {
                             readTotal += read;
                             read = socketChannel.read(buffer);
                         }
-                        log.debug(String.format("Read %d bytes, setting buffer limit from %d to %d.", readTotal, buffer.limit(), readTotal));
+                        //log.debug(String.format("Read %d bytes, setting buffer limit from %d to %d.", readTotal, buffer.limit(), readTotal));
                         buffer.limit(readTotal);
                         socketChannel.register(selector, SelectionKey.OP_WRITE, targetMachine);
 
