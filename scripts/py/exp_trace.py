@@ -2,6 +2,8 @@ import os.path
 import logging
 import threading
 import time
+
+from extractor import Extractor
 from memaslap import Memaslap
 from memcached import Memcached
 from middleware import Middleware
@@ -188,10 +190,13 @@ for mc_server in mc_servers:
 
 # endregion
 
-# region ---- Download logs ----
+# region ---- Download logs and extract data ----
 mw_server.download_logs(local_path=results_dir)
 for ms_server in ms_servers:
     ms_server.download_logs(local_path=results_dir)
+
+e = Extractor()
+e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
 
 # endregion
 
