@@ -27,7 +27,7 @@ public class LoadBalancer implements Runnable {
     private String address;
     private Integer port;
 
-    private Map<SelectionKey, ByteBuffer> requestMessageBuffer2;
+    private Map<SelectionKey, ByteBuffer> requestMessageBuffer;
     private Map<SelectionKey, Integer> numBytesRead;
     private Map<SelectionKey, Request> keyToRequest;
 
@@ -36,7 +36,7 @@ public class LoadBalancer implements Runnable {
         this.hasher = hasher;
         this.address = address;
         this.port = port;
-        this.requestMessageBuffer2 = new HashMap<>();
+        this.requestMessageBuffer = new HashMap<>();
         this.numBytesRead = new HashMap<>();
         this.keyToRequest = new HashMap<>();
         this.readRequestCounter = 0;
@@ -50,13 +50,13 @@ public class LoadBalancer implements Runnable {
         keyToRequest.put(selectionKey, request);
         selectionKey.interestOps(SelectionKey.OP_WRITE);
 
-        requestMessageBuffer2.remove(selectionKey);
+        requestMessageBuffer.remove(selectionKey);
 
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
         ByteBuffer buffer = request.getBuffer();
-        log.debug(String.format("Setting buffer limit from %d to %d.", buffer.limit(), numBytesRead.get(selectionKey)));
+        //log.debug(String.format("Setting buffer limit from %d to %d.", buffer.limit(), numBytesRead.get(selectionKey)));
         buffer.limit(numBytesRead.get(selectionKey));
         numBytesRead.remove(selectionKey);
 
@@ -128,11 +128,11 @@ public class LoadBalancer implements Runnable {
 
                         SocketChannel client = (SocketChannel) myKey.channel();
 
-                        log.debug(String.format("Responding to request %s, response '%s', #bytes %d, first line '%s'.",
+                        /*log.debug(String.format("Responding to request %s, response '%s', #bytes %d, first line '%s'.",
                                 r,
                                 Util.unEscapeString(Util.getNonemptyString(responseBuffer)),
                                 Util.getNumNonemptyBytes(r.getResponseBuffer()),
-                                Util.getFirstLine(r.getResponseBuffer())));
+                                Util.getFirstLine(r.getResponseBuffer())));*/
 
                         if(Request.isGetMiss(r.getResponseBuffer())) {
                             log.warn("GET miss! " + r);
@@ -140,14 +140,14 @@ public class LoadBalancer implements Runnable {
 
                         // Write buffer
                         responseBuffer.rewind();
-                        log.debug(String.format("Writing buffer. Position %d, #remaining bytes %d.",
-                                responseBuffer.position(), responseBuffer.remaining()));
+                        /*log.debug(String.format("Writing buffer. Position %d, #remaining bytes %d.",
+                                responseBuffer.position(), responseBuffer.remaining()));*/
                         int bytesWritten = 0;
                         while(responseBuffer.hasRemaining()) {
                             int written = client.write(responseBuffer);
                             bytesWritten += written;
                         }
-                        log.debug(String.format("Wrote %d bytes.", bytesWritten));
+                        //log.debug(String.format("Wrote %d bytes.", bytesWritten));
 
                         r.setTimeReturned();
                         r.logTimestamps();
@@ -172,7 +172,7 @@ public class LoadBalancer implements Runnable {
 
                         SocketChannel client = (SocketChannel) myKey.channel();
 
-                        if(!requestMessageBuffer2.containsKey(myKey)) {
+                        if(!requestMessageBuffer.containsKey(myKey)) {
                             log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
 
                             ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.FULL_BUFFER_SIZE);
@@ -195,22 +195,22 @@ public class LoadBalancer implements Runnable {
                                 handleRequest(r, myKey);
                             } else if (requestType == RequestType.SET) {
                                 // We may need to wait for the second line in the SET request.
-                                requestMessageBuffer2.put(myKey, buffer);
+                                requestMessageBuffer.put(myKey, buffer);
                                 //log.debug("Got a part of SET request [" + Util.unEscapeString(message) + "], waiting for more.");
                             }
                         } else {
                             log.debug("ADDING STUFF TO KEY: " + myKey);
                             // If we have something already from this connection
-                            ByteBuffer buffer = requestMessageBuffer2.get(myKey);
+                            ByteBuffer buffer = requestMessageBuffer.get(myKey);
                             int read = client.read(buffer);
                             numBytesRead.put(myKey, numBytesRead.get(myKey) + read);
                         }
 
                         // If we already have the whole message, we can create a Request.
-                        if(requestMessageBuffer2.containsKey(myKey) &&
-                                Request.isCompleteSetRequest(requestMessageBuffer2.get(myKey))) {
+                        if(requestMessageBuffer.containsKey(myKey) &&
+                                Request.isCompleteSetRequest(requestMessageBuffer.get(myKey))) {
                             log.debug("KEY IS COMPLETE: " + myKey);
-                            Request r = new Request(requestMessageBuffer2.get(myKey), client);
+                            Request r = new Request(requestMessageBuffer.get(myKey), client);
                             handleRequest(r, myKey);
                         }
 
