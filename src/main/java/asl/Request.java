@@ -253,6 +253,23 @@ public class Request {
         }
     }
 
+    /**
+     * Find if buffer contains any responses and if it does, return the limit of the first one.
+     */
+    public static Integer firstGetResponseLimit(ByteBuffer buffer) {
+        if(buffer.position() >= 8) {            // Minimal answer is "STORED\r\n"
+            for(int i=0; i<buffer.position(); i++) {
+                if(buffer.get(i) == 0) {
+                    return 0;
+                }
+                char c = (char) buffer.get(i);
+                if(c == '\r') {
+                    return i + 2;
+                }
+            }
+        }
+        return 0;
+    }
 
     @Override
     public String toString() {
