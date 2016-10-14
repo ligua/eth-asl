@@ -28,6 +28,7 @@ public class LoadBalancer implements Runnable {
     private Integer port;
 
     private Map<SelectionKey, ByteBuffer> requestMessageBuffer2;
+    private Map<SelectionKey, Integer> numBytesRead;
     private Map<SelectionKey, Request> keyToRequest;
 
     LoadBalancer(List<MiddlewareComponent> middlewareComponents, Hasher hasher, String address, Integer port) {
@@ -36,6 +37,7 @@ public class LoadBalancer implements Runnable {
         this.address = address;
         this.port = port;
         this.requestMessageBuffer2 = new HashMap<>();
+        this.numBytesRead = new HashMap<>();
         this.keyToRequest = new HashMap<>();
         this.readRequestCounter = 0;
         this.writeRequestCounter = 0;
@@ -53,7 +55,10 @@ public class LoadBalancer implements Runnable {
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
-        //request.getBuffer().flip();
+        ByteBuffer buffer = request.getBuffer();
+        log.debug(String.format("Setting buffer limit from %d to %d.", buffer.limit(), numBytesRead.get(selectionKey)));
+        buffer.limit(numBytesRead.get(selectionKey));
+        numBytesRead.remove(selectionKey);
 
         log.debug("Sending request " + request + " to its primary machine #" + primaryMachine + ".");
 
@@ -135,9 +140,14 @@ public class LoadBalancer implements Runnable {
 
                         // Write buffer
                         responseBuffer.rewind();
+                        log.debug(String.format("Writing buffer. Position %d, #remaining bytes %d.",
+                                responseBuffer.position(), responseBuffer.remaining()));
+                        int bytesWritten = 0;
                         while(responseBuffer.hasRemaining()) {
-                            client.write(responseBuffer);
+                            int written = client.write(responseBuffer);
+                            bytesWritten += written;
                         }
+                        log.debug(String.format("Wrote %d bytes.", bytesWritten));
 
                         r.setTimeReturned();
                         r.logTimestamps();
@@ -166,7 +176,8 @@ public class LoadBalancer implements Runnable {
                             log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
 
                             ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.FULL_BUFFER_SIZE);
-                            client.read(buffer);
+                            int read = client.read(buffer);
+                            numBytesRead.put(myKey, read);
 
                             // If this is the first time we hear from this connection
                             if(buffer.position() == 0) {
@@ -191,7 +202,8 @@ public class LoadBalancer implements Runnable {
                             log.debug("ADDING STUFF TO KEY: " + myKey);
                             // If we have something already from this connection
                             ByteBuffer buffer = requestMessageBuffer2.get(myKey);
-                            client.read(buffer);
+                            int read = client.read(buffer);
+                            numBytesRead.put(myKey, numBytesRead.get(myKey) + read);
                         }
 
                         // If we already have the whole message, we can create a Request.

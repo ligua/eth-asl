@@ -110,7 +110,6 @@ class WriteWorker implements Runnable {
 
                         r.setTimeForwarded();  // This will have the value of the latest write
                         socketChannel.register(selector, SelectionKey.OP_READ, targetMachine);
-                        buffer.rewind();  // TODO not sure if this resets everything properly
 
                     } else if (myKey.isValid() && myKey.isReadable()  && inQueues.get(targetMachine).size() > 0) {
                         log.debug(String.format("Server %d is readable.", targetMachine));
@@ -126,6 +125,8 @@ class WriteWorker implements Runnable {
                             readTotal += read;
                             read = socketChannel.read(buffer);
                         }
+                        log.debug(String.format("Read %d bytes, setting buffer limit from %d to %d.", readTotal, buffer.limit(), readTotal));
+                        buffer.limit(readTotal);
                         socketChannel.register(selector, SelectionKey.OP_WRITE, targetMachine);
 
                         ResponseFlag responseFlag = Request.getResponseFlag(buffer);
@@ -134,7 +135,6 @@ class WriteWorker implements Runnable {
                         // Keep the worst response
                         if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
                             r.setResponseFlag(responseFlag);
-                            buffer.rewind();
                             r.setResponseBuffer(buffer);
                         }
                         numResponses.put(r, numResponses.get(r) + 1);
