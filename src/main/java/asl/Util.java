@@ -41,6 +41,54 @@ public class Util {
     }
 
     /**
+     * Count the number of non-empty bytes in a buffer.
+     */
+    public static Integer getNumNonemptyBytes(ByteBuffer buffer) {
+        Integer counter = 0;
+
+        for(int i=0; i<buffer.limit(); i++) {
+            byte b = buffer.get(i);
+            if(b > 0) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    /**
+     * Make a string out of a buffer, ignoring empty bytes.
+     */
+    public static String getNonemptyString(ByteBuffer buffer) {
+        String s = "";
+        for(int i=0; i<buffer.limit(); i++) {
+            char c = (char) buffer.get(i);
+            if (c == '\n' || c == '\r') {
+                break;
+            } else {
+                s += c;
+            }
+        }
+
+        return s;
+    }
+
+    /**
+     * Get the first line from a buffer.
+     */
+    public static String getFirstLine(ByteBuffer buffer) {
+        String line = "";
+        for(int i=0; i<buffer.limit(); i++) {
+            char c = (char) buffer.get(i);
+            if(c == '\n' || c == '\r') {
+                break;
+            } else {
+                line += c;
+            }
+        }
+        return line;
+    }
+
+    /**
      * Turn a bytebuffer into a string.
      */
     public static String bufferToString(ByteBuffer buffer) {
