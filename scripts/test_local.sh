@@ -5,6 +5,8 @@ NUM_CLIENTS=64
 LOG_DIR=tmp/local
 mkdir -p $LOG_DIR
 
+rm log/*.log
+
 memcached -p 11211 -t 1 > $LOG_DIR/memcached1.out 2>&1 &
 MEMCACHED_PID1=$!
 memcached -p 11210 -t 1 > $LOG_DIR/memcached2.out 2>&1 &

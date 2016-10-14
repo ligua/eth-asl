@@ -61,11 +61,11 @@ class ReadWorker implements Runnable {
 
                         // Write request
                         r.getBuffer().rewind();
-                        channelOut.write(r.getBuffer());
+                        channelOut.write(r.getBuffer()); // TODO maybe this doesn't get written? (or blocks until written?)
                         r.setTimeForwarded();
 
                         // Read response
-                        byte[] buffer = new byte[MiddlewareMain.FULL_BUFFER_SIZE]; // TODO use ByteBuffer here?
+                        byte[] buffer = new byte[MiddlewareMain.FULL_BUFFER_SIZE];
                         int readTotal = 0;
                         int read = streamIn.read(buffer);
 
@@ -93,6 +93,8 @@ class ReadWorker implements Runnable {
                         }
 
                         ByteBuffer wrapped = ByteBuffer.wrap(buffer);
+                        log.debug(String.format("Setting buffer limit from %d to %d.", wrapped.limit(), readTotal));
+                        wrapped.limit(readTotal);
                         r.setResponseBuffer(wrapped);
                         ResponseFlag responseFlag = Request.getResponseFlag(wrapped);
                         r.setResponseFlag(responseFlag);

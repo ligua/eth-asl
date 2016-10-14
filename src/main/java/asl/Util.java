@@ -50,6 +50,8 @@ public class Util {
             byte b = buffer.get(i);
             if(b > 0) {
                 counter++;
+            } else {
+                break;
             }
         }
         return counter;
