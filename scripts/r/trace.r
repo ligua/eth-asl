@@ -66,8 +66,6 @@ g3 <- ggplot(data3) +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/latency"), g2, width=8, height=5)
 
-#ggsave(paste0(result_dir_base, "/graphs/throughput_over_time.svg"), g2, width=8, height=5)
-
 # ---- Time spent in different parts of the system
 data4 <- requests %>%
   mutate(tLoadBalancer=timeEnqueued-timeCreated,
