@@ -56,10 +56,12 @@ ggsave(paste0(result_dir_base, "/graphs/throughput.svg"), g2, width=8, height=5)
 data3 <- memaslap %>%
   filter(type=="t") %>%
   group_by(time, request_type) %>%
-  summarise(avg=sum(avg * ops) / sum(ops))
+  summarise(avg=sum(avg * ops) / sum(ops),
+            std=sum(std * ops) / sum(ops)) # TODO this is very bad
 
 g3 <- ggplot(data3) +
   geom_line(aes(x=time, y=avg, color=request_type), size=2) +
+  geom_errorbar(aes(x=time, ymin=avg-std, ymax=avg+std)) +
   xlab("Time since start of experiment (s)") +
   ylab("Latency measured by memaslap (ms)") +
   facet_wrap(~request_type, nrow=2, scales="free") +
