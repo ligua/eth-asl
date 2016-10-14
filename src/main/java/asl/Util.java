@@ -90,11 +90,4 @@ public class Util {
         return line;
     }
 
-    /**
-     * Turn a bytebuffer into a string.
-     */
-    public static String bufferToString(ByteBuffer buffer) {
-        return new String(buffer.array());
-    }
-
 }

@@ -46,7 +46,7 @@ public class LoadBalancer implements Runnable {
     /**
      * Take one request and add it to the correct queue.
      */
-    void handleRequest(Request request, SelectionKey selectionKey) {
+    private void handleRequest(Request request, SelectionKey selectionKey) {
         keyToRequest.put(selectionKey, request);
         selectionKey.interestOps(SelectionKey.OP_WRITE);
 
@@ -56,29 +56,29 @@ public class LoadBalancer implements Runnable {
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
 
         ByteBuffer buffer = request.getBuffer();
-        //log.debug(String.format("Setting buffer limit from %d to %d.", buffer.limit(), numBytesRead.get(selectionKey)));
         buffer.limit(numBytesRead.get(selectionKey));
         numBytesRead.remove(selectionKey);
 
-        log.debug("Sending request " + request + " to its primary machine #" + primaryMachine + ".");
+        log.debug(String.format("Sending request %s to its primary machine #%d.", request, primaryMachine));
 
-        request.setTimeEnqueued();
         if(request.getType().equals(RequestType.GET)) {
             if(readRequestCounter % Request.LOG_SAMPLING_FREQUENCY == 0) {
                 request.setShouldLog(true);
             }
             mc.readQueue.add(request);
+            request.setTimeEnqueued();
             readRequestCounter++;
         } else {
             if(writeRequestCounter % Request.LOG_SAMPLING_FREQUENCY == 0) {
                 request.setShouldLog(true);
             }
             mc.writeQueue.add(request);
+            request.setTimeEnqueued();
             writeRequestCounter++;
         }
 
         if((readRequestCounter + writeRequestCounter) % INFO_EVERY_N_REQUESTS == 0) {
-            log.info(String.format("Processed %5d reads and %5d writes so far.", readRequestCounter, writeRequestCounter));
+            log.info(String.format("Processed %6d reads and %6d writes so far.", readRequestCounter, writeRequestCounter));
         }
     }
 
@@ -88,33 +88,24 @@ public class LoadBalancer implements Runnable {
         log.info("Load balancer started.");
 
         try {
-            // Selector: multiplexor of SelectableChannel objects
-            Selector selector = Selector.open(); // selector is open here
+            Selector selector = Selector.open();
 
             // ServerSocketChannel: selectable channel for stream-oriented listening sockets
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
             InetSocketAddress inetSocketAddress = new InetSocketAddress(address, port);
 
-            // Binds the channel's socket to a local address and configures the socket to listen for connections
             serverSocketChannel.bind(inetSocketAddress);
 
-            // Adjusts this channel's blocking mode.
             serverSocketChannel.configureBlocking(false);
 
             int ops = serverSocketChannel.validOps();
             SelectionKey selectionKey = serverSocketChannel.register(selector, ops, null);
 
             while(true) {
-                //log.debug("Waiting for a new connection...");
-                // Select a set of keys whose corresponding channels are ready for I/O operations
                 selector.select();
 
-                // Token representing the registration of a SelectableChannel with a Selector
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
-
-                //log.debug("Read queue 0 has " + middlewareComponents.get(0).readQueue.size() + " elements.");
-                //log.debug("Write queue 0 has " + middlewareComponents.get(0).writeQueue.size() + " elements.");
 
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
@@ -128,26 +119,17 @@ public class LoadBalancer implements Runnable {
 
                         SocketChannel client = (SocketChannel) myKey.channel();
 
-                        /*log.debug(String.format("Responding to request %s, response '%s', #bytes %d, first line '%s'.",
-                                r,
-                                Util.unEscapeString(Util.getNonemptyString(responseBuffer)),
-                                Util.getNumNonemptyBytes(r.getResponseBuffer()),
-                                Util.getFirstLine(r.getResponseBuffer())));*/
-
                         if(Request.isGetMiss(r.getResponseBuffer())) {
                             log.warn("GET miss! " + r);
                         }
 
                         // Write buffer
                         responseBuffer.rewind();
-                        /*log.debug(String.format("Writing buffer. Position %d, #remaining bytes %d.",
-                                responseBuffer.position(), responseBuffer.remaining()));*/
                         int bytesWritten = 0;
                         while(responseBuffer.hasRemaining()) {
                             int written = client.write(responseBuffer);
                             bytesWritten += written;
                         }
-                        //log.debug(String.format("Wrote %d bytes.", bytesWritten));
 
                         r.setTimeReturned();
                         r.logTimestamps();
@@ -164,8 +146,6 @@ public class LoadBalancer implements Runnable {
 
                         // Operation-set bit for read operations
                         client.register(selector, SelectionKey.OP_READ);
-                        //log.debug("Connection accepted: " + client.getLocalAddress());
-
 
                     } else if (myKey.isValid() && myKey.isReadable()) {
                         // If this key's channel is ready for reading
@@ -173,30 +153,27 @@ public class LoadBalancer implements Runnable {
                         SocketChannel client = (SocketChannel) myKey.channel();
 
                         if(!requestMessageBuffer.containsKey(myKey)) {
+                            // If this is the first time we hear from this connection
                             log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
 
                             ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.FULL_BUFFER_SIZE);
                             int read = client.read(buffer);
                             numBytesRead.put(myKey, read);
 
-                            // If this is the first time we hear from this connection
-                            if(buffer.position() == 0) {
+                            // If we read nothing
+                            if(read == 0) { // TODO change to read == 0
                                 client.close();         // TODO not sure if this is correct behaviour
                                 continue;
                             }
                             RequestType requestType = Request.getRequestType(buffer);
 
-                            //log.debug("request type: " + requestType);
-
                             if (requestType == RequestType.GET) {
-                                // TODO assuming we get the whole GET or DELETE message in one chunk
                                 Request r = new Request(buffer, client);
 
                                 handleRequest(r, myKey);
                             } else if (requestType == RequestType.SET) {
                                 // We may need to wait for the second line in the SET request.
                                 requestMessageBuffer.put(myKey, buffer);
-                                //log.debug("Got a part of SET request [" + Util.unEscapeString(message) + "], waiting for more.");
                             }
                         } else {
                             log.debug("ADDING STUFF TO KEY: " + myKey);
@@ -220,7 +197,7 @@ public class LoadBalancer implements Runnable {
             }
 
         } catch (Exception ex) {
-            log.error("an exception: ", ex);
+            log.error("Exception: ", ex);
             throw new RuntimeException(ex);
         }
     }
