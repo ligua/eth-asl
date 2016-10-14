@@ -198,8 +198,9 @@ for ms_server in ms_servers:
 e = Extractor()
 e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
 
-fabric.api.local("mkdir results/trace/graphs")
-fabric.api.local("Rscript scripts/r/trace.r")
+with fabric.api.settings(warn_only=True):
+    fabric.api.local("mkdir results/trace/graphs")
+    fabric.api.local("Rscript scripts/r/trace.r")
 
 # endregion
 
