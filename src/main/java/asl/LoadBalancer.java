@@ -65,15 +65,15 @@ public class LoadBalancer implements Runnable {
             if(readRequestCounter % Request.LOG_SAMPLING_FREQUENCY == 0) {
                 request.setShouldLog(true);
             }
-            mc.readQueue.add(request);
             request.setTimeEnqueued();
+            mc.readQueue.add(request);
             readRequestCounter++;
         } else {
             if(writeRequestCounter % Request.LOG_SAMPLING_FREQUENCY == 0) {
                 request.setShouldLog(true);
             }
-            mc.writeQueue.add(request);
             request.setTimeEnqueued();
+            mc.writeQueue.add(request);
             writeRequestCounter++;
         }
 
