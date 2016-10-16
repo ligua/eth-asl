@@ -7,6 +7,8 @@ library(ggplot2, lib.loc=library_location)
 
 source("scripts/r/common.r")
 
+FIGURE_TYPE = ".pdf"
+
 # ---- Parse command line args ----
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) == 0) {
@@ -34,7 +36,8 @@ g1 <- ggplot(data1, aes(x=concurrency, y=mean_tps, ymin=0)) +
   xlab("Concurrency (# clients)") +
   ylab("Mean throughput (requests / second)") +
   asl_theme
-ggsave(paste0(result_dir_base, "/graphs/throughput.svg"), g1, width=20, height=10)
+ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g1,
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 # ---- Average response time as a function of concurrency
 data2 <- data %>%
@@ -49,4 +52,5 @@ g2 <- ggplot(data2, aes(x=concurrency)) +
   xlab("Concurrency") +
   ylab("Mean response time (ms)") +
   asl_theme
-ggsave(paste0(result_dir_base, "/graphs/responsetime.svg"), g2, width=20, height=10)
+ggsave(paste0(result_dir_base, "/graphs/responsetime", FIGURE_TYPE), g2,
+       width=fig_width, height=fig_height, device=cairo_pdf)

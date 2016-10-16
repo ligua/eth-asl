@@ -7,3 +7,6 @@ asl_theme = theme_bw() +
 color_dark = "#322270"
 color_medium = "#7963cf"
 color_light = "#cdc4ed"
+
+fig_width = 10
+fig_height = 5
