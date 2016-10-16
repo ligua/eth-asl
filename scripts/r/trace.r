@@ -75,18 +75,21 @@ data3 <- memaslap %>%
 data3summarised <- memaslap %>%
   filter(type=="t") %>%
   group_by(time) %>%
-  summarise(avg=sum(avg * ops) / sum(ops))
+  summarise(avg=sum(avg * ops) / sum(ops),
+            std=sqrt(sum(std*std*ops)/sum(ops)))
 
 g3 <- ggplot(data3) +
   geom_line(aes(x=time, y=avg, ymin=0, color=request_type), size=2) +
   xlab("Time since start of experiment (s)") +
-  ylab("Response time measured by memaslap (ms)") +
+  ylab("Mean response time (ms)") +
   facet_wrap(~request_type, nrow=2, scales="free") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/latency_breakdown", FIGURE_TYPE), g3,
        width=fig_width, height=fig_height, device=cairo_pdf)
 
 g3summarised <- ggplot(data3summarised) +
+  geom_ribbon(aes(x=time, ymin=avg-std, ymax=avg+std), fill=color_light,
+              alpha=0.5) +
   geom_line(aes(x=time, y=avg, ymin=0), color=color_dark, size=2) +
   xlab("Time since start of experiment (s)") +
   ylab("Response time measured by memaslap (ms)") +

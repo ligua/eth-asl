@@ -34,7 +34,7 @@ g1 <- ggplot(data1, aes(x=concurrency, y=mean_tps, ymin=0)) +
   geom_line(color=color_dark, size=2) +
   geom_point(color=color_dark, size=3) + 
   xlab("Concurrency (# clients)") +
-  ylab("Mean throughput (requests / second)") +
+  ylab("Total throughput (requests / second)") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g1,
        width=fig_width, height=fig_height, device=cairo_pdf)
@@ -46,10 +46,10 @@ data2 <- data %>%
             t_std=sqrt(sum(tstd*tstd*total_events)/sum(total_events)))  # TODO this is probably not good
 
 g2 <- ggplot(data2, aes(x=concurrency)) +
-  geom_errorbar(aes(ymin=pmax(0, t_mean-t_std), ymax=t_mean+t_std), color=color_light, size=1) +
+  geom_errorbar(aes(ymin=t_mean-t_std, ymax=t_mean+t_std), color=color_light, size=1) +
   geom_line(aes(y=t_mean), color=color_dark, size=2) +
   geom_point(aes(y=t_mean), color=color_dark, size=3) + 
-  xlab("Concurrency") +
+  xlab("Concurrency (# clients)") +
   ylab("Mean response time (ms)") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/responsetime", FIGURE_TYPE), g2,
