@@ -17,7 +17,6 @@ public class MiddlewareMain implements Runnable {
 
     private static final Logger log = LogManager.getLogger(MiddlewareMain.class);
 
-    public static final String LINE_END = "\r\n";
     public static final Integer FULL_BUFFER_SIZE = 2048;
     public static final Integer RESPONSE_BUFFER_SIZE = 1024;
     public static final Integer QUEUE_SIZE = 200;
@@ -54,7 +53,7 @@ public class MiddlewareMain implements Runnable {
         this.replicationFactor = replicationFactor;
         this.hasher = new UniformHasher(numMemcachedServers, replicationFactor);
 
-        this.memcachedAddresses = memcachedAddresses;
+        MiddlewareMain.memcachedAddresses = memcachedAddresses;
     }
 
     @Override
