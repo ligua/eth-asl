@@ -16,7 +16,7 @@ public class Request {
     private static final Logger log = LogManager.getLogger(Request.class);
     private static final Logger csvLog = LogManager.getLogger("request_csv");
 
-    public static final int LOG_SAMPLING_FREQUENCY = 1;
+    public static final int LOG_SAMPLING_FREQUENCY = 100;
 
     private RequestType type;
     private ByteBuffer buffer;
