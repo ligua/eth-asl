@@ -204,7 +204,7 @@ with fabric.api.settings(warn_only=True):
 
 # endregion
 
-# deployer.hibernate_wait()
+deployer.hibernate_wait()
 
 log.info("Done.")
 
