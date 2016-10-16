@@ -47,6 +47,8 @@ class Memcached(object):
 
     def start(self):
         """Start memcached."""
+        self.log.info("Before starting, killing previous instances...")
+        self.stop()
         self.log.info("Starting memcached on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             command = "memcached -p {} -t 1".format(self.serve_port)
