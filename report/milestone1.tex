@@ -102,10 +102,10 @@ The most important classes in this implementation all belong to the package \cod
 \end{itemize}
 
 \begin{figure}[h]
-\caption{Middleware architecture.}
 \centering
 \includegraphics[width=0.8\textwidth]{figures/structure.png}
 \label{fig:structure}
+\caption{Middleware architecture.}
 \end{figure}
 
 The middleware is instrumented at six points that are also shown in Figure~\ref{fig:structure}:
@@ -200,9 +200,20 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 
 
 \subsection{Throughput}\label{sec:baseline:tput}
-See previous explanation.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/baseline/graphs/throughput.pdf}
+\label{fig:baseline:throughput}
+\caption{Throughput of the baseline \todo{}.}
+\end{figure}
+
 \subsection{Response time}\label{sec:baseline:rt}
-See previous explanation.
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
+\label{fig:baseline:responsetime}
+\caption{Response time of the baseline \todo{}.}
+\end{figure}
 
 \section{Stability Trace}\label{sec:trace}
 
@@ -227,10 +238,37 @@ You will have to provide two graphs. The x-axis is time and the y-axis is either
 
 
 \subsection{Throughput}
-See previous explanation.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/trace_rep1/graphs/throughput.pdf}
+\label{fig:rep1:throughput}
+\caption{Throughput trace of the middleware without replication \todo{}.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/trace_rep3/graphs/throughput.pdf}
+\label{fig:rep3:throughput}
+\caption{Throughput trace of the middleware with full replication \todo{}.}
+\end{figure}
+
 
 \subsection{Response time}
-See previous explanation.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/trace_rep1/graphs/responsetime.pdf}
+\label{fig:rep1:responsetime}
+\caption{Response time trace of the middleware with no replication \todo{}.}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/trace_rep3/graphs/responsetime.pdf}
+\label{fig:rep3:responsetime}
+\caption{Response time trace of the middleware with full replication \todo{}.}
+\end{figure}
 
 \subsection{Overhead of middleware}
 
