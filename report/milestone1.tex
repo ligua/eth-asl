@@ -90,15 +90,15 @@ We expect you to use this template for the report, but in case you want to use W
 
 \subsection{Overall Architecture}\label{sec:desc:architecture}
 
-The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows ($N$ is the number of memcached servers). Note that whenever a Java class is referenced, it will appear as a link to GitLab, e.g. \linkmain{MiddlewareMain}. 
+The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows. Note that whenever a Java class is referenced, it will appear as a link to GitLab, e.g. \linkmain{MiddlewareMain}. 
 
 \begin{itemize}
 \item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware.
 \item \linkmain{Request} is a wrapper class for all GET- or SET-requests.
-\item \linkmain{LoadBalancer} is the front of the middleware. It handles all incoming requests from all clients using \code{java.nio}, hashes the requests using a \linkmain{Hasher} and forwards them to the correct servers for writing or reading. When a request has a response, \linkmain{LoadBalancer} also returns the response to the client.
+\item \linkmain{LoadBalancer} is the front of the middleware. It reads all incoming requests from all clients using \code{java.nio}, hashes the requests using a \linkmain{Hasher} and forwards them to the correct servers for writing or reading. When a request has a response, \linkmain{LoadBalancer} also returns the response to the client.
 \item \linkmain{UniformHasher} implements the \linkmain{Hasher} interface and is responsible for mapping request keys to memcached servers. More in Section~\ref{sec:desc:hashing}.
-\item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the threads that process requests from those queues. There are $N$ \linkmain{MiddlewareComponent} instances, each of which has one \linkmain{WriteWorker} and one or more \linkmain{ReadWorker}s.
-\item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and~\ref{sec:desc:reads}.
+\item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the threads that process requests from those queues.
+\item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
 \end{itemize}
 
 \begin{figure}[h]
@@ -115,14 +115,10 @@ The middleware is instrumented at six points that are also shown in Figure~\ref{
 \item $t_{dequeued}$ -- when the request is removed from the queue.
 \item $t_{forwarded}$ -- when the request has been sent to all the servers (one server for GET requests and $R$ servers for SET requests).
 \item $t_{received}$ -- when responses to the request have been received from all servers.
-\item $t_{returned}$ -- when the reponse is returned to the client.
+\item $t_{returned}$ -- when the response is returned to the client.
 \end{enumerate}
 
-\todo{}
-
-Explain how the abstract architecture we provided for you has been implemented in terms of classes and shortly outline the main design decisions. Mark on the figure where are the points that you instrumented the architecture (see Section~2.3 of the Project Description) and give the different timestamps a name that you\textbf{ will use throughout the three milestones }whenever referencing measurements (e.g., $T_{requestreceived}$, $T_{responsesent}$).
-
-Log files belonging to experiments should be referenced by an ID, or short name, and there has to be a table at the end of the report mapping these to files in the git repository.
+\todo{"Shortly outline the main design decisions?"}
 
 \subsection{Load Balancing and Hashing}\label{sec:desc:hashing}
 
