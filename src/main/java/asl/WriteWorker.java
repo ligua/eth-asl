@@ -180,6 +180,7 @@ class WriteWorker implements Runnable {
                                 // If we've collected all responses
                                 if(numResponses.get(r) == targetMachines.size()) {
                                     log.debug("Collected all responses to request " + r + "");
+                                    r.setTimeReceived();
                                     r.respond();
                                     numResponses.remove(r);
                                 }
