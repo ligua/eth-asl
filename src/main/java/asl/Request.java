@@ -30,6 +30,7 @@ public class Request {
     private long timeEnqueued;
     private long timeDequeued;
     private long timeForwarded;
+    private long timeReceived;
     private long timeReturned;
 
     private boolean shouldLog;
@@ -77,6 +78,10 @@ public class Request {
 
     public void setTimeReturned() {
         this.timeReturned = System.currentTimeMillis();
+    }
+
+    public void setTimeReceived() {
+        this.timeReceived = System.currentTimeMillis();
     }
 
     public void setShouldLog(boolean shouldLog) {
@@ -248,8 +253,8 @@ public class Request {
      */
     public void logTimestamps() {
         if(shouldLog) {
-            csvLog.info(String.format("%s,%s,%d,%d,%d,%d,%d",
-                    type, responseFlag, timeCreated, timeEnqueued, timeDequeued, timeForwarded, timeReturned));
+            csvLog.info(String.format("%s,%s,%d,%d,%d,%d,%d,%d",
+                    type, responseFlag, timeCreated, timeEnqueued, timeDequeued, timeForwarded, timeReceived, timeReturned));
         }
     }
 

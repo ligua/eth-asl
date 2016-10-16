@@ -90,6 +90,7 @@ class ReadWorker implements Runnable {
                                 read = 0;
                             }
                         }
+                        r.setTimeReceived();
 
                         ByteBuffer wrapped = ByteBuffer.wrap(buffer);
                         wrapped.limit(readTotal);
