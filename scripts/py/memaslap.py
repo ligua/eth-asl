@@ -65,7 +65,7 @@ class Memaslap(object):
                 self.log.info("Memaslap already built.")
 
     def start(self, concurrency=64, stats_freq="10s", runtime="10s", log_filename="memaslap.out",
-              workload_filename="xlargevalue.cfg", verbose=False, verify=False):
+              workload_filename="smallvalue.cfg", verbose=False, verify=False):
         """Start memaslap."""
         self.log.info("Starting memaslap on machine {}.".format(self.ssh_hostname))
         verbose_string = " -b" if verbose else ""

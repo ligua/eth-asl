@@ -12,6 +12,7 @@ NUM_REPETITIONS = 5
 EXPERIMENT_RUNTIME = 60  # seconds
 EXPERIMENT_RUNTIME_STRING = "{}s".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "10m"
+MEMASLAP_WORKLOAD = "smallvalue.cfg"
 
 # region ---- Logging ----
 LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
@@ -113,11 +114,11 @@ for i in range(0, len(ms_concurrencies)):
             concurrency_per_client = int(concurrency_per_client / 2)
 
         memaslap_server1.start(concurrency=concurrency_per_client, runtime=EXPERIMENT_RUNTIME_STRING,
-                               stats_freq=STATS_FREQUENCY,
+                               stats_freq=STATS_FREQUENCY, workload_filename=MEMASLAP_WORKLOAD,
                                log_filename=log_filename_base.format(1, ms_concurrencies[i], rep))
         if ms_concurrencies[i] > 1:
             memaslap_server2.start(concurrency=concurrency_per_client, runtime=EXPERIMENT_RUNTIME_STRING,
-                                   stats_freq=STATS_FREQUENCY,
+                                   stats_freq=STATS_FREQUENCY, workload_filename=MEMASLAP_WORKLOAD,
                                    log_filename=log_filename_base.format(2, ms_concurrencies[i], rep))
         time.sleep(EXPERIMENT_RUNTIME + 5)
         memcached_server.stop()
