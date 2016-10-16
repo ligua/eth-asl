@@ -95,7 +95,7 @@ The most important classes in this implementation all belong to the package \cod
 \begin{itemize}
 \item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware.
 \item \linkmain{Request} is a wrapper class for all GET- or SET-requests.
-\item \linkmain{LoadBalancer} is the front of the middleware. It reads all incoming requests from all clients using \code{java.nio}, hashes the requests using a \linkmain{Hasher} and forwards them to the correct servers for writing or reading. When a request has a response, \linkmain{LoadBalancer} also returns the response to the client.
+\item \linkmain{LoadBalancer} is the front of the middleware. It reads all incoming requests from all clients using \code{java.nio}, hashes the requests using a \linkmain{Hasher} and forwards them to the correct servers for writing or reading.
 \item \linkmain{UniformHasher} implements the \linkmain{Hasher} interface and is responsible for mapping request keys to memcached servers. More in Section~\ref{sec:desc:hashing}.
 \item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the threads that process requests from those queues.
 \item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
@@ -169,7 +169,7 @@ Give an estimate of the latencies the writing operation will incur, and generali
 
 The read operations are handled by \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/ReadWorker.java}{ReadWorker}s. Each \linkmain{ReadWorker} runs on one thread and has exactly one socket connection to its assigned memcached server.
 
-Every \linkmain{ReadWorker} runs an infinite while-loop in which it takes a request r from its assigned queue of GET-requests, writes the contents of r to its assigned memcached server, blocks until the response from memcached arrives, sets the response buffer of r to what it received from memcached and finally notifies \linkmain{LoadBalancer} that r is ready for returning by setting \code{r.hasResponse} to \code{true}.
+Every \linkmain{ReadWorker} runs an infinite while-loop in which it takes a request r from its assigned queue of GET-requests, writes the contents of r to its assigned memcached server, blocks until the response from memcached arrives, sets the response buffer of r to what it received from memcached and finally sends the response to the client corresponding to r.
 
 Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests at the same time as the \linkmain{LoadBalancer} is inserting elements, the queue needs to be safe to concurrent access by multiple threads. For this reason, \code{BlockingQueue} was chosen; in particular, the \code{ArrayBlockingQueue} subclass of \code{BlockingQueue}. The maximum size of the queue was set to a constant 200 (defined in \code{MiddlewareMain.QUEUE_SIZE}), because 3 load generating machines each with 64 concurrent clients can generate a maximum of $3 \cdot 64 = 192 < 200$ requests at a time, which in the worst (although unlikely) case will all be forwarded to the same server.
 
