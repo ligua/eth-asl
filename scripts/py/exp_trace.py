@@ -18,12 +18,14 @@ RUNTIME_BUFFER = 3 * 60     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "30s"
 NUM_THREADS_IN_POOL = 5
-REPLICATION_FACTOR = 3
+REPLICATION_FACTOR = 1
 MEMASLAP_VERBOSE = False
 MEMASLAP_VERIFY = False
 
 ssh_username = "pungast7"
 results_dir = "results/trace"
+with fabric.api.settings(warn_only=True):
+    fabric.api.local("mkdir -p results/trace/")
 
 # region ---- Logging ----
 LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
@@ -200,7 +202,7 @@ e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="res
 
 with fabric.api.settings(warn_only=True):
     fabric.api.local("mkdir results/trace/graphs")
-    fabric.api.local("Rscript scripts/r/trace.r")
+    fabric.api.local("Rscript scripts/r/trace.r results/trace")
 
 # endregion
 
