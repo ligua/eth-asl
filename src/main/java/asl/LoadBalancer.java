@@ -30,7 +30,6 @@ public class LoadBalancer implements Runnable {
 
     private Map<SelectionKey, ByteBuffer> requestMessageBuffer;
     private Map<SelectionKey, Integer> numBytesRead;
-    private Map<SelectionKey, Request> keyToRequest;
 
     LoadBalancer(List<MiddlewareComponent> middlewareComponents, Hasher hasher, String address, Integer port) {
         this.middlewareComponents = middlewareComponents;
@@ -39,7 +38,6 @@ public class LoadBalancer implements Runnable {
         this.port = port;
         this.requestMessageBuffer = new HashMap<>();
         this.numBytesRead = new HashMap<>();
-        this.keyToRequest = new HashMap<>();
         this.readRequestCounter = 0;
         this.writeRequestCounter = 0;
     }
@@ -48,7 +46,6 @@ public class LoadBalancer implements Runnable {
      * Take one request and add it to the correct queue.
      */
     private void handleRequest(Request request, SelectionKey selectionKey) {
-        keyToRequest.put(selectionKey, request);
         selectionKey.interestOps(SelectionKey.OP_WRITE);
 
         requestMessageBuffer.remove(selectionKey);
@@ -111,33 +108,6 @@ public class LoadBalancer implements Runnable {
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
 
-                    if(keyToRequest.containsKey(myKey) && keyToRequest.get(myKey).hasResponse()) {
-                        // If request has response, then write it.
-                        Request r = keyToRequest.get(myKey);
-
-                        ByteBuffer responseBuffer = r.getResponseBuffer();
-                        keyToRequest.remove(myKey);
-
-                        SocketChannel client = (SocketChannel) myKey.channel();
-
-                        if(Request.isGetMiss(r.getResponseBuffer())) {
-                            log.warn("GET miss! " + r);
-                        }
-
-                        // Write buffer
-                        responseBuffer.rewind();
-                        int bytesWritten = 0;
-                        while(responseBuffer.hasRemaining()) {
-                            int written = client.write(responseBuffer);
-                            bytesWritten += written;
-                        }
-
-                        r.setTimeReturned();
-                        r.logTimestamps();
-
-                        myKey.interestOps(SelectionKey.OP_READ);
-                    }
-
                     if ((myKey.isValid() && myKey.isAcceptable())) {
                         // If this key's channel is ready to accept a new socket connection
                         SocketChannel client = serverSocketChannel.accept();
@@ -169,7 +139,7 @@ public class LoadBalancer implements Runnable {
                             RequestType requestType = Request.getRequestType(buffer);
 
                             if (requestType == RequestType.GET) {
-                                Request r = new Request(buffer, client);
+                                Request r = new Request(buffer, myKey);
 
                                 handleRequest(r, myKey);
                             } else if (requestType == RequestType.SET) {
@@ -188,7 +158,7 @@ public class LoadBalancer implements Runnable {
                         if(requestMessageBuffer.containsKey(myKey) &&
                                 Request.isCompleteSetRequest(requestMessageBuffer.get(myKey))) {
                             log.debug("KEY IS COMPLETE: " + myKey);
-                            Request r = new Request(requestMessageBuffer.get(myKey), client);
+                            Request r = new Request(requestMessageBuffer.get(myKey), myKey);
                             handleRequest(r, myKey);
                         }
 
