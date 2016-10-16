@@ -1,5 +1,6 @@
 asl_theme = theme_bw() +
   theme(panel.grid.minor=element_blank()) +
+  theme(panel.grid.major=element_line(color="#888888"))
   theme(text=element_text(family="Open Sans"))
 
 
