@@ -19,6 +19,8 @@ class WriteWorker implements Runnable {
 
     private static final Logger log = LogManager.getLogger(WriteWorker.class);
 
+    public static final Integer SELECTOR_TIMEOUT = 1; // Milliseconds
+
     private Integer componentId;
     private List<Integer> targetMachines;
     private BlockingQueue<Request> writeQueue;
@@ -90,11 +92,6 @@ class WriteWorker implements Runnable {
 
             while (true) {
 
-                int numElements = writeQueue.size();
-                if(System.currentTimeMillis() % 1000 == 0 || numElements > 0) {
-                    //log.info("queue has elements: " + numElements);
-                }
-
                 // region Take new element from write queue
                 if (!writeQueue.isEmpty()) {
                     log.info("Writequeue has " + writeQueue.size() + " elements.");
@@ -126,9 +123,8 @@ class WriteWorker implements Runnable {
                 }
                 // endregion
 
-
                 // region Communicate with memcached servers
-                selector.select();
+                selector.select(SELECTOR_TIMEOUT);
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
 
@@ -136,22 +132,6 @@ class WriteWorker implements Runnable {
                     SelectionKey myKey = selectionKeyIterator.next();
                     Integer targetMachine = (Integer) myKey.attachment();
 
-                    /*if (myKey.isValid() && myKey.isWritable() && outQueues.get(targetMachine).size() > 0) {
-                        /*SocketChannel socketChannel = (SocketChannel) myKey.channel();
-                        Request r = outQueues.get(targetMachine).remove();
-                        inQueues.get(targetMachine).add(r);
-                        log.debug(String.format("Server %d is writable.", targetMachine));
-
-                        ByteBuffer buffer = r.getBuffer();
-                        buffer.rewind();
-                        while(buffer.hasRemaining()) {
-                            socketChannel.write(buffer);
-                        }
-
-                        r.setTimeForwarded();  // This will have the value of the latest write
-                        socketChannel.register(selector, SelectionKey.OP_READ, targetMachine);
-
-                    } else*/
                     if (myKey.isValid() && myKey.isReadable() && inQueues.get(targetMachine).size() > 0) {
                         log.debug(String.format("Server %d is readable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
@@ -159,7 +139,7 @@ class WriteWorker implements Runnable {
                         ByteBuffer buffer = inBuffers.get(targetMachine);
                         int read = socketChannel.read(buffer);
 
-                        if(read > 0 || inBuffers.get(targetMachine).position() > 0) {
+                        if(read > 0 || buffer.position() > 0) {
                             Integer firstLimit = Request.firstGetResponseLimit(buffer);
                             if (firstLimit == 0) {
                                 continue;
