@@ -73,9 +73,7 @@ public class LoadBalancer implements Runnable {
                 request.setShouldLog(true);
             }
             request.setTimeEnqueued();
-            log.info(String.format("Write queue had %d elements", mc.writeQueue.size()));
             mc.writeQueue.add(request);
-            log.info(String.format("Write queue now has %d elements", mc.writeQueue.size()));
             writeRequestCounter++;
         }
 
