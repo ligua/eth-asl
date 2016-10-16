@@ -94,9 +94,9 @@ class WriteWorker implements Runnable {
 
                 // region Take new element from write queue
                 if (!writeQueue.isEmpty()) {
-                    log.info("Writequeue has " + writeQueue.size() + " elements.");
+                    log.debug("Writequeue has " + writeQueue.size() + " elements.");
                     Request r = writeQueue.remove();
-                    log.info(String.format("Took %s from queue...", r));
+                    log.debug(String.format("Took %s from queue...", r));
                     r.setTimeDequeued();
                     log.debug(getName() + " processing request " + r);
 
@@ -146,7 +146,7 @@ class WriteWorker implements Runnable {
                             } else {
                                 Request r = inQueues.get(targetMachine).remove();
                                 Integer currentPosition = buffer.position();
-                                log.warn(String.format("Buffer position %d, limit %d, first request ends at %d.",
+                                log.debug(String.format("Buffer position %d, limit %d, first request ends at %d.",
                                         currentPosition, buffer.limit(), firstLimit));
 
                                 // Copy the first request from one buffer to the other
@@ -154,20 +154,20 @@ class WriteWorker implements Runnable {
                                 for(int i=0; i<firstLimit; i++) {
                                     array[i] = buffer.get(i);
                                 }
-                                log.warn(String.format("Buffer: %s [len %d]",
+                                log.debug(String.format("Buffer: %s [len %d]",
                                         Util.getNonemptyString(buffer), Util.getNonemptyString(buffer).length()));
                                 ByteBuffer responseBuffer = ByteBuffer.wrap(array);
                                 Integer numExtraBytes = buffer.position() - firstLimit;
                                 Util.copyToBeginning(buffer, firstLimit, numExtraBytes);
                                 buffer.position(numExtraBytes);
-                                log.warn(String.format("Buffer now: %s [len %d]",
+                                log.debug(String.format("Buffer now: %s [len %d]",
                                         Util.getNonemptyString(buffer), Util.getNonemptyString(buffer).length()));
-                                log.warn(String.format("Buffer position now %d, limit %d.",
+                                log.debug(String.format("Buffer position now %d, limit %d.",
                                         buffer.position(), buffer.limit()));
                                 ResponseFlag responseFlag = Request.getResponseFlag(responseBuffer);
                                 log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
                                 if(responseFlag == ResponseFlag.UNKNOWN) {
-                                    log.warn(String.format("Unknown response to %s: %s", r, Util.getNonemptyString(responseBuffer)));
+                                    log.debug(String.format("Unknown response to %s: %s", r, Util.getNonemptyString(responseBuffer)));
                                 }
 
                                 // Keep the worst response
