@@ -26,7 +26,8 @@ MEMASLAP_WORKLOAD = "smallvalue.cfg"
 ssh_username = "pungast7"
 results_dir = "results/trace"
 with fabric.api.settings(warn_only=True):
-    fabric.api.local("mkdir -p results/trace/")
+    fabric.api.local("rm -r {}/*".format(results_dir))
+    fabric.api.local("mkdir -p {}".format(results_dir))
 
 # region ---- Logging ----
 LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
