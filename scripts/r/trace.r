@@ -8,10 +8,11 @@ library(ggplot2, lib.loc=library_location)
 
 source("scripts/r/common.r")
 
-requests <- read.csv("results/trace/request.log", header=TRUE, sep=",")
-memaslap <- read.csv("results/trace/memaslap_stats.csv", header=TRUE, sep=";") %>%
+result_dir_base <- "results/trace_rep1"
+
+requests <- read.csv(paste0(result_dir_base, "/request.log"), header=TRUE, sep=",")
+memaslap <- read.csv(paste0(result_dir_base, "/memaslap_stats.csv"), header=TRUE, sep=";") %>%
   mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000)
-result_dir_base <- "results/trace"
 
 # ---- Filter out beginning and end ----
 SHOULD_FILTER = FALSE
