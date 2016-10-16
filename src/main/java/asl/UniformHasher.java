@@ -17,12 +17,6 @@ public class UniformHasher implements Hasher {
     private Integer numMachines;
     private Integer replicationFactor;
 
-    private String hashingAlgorithm = "MD5";
-    private String encoding = "UTF-8";
-
-    private MessageDigest md;
-
-
     public UniformHasher(Integer numMemcachedServers, Integer replicationFactor) {
         if(replicationFactor > numMemcachedServers) {
             throw new RuntimeException("Replication factor cannot be larger than the number of machines!");
@@ -30,34 +24,15 @@ public class UniformHasher implements Hasher {
         this.numMachines = numMemcachedServers;
         this.replicationFactor = replicationFactor;
 
-        try {
-            this.md = MessageDigest.getInstance(hashingAlgorithm);
-        } catch (NoSuchAlgorithmException ex) {
-            String errorString = "Hashing algorithm " + hashingAlgorithm + " not found in MessageDigest class.";
-            log.error(errorString);
-            throw new RuntimeException(errorString);
-        }
-
-
         log.info("Hasher initialised.");
     }
 
+
     /**
-     * Hash the given string.
+     * Get the primary machine corresponding to a key.
+     * @param s the key of a request.
+     * @return Machine ID: integer in [0, numMachines).
      */
-    public byte[] getHash(String s) {
-        byte[] hashBytes;
-        try {
-            hashBytes = md.digest(s.getBytes(encoding));
-        } catch (UnsupportedEncodingException ex) {
-            String errorString = "Encoding " + encoding + " not available.";
-            log.error(errorString);
-            throw new RuntimeException(errorString);
-        }
-
-        return hashBytes;
-    }
-
     @Override
     public Integer getPrimaryMachine(String s) {
         Random r = new Random();
@@ -66,6 +41,11 @@ public class UniformHasher implements Hasher {
         return r.nextInt(numMachines);
     }
 
+    /**
+     * Get the all machines we need to replicate to given a key.
+     * @param primaryMachine the primary machine for the key.
+     * @return A list of all machines we need to replicate to, including primaryMachine as the first element.
+     */
     @Override
     public List<Integer> getTargetMachines(Integer primaryMachine) {
         return getTargetMachines(primaryMachine, replicationFactor, numMachines);
