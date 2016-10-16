@@ -8,7 +8,17 @@ library(ggplot2, lib.loc=library_location)
 
 source("scripts/r/common.r")
 
-result_dir_base <- "results/trace"
+
+
+# ---- Parse command line args ----
+args <- commandArgs(trailingOnly=TRUE)
+if (length(args) == 0) {
+  result_dir_base <- "results/trace"
+} else if(length(args) == 1) {
+  result_dir_base <- args[1]
+} else {
+  stop("Arguments: [<results_directory>]")
+}
 
 requests <- read.csv(paste0(result_dir_base, "/request.log"), header=TRUE, sep=",")
 memaslap <- read.csv(paste0(result_dir_base, "/memaslap_stats.csv"), header=TRUE, sep=";") %>%
@@ -46,28 +56,38 @@ data2 <- memaslap %>%
   summarise(tps=sum(tps))
 
 g2 <- ggplot(data2) +
-  geom_line(aes(x=time, y=tps), color=color_dark, size=2) +
+  geom_line(aes(x=time, y=tps, ymin=0), color=color_dark, size=2) +
   xlab("Time since start of experiment (s)") +
   ylab("Total throughput (requests / s)") +
   asl_theme
-ggsave(paste0(result_dir_base, "/graphs/throughput.svg"), g2, width=8, height=5)
+ggsave(paste0(result_dir_base, "/graphs/throughput.svg"), g2, width=10, height=5)
 
 
 # ---- Latency over time ----
 data3 <- memaslap %>%
   filter(type=="t") %>%
   group_by(time, request_type) %>%
-  summarise(avg=sum(avg * ops) / sum(ops),
-            std=sum(std * ops) / sum(ops)) # TODO this is very bad
+  summarise(avg=sum(avg * ops) / sum(ops))
+
+data3summarised <- memaslap %>%
+  filter(type=="t") %>%
+  group_by(time) %>%
+  summarise(avg=sum(avg * ops) / sum(ops))
 
 g3 <- ggplot(data3) +
-  geom_line(aes(x=time, y=avg, color=request_type), size=2) +
-  geom_errorbar(aes(x=time, ymin=avg-std, ymax=avg+std)) +
+  geom_line(aes(x=time, y=avg, ymin=0, color=request_type), size=2) +
   xlab("Time since start of experiment (s)") +
   ylab("Latency measured by memaslap (ms)") +
   facet_wrap(~request_type, nrow=2, scales="free") +
   asl_theme
-ggsave(paste0(result_dir_base, "/graphs/latency.svg"), g3, width=8, height=5)
+ggsave(paste0(result_dir_base, "/graphs/latency_breakdown.svg"), g3, width=10, height=5)
+
+g3summarised <- ggplot(data3summarised) +
+  geom_line(aes(x=time, y=avg, ymin=0), color=color_dark, size=2) +
+  xlab("Time since start of experiment (s)") +
+  ylab("Latency measured by memaslap (ms)") +
+  asl_theme
+ggsave(paste0(result_dir_base, "/graphs/latency.svg"), g3summarised, width=10, height=5)
 
 # ---- Time spent in different parts of the system
 data4 <- requests %>%
@@ -80,9 +100,9 @@ data4 <- requests %>%
   melt(id.vars=c("type"))
 
 g4 <- ggplot(data4) +
-  geom_histogram(aes(x=value, fill=type)) +
+  geom_histogram(aes(x=value, xmin=0, fill=type)) +
   facet_wrap(~variable + type, ncol=2, scales="free") +
   xlab("Time spent (ms)") +
   ylab("Number of requests") +
   asl_theme
-ggsave(paste0(result_dir_base, "/graphs/time_breakdown.svg"), g4, width=8, height=5)
+ggsave(paste0(result_dir_base, "/graphs/time_breakdown.svg"), g4, width=10, height=14)
