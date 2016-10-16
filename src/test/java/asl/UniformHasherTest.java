@@ -18,12 +18,6 @@ public class UniformHasherTest {
 
     }*/
 
-    @Test
-    public void getHash() throws Exception {
-        UniformHasher uh = new UniformHasher(1, 0);
-        assertEquals(Util.bytesToString(uh.getHash("taivo")), "30834776a9b6d5ac92969b8af8484859");
-    }
-
     public void getTargetMachinesSingle(Integer numMachines, Integer replicationFactor) throws Exception {
         UniformHasher uh = new UniformHasher(numMachines, replicationFactor);
 
