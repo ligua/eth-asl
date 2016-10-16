@@ -1,6 +1,10 @@
 \documentclass[11pt]{article}
 \usepackage[a4paper, portrait, margin=1in]{geometry}
-\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=gray]{hyperref}
 % Fancy header package for version number
 
 \usepackage{fancyhdr}
@@ -16,6 +20,11 @@
 \rfoot{\thepage}
 }
 \cfoot{\thepage}
+
+\newcommand{\code}[1]{\lstinline[language=Java]{#1}}
+\newcommand{\todo}[1]{\fcolorbox{black}{Apricot}{TODO: #1}}
+\newcommand{\linkmain}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/#1.java}{#1}}
+\newcommand{\linktest}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/test/java/asl/#1.java}{#1}}
 
 \begin{document}
 
@@ -81,34 +90,97 @@ We expect you to use this template for the report, but in case you want to use W
 
 \subsection{Overall Architecture}\label{sec:desc:architecture}
 
-Length: at most 1 page
+The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows ($N$ is the number of memcached servers). Note that whenever a Java class is referenced, it will appear as a link to GitLab, e.g. \linkmain{MiddlewareMain}. 
+
+\begin{itemize}
+\item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware.
+\item \linkmain{Request} is a wrapper class for all GET- or SET-requests.
+\item \linkmain{LoadBalancer} is the front of the middleware. It handles all incoming requests from all clients using \code{java.nio}, hashes the requests using a \linkmain{Hasher} and forwards them to the correct servers for writing or reading. When a request has a response, \linkmain{LoadBalancer} also returns the response to the client.
+\item \linkmain{UniformHasher} implements the \linkmain{Hasher} interface and is responsible for mapping request keys to memcached servers. More in Section~\ref{sec:desc:hashing}.
+\item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the threads that process requests from those queues. There are $N$ \linkmain{MiddlewareComponent} instances, each of which has one \linkmain{WriteWorker} and one or more \linkmain{ReadWorker}s.
+\item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and~\ref{sec:desc:reads}.
+\end{itemize}
+
+\begin{figure}[h]
+\caption{Middleware architecture.}
+\centering
+\includegraphics[width=0.8\textwidth]{figures/structure.png}
+\label{fig:structure}
+\end{figure}
+
+The middleware is instrumented at six points that are also shown in Figure~\ref{fig:structure}:
+\begin{enumerate}
+\item $t_{created}$ -- when the request is received in \linkmain{LoadBalancer}.
+\item $t_{enqueued}$ -- when the request is added to the queue.
+\item $t_{dequeued}$ -- when the request is removed from the queue.
+\item $t_{forwarded}$ -- when the request has been sent to all the servers (one server for GET requests and $R$ servers for SET requests).
+\item $t_{received}$ -- when responses to the request have been received from all servers.
+\item $t_{returned}$ -- when the reponse is returned to the client.
+\end{enumerate}
+
+\todo{}
 
 Explain how the abstract architecture we provided for you has been implemented in terms of classes and shortly outline the main design decisions. Mark on the figure where are the points that you instrumented the architecture (see Section~2.3 of the Project Description) and give the different timestamps a name that you\textbf{ will use throughout the three milestones }whenever referencing measurements (e.g., $T_{requestreceived}$, $T_{responsesent}$).
 
-Reference throughout the report all relevant java source files, result files, etc. by providing the gitlab link in a footnote, for instance\footnote{\url{https://gitlab.inf.ethz.ch/zistvan/asl-fall16-project/blob/master/src/ch/ethz/SomeClass.java}}. An exception to this rule is the referencing of log files belonging to experiments. These should be referenced by an ID, or short name, and there has to be a table at the end of the report mapping these to files in the git repository.
+Log files belonging to experiments should be referenced by an ID, or short name, and there has to be a table at the end of the report mapping these to files in the git repository.
 
 \subsection{Load Balancing and Hashing}\label{sec:desc:hashing}
 
-Length: at most 1 page
+The hashing is implemented by \linkmain{UniformHasher}. The hashing scheme for a given key s works as follows:
+\begin{enumerate}
+\item s is hashed into a 32-bit signed integer using Java's native \code{String.hashCode()}.
+\item The hash is used to set the seed of a random number generator (\code{java.util.Random}).
+\item The first random number that the generator returns is used.
+\end{enumerate}
 
-Explain what hash function you use for load balancing and how you implement the selection of servers. Give a short reasoning on why the chosen scheme should uniformly distribute load (assuming no skew on the client side).
+The uniformity of hashing was also validated in tests (see \linktest{UniformHasherTest}). For 1 million random strings and 13 target machines, the distribution to different machines was the following:
+
+\begin{verbatim}
+Machine   0 got      76706 hits.
+Machine   1 got      76896 hits.
+Machine   2 got      76718 hits.
+Machine   3 got      76829 hits.
+Machine   4 got      77102 hits.
+Machine   5 got      76980 hits.
+Machine   6 got      76467 hits.
+Machine   7 got      76940 hits.
+Machine   8 got      77194 hits.
+Machine   9 got      76896 hits.
+Machine  10 got      77107 hits.
+Machine  11 got      76785 hits.
+Machine  12 got      77380 hits.
+\end{verbatim}
+
+As apparent, the distribution is indeed uniform.
+
+Selection of replicated machines for a given replication factor $R$ was done by first selecting the primary machine using the scheme described above, and then selecting the next $R-1$ machines for replication. E.g. for a setup with 8 memcached servers and $R=5$, a key whose primary machine is 5 would be replicated to machines 6, 7, 0, and 1.
 
 \subsection{Write Operations and Replication}\label{sec:desc:writes}
 
-Length: at most 1 page
+The write operations are handled by \linkmain{WriteWorker}s. Each \linkmain{WriteWorker} runs on one thread and has exactly one connection to each memcached server it needs to write to, so in total $R$ connections (where $R$ is the replication factor).
 
-Provide a short description of how the writes are handled in the middleware. Explain how the replicated case differs from the simple ``write one'' scenario. 
+\linkmain{WriteWorker} runs an infinite while-loop in which it does two distinct things.
 
+Firstly, if there are any requests available in the queue of SET-requests, it removes one request r from the queue. It then writes to each of the replication servers without waiting for a response, i.e. it writes the whole SET-request to the first server, then to the second server, and so on. For the non-replicated case, only one request is sent.
+
+Secondly, \linkmain{WriteWorker} checks all memcached servers to see if any of them have responded. This is done in a non-blocking manner using \code{java.nio}: if a server is not yet ready to respond, other servers will be checked. \linkmain{WriteWorker} keeps track of all responses to the same request and once all servers have returned a response, the worst out of the $R$ responses is forwarded to the client. For the non-replicated case, this process reduces to just forwarding the response from memcached to the client.
+
+
+\todo{Estimate of latencies -- replicated and non-replicated}
 Give an estimate of the latencies the writing operation will incur, and generalize it to the replicated case. What do you expect will limit the rate at which writes can be carried out in the system (if anything)?
 
 \subsection{Read Operations and Thread Pool}\label{sec:desc:reads}
 
-Length: at most 1 page
+The read operations are handled by \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/ReadWorker.java}{ReadWorker}s. Each \linkmain{ReadWorker} runs on one thread and has exactly one socket connection to its assigned memcached server.
 
-How are reads handled in the system? How does the middleware make sure that the queue between the ``main receiving'' thread and the read handlers is not accessed in unsafe concurrent manner? Explain what is the relation between threads in the thread pool and connections to servers. 
+Every \linkmain{ReadWorker} runs an infinite while-loop in which it takes a request r from its assigned queue of GET-requests, writes the contents of r to its assigned memcached server, blocks until the response from memcached arrives, sets the response buffer of r to what it received from memcached and finally notifies \linkmain{LoadBalancer} that r is ready for returning by setting \code{r.hasResponse} to \code{true}.
+
+Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests at the same time as the \linkmain{LoadBalancer} is inserting elements, the queue needs to be safe to concurrent access by multiple threads. For this reason, \code{BlockingQueue} was chosen; in particular, the \code{ArrayBlockingQueue} subclass of \code{BlockingQueue}. The maximum size of the queue was set to a constant 200 (defined in \code{MiddlewareMain.QUEUE_SIZE}), because 3 load generating machines each with 64 concurrent clients can generate a maximum of $3 \cdot 64 = 192 < 200$ requests at a time, which in the worst (although unlikely) case will all be forwarded to the same server.
 
 
 \section{Memcached Baselines}\label{sec:baseline}
+
+\todo{}
 
 This section will report experimental results. All such parts will start with a short description of the experimental setup. The log files should be identified by a short name, or number, which will be explicitly listed at the end of the document (see Logfile Listing at the end).  \textbf{If this table is missing or the logfiles listed can't be found in your repository the experiment could be considered invalid, and no points will be awarded!}
 For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{sec:baseline:tput} and \ref{sec:baseline:rt}), one with aggregated throughput and one with average response time and standard deviation as a function of number of virtual clients. Increase these in steps from 1 to 128. Give a short explanation of memcache's behavior and find the number of virtual clients that saturate the server.
@@ -137,6 +209,8 @@ See previous explanation.
 See previous explanation.
 
 \section{Stability Trace}\label{sec:trace}
+
+\todo{}
 
 In this section you will have to show that the middleware is functional and it can handle a long-running workload without crashing or degrading in performance. For this you will run it with full replication for one hour connected to three memcache instances and three load generator machines.
 You will have to provide two graphs. The x-axis is time and the y-axis is either throughput or response time. Include standard deviation whenever applicable. 
