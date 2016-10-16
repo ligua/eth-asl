@@ -1,10 +1,12 @@
 package main.java.asl;
 
+import com.sun.org.apache.bcel.internal.generic.Select;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 enum RequestType {GET, SET, UNKNOWN}
@@ -23,8 +25,7 @@ public class Request {
     private ByteBuffer responseBuffer;
     private String key;
     private String stringRepresentation;
-
-    private boolean hasResponse;
+    private SelectionKey selectionKey;
 
     private long timeCreated;
     private long timeEnqueued;
@@ -37,15 +38,14 @@ public class Request {
 
     private ResponseFlag responseFlag = ResponseFlag.NA;
 
-    public Request(ByteBuffer buffer, SocketChannel client) {
+    public Request(ByteBuffer buffer, SelectionKey selectionKey) {
         setTimeCreated();
         buffer.flip();
         this.buffer = buffer;
-        type = getRequestType(buffer);
-        String message = new String(buffer.array());
-        key = getKeyFromBuffer(buffer);
-        shouldLog = false;
-        hasResponse = false;
+        this.type = getRequestType(buffer);
+        this.key = getKeyFromBuffer(buffer);
+        this.shouldLog = false;
+        this.selectionKey = selectionKey;
     }
 
     public RequestType getType() {
@@ -54,10 +54,6 @@ public class Request {
 
     public String getKey() {
         return key;
-    }
-
-    public boolean hasResponse() {
-        return hasResponse;
     }
 
     private void setTimeCreated() {
@@ -115,7 +111,27 @@ public class Request {
         if(this.responseBuffer == null) {
             throw new RuntimeException("Can't respond with an empty buffer!");
         }
-        this.hasResponse = true;
+
+        ByteBuffer responseBuffer = getResponseBuffer();
+
+        SocketChannel client = (SocketChannel) selectionKey.channel();
+
+        if(Request.isGetMiss(getResponseBuffer())) {
+            log.warn("GET miss! " + this);
+        }
+
+        // Write buffer
+        responseBuffer.rewind();
+        int bytesWritten = 0;
+        while(responseBuffer.hasRemaining()) {
+            int written = client.write(responseBuffer);
+            bytesWritten += written;
+        }
+
+        setTimeReturned();
+        logTimestamps();
+
+        selectionKey.interestOps(SelectionKey.OP_READ);
     }
 
     /**
