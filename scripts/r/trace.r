@@ -74,8 +74,9 @@ data4 <- requests %>%
   mutate(tLoadBalancer=timeEnqueued-timeCreated,
          tQueue=timeDequeued-timeEnqueued,
          tWorker=timeForwarded-timeDequeued,
-         tMemcachedAndReturn=timeReturned-timeForwarded) %>%
-  select(type, tLoadBalancer:tMemcachedAndReturn) %>%
+         tMemcached=timeReceived-timeForwarded,
+         tReturn=timeReturned-timeReceived) %>%
+  select(type, tLoadBalancer:tReturn) %>%
   melt(id.vars=c("type"))
 
 g4 <- ggplot(data4) +
