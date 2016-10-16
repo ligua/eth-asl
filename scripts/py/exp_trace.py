@@ -13,14 +13,15 @@ from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
 UPDATE_AND_INSTALL_ONLY_MIDDLEWARE = True
-EXPERIMENT_RUNTIME = 65  # minutes
-RUNTIME_BUFFER = 3 * 60     # seconds
+EXPERIMENT_RUNTIME = 5  # minutes
+RUNTIME_BUFFER = 60     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "30s"
 NUM_THREADS_IN_POOL = 5
 REPLICATION_FACTOR = 1
 MEMASLAP_VERBOSE = False
 MEMASLAP_VERIFY = False
+MEMASLAP_WORKLOAD = "smallvalue.cfg"
 
 ssh_username = "pungast7"
 results_dir = "results/trace"
@@ -161,7 +162,8 @@ for i in indices_smallmachines[3:]:
 for s in ms_servers:
     s.clear_logs()
     s.start(runtime=EXPERIMENT_RUNTIME_STRING, log_filename="memaslap{}.out".format(s.id_number),
-            stats_freq=STATS_FREQUENCY, verbose=MEMASLAP_VERBOSE, verify=MEMASLAP_VERIFY)
+            stats_freq=STATS_FREQUENCY, verbose=MEMASLAP_VERBOSE, verify=MEMASLAP_VERIFY,
+            workload_filename=MEMASLAP_WORKLOAD)
 
 # endregion
 
