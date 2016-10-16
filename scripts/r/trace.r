@@ -8,7 +8,7 @@ library(ggplot2, lib.loc=library_location)
 
 source("scripts/r/common.r")
 
-result_dir_base <- "results/trace_rep1"
+result_dir_base <- "results/trace"
 
 requests <- read.csv(paste0(result_dir_base, "/request.log"), header=TRUE, sep=",")
 memaslap <- read.csv(paste0(result_dir_base, "/memaslap_stats.csv"), header=TRUE, sep=";") %>%
