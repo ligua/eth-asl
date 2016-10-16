@@ -18,6 +18,7 @@ public class LoadBalancer implements Runnable {
 
     private static final Logger log = LogManager.getLogger(LoadBalancer.class);
     private static final Integer INFO_EVERY_N_REQUESTS = 1000;
+    public static final Integer SELECTOR_TIMEOUT = 1; // milliseconds
 
     private long readRequestCounter;
     private long writeRequestCounter;
@@ -102,7 +103,7 @@ public class LoadBalancer implements Runnable {
             SelectionKey selectionKey = serverSocketChannel.register(selector, ops, null);
 
             while(true) {
-                selector.select();
+                selector.select(SELECTOR_TIMEOUT);
 
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
