@@ -26,6 +26,12 @@
 \newcommand{\linkmain}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/#1.java}{#1}}
 \newcommand{\linktest}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/test/java/asl/#1.java}{#1}}
 
+\newcommand{\footnotemain}[1]{\footnote{\url{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/#1.java}}}
+\newcommand{\footnotetest}[1]{\footnote{\url{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/test/java/asl/#1.java}}}
+
+%\newcommand{\resultsurl}[1]{\url{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/#1}}
+\newcommand{\resultsurl}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/#1}{gitlab.inf.ethz.ch/.../results/#1}}
+
 \begin{document}
 
 \title{Advanced Systems Lab (Fall'16) -- First
@@ -187,10 +193,10 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 \hline Number of servers & 1 \\ 
 \hline Number of client machines & 1 to 2 \\ 
 \hline Virtual clients / machine & 1 to 64 \\ 
-\hline Workload & Key 16B, Value 128B, Writes 1\% \footnotemark \\
+\hline Workload & Key 16B, Value 128B, Writes 1\% \\
 \hline Middleware & Not present \\ 
-\hline Runtime x repetitions & 30s x 5 \\ 
-\hline Log files & microbench1, microbench2, \ldots \\
+\hline Runtime x repetitions & 60s x 5 \\ 
+\hline Log files & \todo{} \\
 \hline 
 \end{tabular} }
 
@@ -203,7 +209,7 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{../results/baseline/graphs/throughput.pdf}
+%\includegraphics[width=\textwidth]{../results/baseline/graphs/throughput.pdf}
 \label{fig:baseline:throughput}
 \caption{Throughput of the baseline \todo{}.}
 \end{figure}
@@ -211,7 +217,7 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 \subsection{Response time}\label{sec:baseline:rt}
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
+%\includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
 \label{fig:baseline:responsetime}
 \caption{Response time of the baseline \todo{}.}
 \end{figure}
@@ -228,11 +234,11 @@ You will have to provide two graphs. The x-axis is time and the y-axis is either
 \begin{tabular}{|c|c|}
 \hline Number of servers & 3 \\ 
 \hline Number of client machines & 3 \\ 
-\hline Virtual clients / machine &  64 (explain if chosen otherwise) \\ 
-\hline Workload & Key 16B, Value 128B, Writes 1\% (see footnote) \\
+\hline Virtual clients / machine &  64 \\ 
+\hline Workload & Key 16B, Value 128B, Writes 1\% \\
 \hline Middleware & Replicate to all (R=3) \\ 
 \hline Runtime x repetitions & 1h x 1 \\ 
-\hline Log files & trace1, \ldots \\
+\hline Log files & \todo{} \\
 \hline 
 \end{tabular} }
 
@@ -283,8 +289,11 @@ Compare the performance you expect based on the baselines and the one you observ
 \begin{tabular}{|c|l|}
 \hline \textbf{Short name }& \textbf{Location} \\ 
 \hline microbench1 & \url{https://gitlab.inf.ethz.ch/.../baseline/logfile.log} \\ 
-\hline microbench2 & \url{https://gitlab.inf.ethz.ch/.../baseline/logfile2.log} \\ 
-\hline trace1 & \url{https://gitlab.inf.ethz.ch/.../baseline/logfile.log} \\ 
+\hline trace-rep3-ms4 & \resultsurl{trace\_rep3/memaslap4.out} \\ 
+\hline trace-rep3-ms5 & \resultsurl{trace\_rep3/memaslap5.out} \\ 
+\hline trace-rep3-ms6 & \resultsurl{trace\_rep3/memaslap6.out} \\ 
+\hline trace-rep3-mw & \resultsurl{trace\_rep3/main.log} \\ 
+\hline trace-rep3-req & \resultsurl{trace\_rep3/request.log} \\ 
 \hline \dots & \dots \\ 
 \hline 
 \end{tabular} 
