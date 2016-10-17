@@ -28,7 +28,9 @@ log/
 scripts/__pycache__
 
 # Results directory
-results/
+results/*
+!results/trace_rep3/
+!results/baseline/
 
 # Random crap
 tmp/
