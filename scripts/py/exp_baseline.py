@@ -4,6 +4,7 @@ import time
 import fabric.api
 from memaslap import Memaslap
 from memcached import Memcached
+from extractor import Extractor
 
 from colors import Colors
 from deployer import Deployer
@@ -130,9 +131,16 @@ for i in range(0, len(ms_concurrencies)):
         memcached_server.stop()
 # endregion
 
-# region ---- Gather logs ----
+# region ---- Gather logs, extract data, plot ----
 memaslap_server1.download_logs(local_path=results_dir)
 memaslap_server2.download_logs(local_path=results_dir)
+
+e = Extractor()
+e.summarise_baseline_logs()
+
+with fabric.api.settings(warn_only=True):
+    fabric.api.local("mkdir results/trace/graphs")
+    fabric.api.local("Rscript scripts/r/trace.r results/trace")
 # endregion
 
 deployer.hibernate_wait()
