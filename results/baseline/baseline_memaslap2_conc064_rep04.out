@@ -1,0 +1,80 @@
+servers : 10.0.0.4:11211
+threads count: 32
+concurrency: 32
+run time: 60s
+windows size: 10k
+set proportion: set_prop=0.01
+get proportion: get_prop=0.99
+[1;1H[2J
+Get Statistics
+Type     Time(s)  Ops          TPS(ops/s)   Net(M/s)   Get_miss   Min(us)  Max(us)    Avg(us)    Std_dev    Geo_dist  
+Period   30       489048       16301        2.2        0          156      19661      1945       1738.94    1468.44
+Global   30       489048       16301        2.2        0          156      19661      1945       1738.94    1468.44
+
+Set Statistics
+Type     Time(s)  Ops          TPS(ops/s)   Net(M/s)   Get_miss   Min(us)  Max(us)    Avg(us)    Std_dev    Geo_dist  
+Period   30       4956         165          0.0        0          254      14998      1983       1776.40    1486.23
+Global   30       4956         165          0.0        0          254      14998      1983       1776.40    1486.23
+
+Total Statistics
+Type     Time(s)  Ops          TPS(ops/s)   Net(M/s)   Get_miss   Min(us)  Max(us)    Avg(us)    Std_dev    Geo_dist  
+Period   30       494004       16466        2.3        0          156      19661      1946       1738.63    1468.62
+Global   30       494004       16466        2.3        0          156      19661      1946       1738.63    1468.62
+
+[1;1H[2J
+Get Statistics
+Type     Time(s)  Ops          TPS(ops/s)   Net(M/s)   Get_miss   Min(us)  Max(us)    Avg(us)    Std_dev    Geo_dist  
+Period   30       492996       16433        2.2        0          155      64849      1930       1909.92    1446.90
+Global   60       982044       16367        2.3        0          155      64849      1938       1826.23    1457.59
+
+Set Statistics
+Type     Time(s)  Ops          TPS(ops/s)   Net(M/s)   Get_miss   Min(us)  Max(us)    Avg(us)    Std_dev    Geo_dist  
+Period   30       4979         165          0.0        0          203      64061      1900       1982.75    1427.28
+Global   60       9935         165          0.0        0          203      64061      1941       1883.42    1456.39
+
+Total Statistics
+Type     Time(s)  Ops          TPS(ops/s)   Net(M/s)   Get_miss   Min(us)  Max(us)    Avg(us)    Std_dev    Geo_dist  
+Period   30       497977       16599        2.3        0          155      64849      1930       1910.35    1446.70
+Global   60       991981       16533        2.3        0          155      64849      1938       1826.84    1457.57
+
+Get Statistics (982079 events)
+   Min:       155
+   Max:     64849
+   Avg:      1938
+   Geo:   1457.60
+   Std:   1826.29
+   Log2 Dist:
+       8:      326    32486   319569   357244
+      12:   170638    93277     8263      165
+      16:      111
+
+Set Statistics (9935 events)
+   Min:       203
+   Max:     64061
+   Avg:      1941
+   Geo:   1456.39
+   Std:   1883.42
+   Log2 Dist:
+       8:        5      318     3262     3551
+      12:     1749      969       79        0
+      16:        2
+
+Total Statistics (992014 events)
+   Min:       155
+   Max:     64849
+   Avg:      1938
+   Geo:   1457.59
+   Std:   1826.91
+   Log2 Dist:
+       8:      331    32804   322831   360795
+      12:   172387    94246     8342      165
+      16:      113
+
+cmd_get: 982110
+cmd_set: 9936
+get_misses: 0
+written_bytes: 23195338
+read_bytes: 162122515
+object_bytes: 1430784
+
+Run time: 60.2s Ops: 992046 TPS: 16468 Net_rate: 2.9M/s
