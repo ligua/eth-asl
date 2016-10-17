@@ -99,29 +99,28 @@ The middleware is instrumented at six points that are also shown in Figure~\ref{
 
 \subsection{Load Balancing and Hashing}\label{sec:desc:hashing}
 
-The hashing is implemented by \linkmain{UniformHasher}. The hashing scheme for a given key s works as follows:
+The hashing is implemented by \linkmain{UniformHasher}. The hashing scheme for a given key works as follows:
 \begin{enumerate}
-\item s is hashed into a 32-bit signed integer using Java's native \code{String.hashCode()}.
-\item The hash is used to set the seed of a random number generator (\code{java.util.Random}).
-\item The first random number that the generator returns is used.
+\item s is hashed into a 32-bit signed integer $i$ using Java's native \code{String.hashCode()}.
+\item The index of the primary machine is calculated as $i \bmod N$ (adding $N$ if the modulus is negative), where $N$ is the number of servers.
 \end{enumerate}
 
 The uniformity of hashing was also validated in tests (see \linktest{UniformHasherTest}). For 1 million random strings and 13 target machines, the distribution to different machines was the following:
 
 \begin{verbatim}
-Machine   0 got      76706 hits.
-Machine   1 got      76896 hits.
-Machine   2 got      76718 hits.
-Machine   3 got      76829 hits.
-Machine   4 got      77102 hits.
-Machine   5 got      76980 hits.
-Machine   6 got      76467 hits.
-Machine   7 got      76940 hits.
-Machine   8 got      77194 hits.
-Machine   9 got      76896 hits.
-Machine  10 got      77107 hits.
-Machine  11 got      76785 hits.
-Machine  12 got      77380 hits.
+Machine   0 got      77229 hits.
+Machine   1 got      76702 hits.
+Machine   2 got      76769 hits.
+Machine   3 got      76860 hits.
+Machine   4 got      76773 hits.
+Machine   5 got      77169 hits.
+Machine   6 got      76650 hits.
+Machine   7 got      76831 hits.
+Machine   8 got      77061 hits.
+Machine   9 got      76955 hits.
+Machine  10 got      76644 hits.
+Machine  11 got      77432 hits.
+Machine  12 got      76925 hits.
 \end{verbatim}
 
 As apparent, the distribution is indeed uniform.

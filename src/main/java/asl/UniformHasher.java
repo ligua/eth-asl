@@ -35,10 +35,11 @@ public class UniformHasher implements Hasher {
      */
     @Override
     public Integer getPrimaryMachine(String s) {
-        Random r = new Random();
-        r.setSeed(s.hashCode());
-
-        return r.nextInt(numMachines);
+        int index = s.hashCode() % numMachines;
+        if(index < 0) {
+            index += numMachines;
+        }
+        return index;
     }
 
     /**
