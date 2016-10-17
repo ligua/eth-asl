@@ -37,3 +37,6 @@ tmp/
 
 # R
 .Rhistory
+
+# Old JARs
+lib2
