@@ -1,6 +1,7 @@
 import os.path
 import logging
 import time
+import fabric.api
 from memaslap import Memaslap
 from memcached import Memcached
 
@@ -11,8 +12,13 @@ UPDATE_AND_INSTALL = False
 NUM_REPETITIONS = 5
 EXPERIMENT_RUNTIME = 60  # seconds
 EXPERIMENT_RUNTIME_STRING = "{}s".format(EXPERIMENT_RUNTIME)
-STATS_FREQUENCY = "10m"
+STATS_FREQUENCY = "30s"
 MEMASLAP_WORKLOAD = "smallvalue.cfg"
+
+results_dir = "results/baseline"
+with fabric.api.settings(warn_only=True):
+    fabric.api.local("rm -r {}/*".format(results_dir))
+    fabric.api.local("mkdir -p {}".format(results_dir))
 
 # region ---- Logging ----
 LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
@@ -125,10 +131,8 @@ for i in range(0, len(ms_concurrencies)):
 # endregion
 
 # region ---- Gather logs ----
-memaslap_server1.download_logs()
-memaslap_server2.download_logs()
+memaslap_server1.download_logs(local_path=results_dir)
+memaslap_server2.download_logs(local_path=results_dir)
 # endregion
 
-#input("Write anything to start hibernation: ")
-
-#deployer.hibernate_wait()
+deployer.hibernate_wait()
