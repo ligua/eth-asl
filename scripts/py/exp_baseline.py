@@ -8,7 +8,7 @@ from memcached import Memcached
 from colors import Colors
 from deployer import Deployer
 
-UPDATE_AND_INSTALL = False
+UPDATE_AND_INSTALL = True
 NUM_REPETITIONS = 5
 EXPERIMENT_RUNTIME = 60  # seconds
 EXPERIMENT_RUNTIME_STRING = "{}s".format(EXPERIMENT_RUNTIME)
