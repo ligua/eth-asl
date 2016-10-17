@@ -66,7 +66,7 @@ ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g2,
        width=fig_width, height=fig_height, device=cairo_pdf)
 
 
-# ---- Latency over time ----
+# ---- Response time ----
 data3 <- memaslap %>%
   filter(type=="t") %>%
   group_by(time, request_type) %>%
