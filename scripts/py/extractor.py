@@ -151,4 +151,5 @@ class Extractor:
 
 if __name__ == "__main__":
     e = Extractor()
-    e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
+    #e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
+    e.summarise_baseline_logs()
