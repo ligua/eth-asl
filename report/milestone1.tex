@@ -37,8 +37,7 @@
 \title{Advanced Systems Lab (Fall'16) -- First
 Milestone}
 
-\author{\textbf{Name: \emph{Your name}}\\\textbf{Legi number: \emph{Your legi
-number}}}
+\author{\textbf{Name: \emph{Taivo Pungas}}\\\textbf{Legi number: \emph{15-928-336}}}
 
 \date{
 \vspace{4cm}
@@ -62,34 +61,6 @@ number}}}
 \maketitle
 \thispagestyle{firstpagefooter}
 \newpage
-
-\section*{Notes on writing the report \small{(remove this page for submission)}}
-
-The report for first milestone not need to be extensive but it must be concise, complete, and correct. 
-Conciseness is important in terms of content and explanations, focusing on what has been done and explanations of the results. A long report is not necessarily a better report, especially if there are aspects of the design or the experiments that remain unexplained. Completeness implies that the report should give a comprehensive idea of what has been done by mentioning all key aspects of the design, experiments, and analysis. Aspects of the system, be it of its design or of its behavior, that remain unexplained detract from the credibility of the report. Correctness is expected in terms of the explanations being logical and correlate with the numbers in the experiments and the design.
-
-Remember that this is a report about the system you have designed and built, about the experiments you have performed, and about how you interpret the results of the experiments and map them to your design and implementation. Please do not contact us seeking confirmation and assurances about, e.g., whether the report is sufficient, your interpretation of the data, validation of concrete aspects of your design, or whether you have done enough experiments. Making those decisions is your job and part of what the course will evaluate.
-
-The report will be graded together with the code and data submitted. \textbf{The maximum number of points is 200 for each of the milestones and you will need at least 100 to pass. Keep in mind that to pass the project you need to collect at least 400 points from the three milestones.} You might be called for a meeting in person to clarify aspects of the report or the system and to make a short presentation of the work done. By submitting the report, the code, and the data, you confirm that you have done the work on your own, the code has been developed by yourself, the data submitted comes from experiments your have done, you have written the report on your own, and you have not copied neither code nor text nor data from other sources.
-
-\medskip
-\noindent
-A passing grade for the milestone requires at the very minimum:
-\begin{itemize}
-\item Conforming to this template
-\item A working system
-\item Consistent experimental results of the entire system
-\item Internal measurements of the middleware
-\item Solid and credible explanations of the design, experimental results and behavior of the implemented system
-\end{itemize}
-
-\section*{Formatting guidelines}
-We expect you to use this template for the report, but in case you want to use Word or an other text processor, keep in mind the following:
-\begin{itemize}
-\item  We expect you to submit \textbf{a single PDF that has the same section structure as this template, and answers all points we outline here}. If you use this file, you should remove this page with notes, and the short description provided by us at the beginning of sections.
-\item Keep the same cover page as on this document and \textbf{fill out your name and legi number}. Leave the grading table empty.
-\item  The main text should be in \textbf{single-column format with 11pt font on A4 paper}. In case you don't start with one of the files provided by us, \textbf{for margins use 2.54 cm (1 inch) on all sides}.
-\end{itemize}
 
 
 \section{System Description}\label{sec:system-description}
@@ -185,7 +156,9 @@ Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests at the
 \todo{}
 
 This section will report experimental results. All such parts will start with a short description of the experimental setup. The log files should be identified by a short name, or number, which will be explicitly listed at the end of the document (see Logfile Listing at the end).  \textbf{If this table is missing or the logfiles listed can't be found in your repository the experiment could be considered invalid, and no points will be awarded!}
-For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{sec:baseline:tput} and \ref{sec:baseline:rt}), one with aggregated throughput and one with average response time and standard deviation as a function of number of virtual clients. Increase these in steps from 1 to 128. \todo{Give a short explanation of memcache's behavior and find the number of virtual clients that saturate the server.}
+For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{sec:baseline:tput} and \ref{sec:baseline:rt}), one with aggregated throughput and one with average response time and standard deviation as a function of number of virtual clients. Increase these in steps from 1 to 128.
+
+\todo{Give a short explanation of memcache's behavior and find the number of virtual clients that saturate the server.}
 
 \small{
 \smallskip
@@ -196,11 +169,9 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 \hline Workload & Key 16B, Value 128B, Writes 1\% \\
 \hline Middleware & Not present \\ 
 \hline Runtime x repetitions & 60s x 5 \\ 
-\hline Log files & \todo{} \\
+\hline Log files & baseline-m*-c*-r* \\
 \hline 
 \end{tabular} }
-
-\footnotetext{As starting point use the workloads provided in \url{http://www.systems.ethz.ch/sites/default/files/file/asl2016/memaslap-workloads.tar}. Use by default the \emph{small} workload. In later experiments you can and should change read-write ratios and potentially use other value sizes.}
 
 
 
@@ -238,7 +209,7 @@ You will have to provide two graphs. The x-axis is time and the y-axis is either
 \hline Workload & Key 16B, Value 128B, Writes 1\% \\
 \hline Middleware & Replicate to all (R=3) \\ 
 \hline Runtime x repetitions & 1h x 1 \\ 
-\hline Log files & \todo{} \\
+\hline Log files & trace-ms4, trace-ms5, trace-ms6, trace-mw, trace-req \\
 \hline 
 \end{tabular} }
 
@@ -274,12 +245,12 @@ Compare the performance you expect based on the baselines and the one you observ
 
 \begin{tabular}{|c|l|}
 \hline \textbf{Short name }& \textbf{Location} \\ 
-\hline microbench1 & \url{https://gitlab.inf.ethz.ch/.../baseline/logfile.log} \\ 
-\hline trace-rep3-ms4 & \resultsurl{trace\_rep3/memaslap4.out} \\ 
-\hline trace-rep3-ms5 & \resultsurl{trace\_rep3/memaslap5.out} \\ 
-\hline trace-rep3-ms6 & \resultsurl{trace\_rep3/memaslap6.out} \\ 
-\hline trace-rep3-mw & \resultsurl{trace\_rep3/main.log} \\ 
-\hline trace-rep3-req & \resultsurl{trace\_rep3/request.log} \\ 
+\hline baseline-m*-c*-r* & \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/baseline}{gitlab.inf.ethz.ch/.../results/baseline/baseline\_memaslap*\_conc*\_rep*.out} \\ 
+\hline trace-ms4 & \resultsurl{trace\_rep3/memaslap4.out} \\ 
+\hline trace-ms5 & \resultsurl{trace\_rep3/memaslap5.out} \\ 
+\hline trace-ms6 & \resultsurl{trace\_rep3/memaslap6.out} \\ 
+\hline trace-mw & \resultsurl{trace\_rep3/main.log} \\ 
+\hline trace-req & \resultsurl{trace\_rep3/request.log} \\ 
 \hline \dots & \dots \\ 
 \hline 
 \end{tabular} 
