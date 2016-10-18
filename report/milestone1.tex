@@ -69,13 +69,15 @@ Milestone}
 
 The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows. Note that whenever a Java class is referenced, it will appear as a link to GitLab, e.g. \linkmain{MiddlewareMain}. 
 
+\todo{Mention thread pool, ExecutorService, and number of threads I use.}
+
 \begin{itemize}
 \item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware.
-\item \linkmain{Request} is a wrapper class for all GET- or SET-requests.
+\item \linkmain{Request} is a wrapper class for all GET- and SET-requests.
 \item \linkmain{LoadBalancer} is the front of the middleware. It reads all incoming requests from all clients using \code{java.nio}, hashes the requests using a \linkmain{Hasher} and forwards them to the correct servers for writing or reading.
 \item \linkmain{UniformHasher} implements the \linkmain{Hasher} interface and is responsible for mapping request keys to memcached servers. More in Section~\ref{sec:desc:hashing}.
 \item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the threads that process requests from those queues.
-\item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
+\item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
 \end{itemize}
 
 \begin{figure}[h]
@@ -102,7 +104,7 @@ The middleware is instrumented at six points that are also shown in Figure~\ref{
 The hashing is implemented by \linkmain{UniformHasher}. The hashing scheme for a given key works as follows:
 \begin{enumerate}
 \item s is hashed into a 32-bit signed integer $i$ using Java's native \code{String.hashCode()}.
-\item The index of the primary machine is calculated as $i \bmod N$ (adding $N$ if the modulus is negative), where $N$ is the number of servers.
+\item The index of the primary machine is calculated as $i \bmod N$ (adding $N$ if the modulus is negative) where $N$ is the number of servers.
 \end{enumerate}
 
 The uniformity of hashing was also validated in tests (see \linktest{UniformHasherTest}). For 1 million random strings and 13 target machines, the distribution to different machines was the following:
@@ -133,9 +135,9 @@ The write operations are handled by \linkmain{WriteWorker}s. Each \linkmain{Writ
 
 \linkmain{WriteWorker} runs an infinite while-loop in which it does two distinct things.
 
-Firstly, if there are any requests available in the queue of SET-requests, it removes one request r from the queue. It then writes to each of the replication servers without waiting for a response, i.e. it writes the whole SET-request to the first server, then to the second server, and so on. For the non-replicated case, only one request is sent.
+Firstly, if there are any requests available in the queue of SET-requests, it removes one request r from the queue. It then writes to each of the replication servers in a serial manner without waiting for a response, i.e. it writes the whole SET-request to the first server, then to the second server, and so on. For the non-replicated case, only one request is sent.
 
-Secondly, \linkmain{WriteWorker} checks all memcached servers to see if any of them have responded. This is done in a non-blocking manner using \code{java.nio}: if a server is not yet ready to respond, other servers will be checked. \linkmain{WriteWorker} keeps track of all responses to the same request and once all servers have returned a response, the worst out of the $R$ responses is forwarded to the client. For the non-replicated case, this process reduces to just forwarding the response from memcached to the client.
+Secondly, \linkmain{WriteWorker} checks all memcached servers to see if any of them have responded. This is done in a non-blocking manner using \code{java.nio}: if a server is not yet ready to respond, other servers will be checked; if no server is ready to respond, the first step is run again. \linkmain{WriteWorker} keeps track of all responses to the same request and once all servers have returned a response, the worst out of the $R$ responses is forwarded to the client. For the non-replicated case, this process reduces to just forwarding the response from memcached to the client.
 
 
 \todo{Estimate of latencies -- replicated and non-replicated}
@@ -147,7 +149,7 @@ The read operations are handled by \href{https://gitlab.inf.ethz.ch/pungast/asl-
 
 Every \linkmain{ReadWorker} runs an infinite while-loop in which it takes a request r from its assigned queue of GET-requests, writes the contents of r to its assigned memcached server, blocks until the response from memcached arrives, sets the response buffer of r to what it received from memcached and finally sends the response to the client corresponding to r.
 
-Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests at the same time as the \linkmain{LoadBalancer} is inserting elements, the queue needs to be safe to concurrent access by multiple threads. For this reason, \code{BlockingQueue} was chosen; in particular, the \code{ArrayBlockingQueue} subclass of \code{BlockingQueue}. The maximum size of the queue was set to a constant 200 (defined in \code{MiddlewareMain.QUEUE_SIZE}), because 3 load generating machines each with 64 concurrent clients can generate a maximum of $3 \cdot 64 = 192 < 200$ requests at a time, which in the worst (although unlikely) case will all be forwarded to the same server.
+Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests concurrently and \linkmain{LoadBalancer} is inserting elements at the same time, the queue needs to be safe to concurrent access by multiple threads. For this reason, \code{BlockingQueue} was chosen; in particular, the \code{ArrayBlockingQueue} implementation of \code{BlockingQueue}. The maximum size of the queue was set to a constant 200 (defined in \code{MiddlewareMain.QUEUE_SIZE}), because 3 load generating machines each with 64 concurrent clients can generate a maximum of $3 \cdot 64 = 192 < 200$ requests at any time, which in the worst (although unlikely) case will all be forwarded to the same server.
 
 
 \section{Memcached Baselines}\label{sec:baseline}
@@ -159,37 +161,48 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 
 \todo{Give a short explanation of memcache's behavior and find the number of virtual clients that saturate the server.}
 
+\todo{Explain high std: Upon examining logs manually, lalala distribution}
+
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
 \hline Number of servers & 1 \\ 
 \hline Number of client machines & 1 to 2 \\ 
-\hline Virtual clients / machine & 1 to 64 \\ 
+\hline Virtual clients / machine & 0 to 64 (see footnote\footnotemark)\\ 
 \hline Workload & Key 16B, Value 128B, Writes 1\% \\
 \hline Middleware & Not present \\ 
 \hline Runtime x repetitions & 60s x 5 \\ 
 \hline Log files & baseline-m*-c*-r* \\
 \hline 
 \end{tabular} }
+\footnotetext{For concurrency=1, one client machine was run with 1 virtual client and the other machine was idle.}
 
 
 
 
 \subsection{Throughput}\label{sec:baseline:tput}
 
-\begin{figure}[h]
+See Figure~\ref{fig:baseline:throughput}.
+
+\begin{figure}[p]
 \centering
-%\includegraphics[width=\textwidth]{../results/baseline/graphs/throughput.pdf}
+\includegraphics[width=\textwidth]{../results/baseline/graphs/throughput.pdf}
 \label{fig:baseline:throughput}
-\caption{Throughput of the baseline \todo{}.}
+\caption{Throughput of memcached without middleware, as measured by memaslap.}
 \end{figure}
 
 \subsection{Response time}\label{sec:baseline:rt}
-\begin{figure}[h]
+
+See Figure~\ref{fig:baseline:responsetime}.
+
+\todo{mention that even though stdev goes below 0, in reality it can't be there (physically impossible)}
+\todo{explain why stdev is so high}
+
+\begin{figure}[p]
 \centering
-%\includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
+\includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
 \label{fig:baseline:responsetime}
-\caption{Response time of the baseline \todo{}.}
+\caption{Response time of memcached without middleware, as measured by memaslap.}
 \end{figure}
 
 \section{Stability Trace}\label{sec:trace}
@@ -199,6 +212,12 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 In this section you will have to show that the middleware is functional and it can handle a long-running workload without crashing or degrading in performance. For this you will run it with full replication for one hour connected to three memcache instances and three load generator machines.
 You will have to provide two graphs. The x-axis is time and the y-axis is either throughput or response time. Include standard deviation whenever applicable. 
 
+\todo{mention that even though stdev goes below 0, in reality it can't be there (physically impossible)}
+
+\todo{explain why stdev is so high}
+
+\todo{explain that first 5 minutes of experiment are not shown in graph -- warmup phase}
+
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
@@ -207,7 +226,7 @@ You will have to provide two graphs. The x-axis is time and the y-axis is either
 \hline Virtual clients / machine &  64 \\ 
 \hline Workload & Key 16B, Value 128B, Writes 1\% \\
 \hline Middleware & Replicate to all (R=3) \\ 
-\hline Runtime x repetitions & 1h x 1 \\ 
+\hline Runtime x repetitions & 65min x 1 \\ 
 \hline Log files & trace-ms4, trace-ms5, trace-ms6, trace-mw, trace-req \\
 \hline 
 \end{tabular} }
@@ -216,21 +235,25 @@ You will have to provide two graphs. The x-axis is time and the y-axis is either
 
 \subsection{Throughput}
 
-\begin{figure}[h]
+See Figure~\ref{fig:rep3:throughput}.
+
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/trace_rep3/graphs/throughput.pdf}
 \label{fig:rep3:throughput}
-\caption{Throughput trace of the middleware with full replication \todo{}.}
+\caption{Throughput trace of the middleware as measured by memaslap.}
 \end{figure}
 
 
 \subsection{Response time}
 
-\begin{figure}[h]
+See Figure~\ref{fig:rep3:responsetime}.
+
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/trace_rep3/graphs/responsetime.pdf}
 \label{fig:rep3:responsetime}
-\caption{Response time trace of the middleware with full replication \todo{}.}
+\caption{Response time trace of the middleware as measured by memaslap.}
 \end{figure}
 
 \subsection{Overhead of middleware}
@@ -250,7 +273,6 @@ Compare the performance you expect based on the baselines and the one you observ
 \hline trace-ms6 & \resultsurl{trace\_rep3/memaslap6.out} \\ 
 \hline trace-mw & \resultsurl{trace\_rep3/main.log} \\ 
 \hline trace-req & \resultsurl{trace\_rep3/request.log} \\ 
-\hline \dots & \dots \\ 
 \hline 
 \end{tabular} 
 

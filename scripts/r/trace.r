@@ -10,6 +10,7 @@ source("scripts/r/common.r")
 
 FIGURE_TYPE = ".pdf"
 SHOULD_FILTER = FALSE
+DROP_TIMES_BEFORE = 5 * 60 # How many seconds in the beginning we want to drop
 
 
 # ---- Parse command line args ----
@@ -25,16 +26,6 @@ if (length(args) == 0) {
 requests <- read.csv(paste0(result_dir_base, "/request.log"), header=TRUE, sep=",")
 memaslap <- read.csv(paste0(result_dir_base, "/memaslap_stats.csv"), header=TRUE, sep=";") %>%
   mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000)
-
-# ---- Filter out beginning and end ----
-if(SHOULD_FILTER) {
-  CUT_BEGINNING = 2 # minutes
-  CUT_END = 1 # minutes
-  min_time = min(requests$timeReturned) + 1e3 * 60 * CUT_BEGINNING
-  max_time = max(requests$timeReturned) - 1e3 * 60 * CUT_END
-  requests <- requests %>%
-    filter(timeReturned > min_time & timeReturned < max_time)
-}
 
 # ---- Distribution of response times -----
 data1 <- requests %>%
@@ -53,14 +44,14 @@ ggsave(paste0(result_dir_base, "/graphs/dist_tAll", FIGURE_TYPE), g1,
 
 # ---- Throughput over time ----
 data2 <- memaslap %>%
-  filter(type=="t") %>%
+  filter(type=="t" & time >= DROP_TIMES_BEFORE) %>%
   group_by(time) %>%
   summarise(tps=sum(tps))
 
 g2 <- ggplot(data2) +
   geom_line(aes(x=time, y=tps, ymin=0), color=color_dark, size=2) +
-  xlab("Time since start of experiment (s)") +
-  ylab("Total throughput (requests / s)") +
+  xlab("Time since start of experiment [s]") +
+  ylab("Total throughput [successful responses / s]") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g2,
        width=fig_width, height=fig_height, device=cairo_pdf)
@@ -68,20 +59,20 @@ ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g2,
 
 # ---- Response time ----
 data3 <- memaslap %>%
-  filter(type=="t") %>%
+  filter(type=="t" & time >= DROP_TIMES_BEFORE) %>%
   group_by(time, request_type) %>%
   summarise(avg=sum(avg * ops) / sum(ops))
 
 data3summarised <- memaslap %>%
-  filter(type=="t") %>%
+  filter(type=="t" & time >= DROP_TIMES_BEFORE) %>%
   group_by(time) %>%
   summarise(avg=sum(avg * ops) / sum(ops),
             std=sqrt(sum(std*std*ops)/sum(ops)))
 
 g3 <- ggplot(data3) +
   geom_line(aes(x=time, y=avg, ymin=0, color=request_type), size=2) +
-  xlab("Time since start of experiment (s)") +
-  ylab("Mean response time (ms)") +
+  xlab("Time since start of experiment [s]") +
+  ylab("Mean response time [ms]") +
   facet_wrap(~request_type, nrow=2, scales="free") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/latency_breakdown", FIGURE_TYPE), g3,
@@ -91,8 +82,8 @@ g3summarised <- ggplot(data3summarised) +
   geom_ribbon(aes(x=time, ymin=avg-std, ymax=avg+std), fill=color_light,
               alpha=0.5) +
   geom_line(aes(x=time, y=avg, ymin=0), color=color_dark, size=2) +
-  xlab("Time since start of experiment (s)") +
-  ylab("Response time measured by memaslap (ms)") +
+  xlab("Time since start of experiment [s]") +
+  ylab("Mean response time [ms]") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/responsetime", FIGURE_TYPE), g3summarised,
        width=fig_width, height=fig_height, device=cairo_pdf)
