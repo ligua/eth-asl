@@ -10,7 +10,6 @@ source("scripts/r/common.r")
 
 FIGURE_TYPE = ".pdf"
 SHOULD_FILTER = FALSE
-DROP_TIMES_BEFORE = 5 * 60 # How many seconds in the beginning we want to drop
 
 
 # ---- Parse command line args ----
@@ -26,6 +25,9 @@ if (length(args) == 0) {
 requests <- read.csv(paste0(result_dir_base, "/request.log"), header=TRUE, sep=",")
 memaslap <- read.csv(paste0(result_dir_base, "/memaslap_stats.csv"), header=TRUE, sep=";") %>%
   mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000)
+
+DROP_TIMES_BEFORE = 3 * 60 # How many seconds in the beginning we want to drop
+DROP_TIMES_AFTER = max((memaslap %>% filter(type=="t"))$time) - 2 * 60
 
 # ---- Distribution of response times -----
 data1 <- requests %>%
@@ -44,7 +46,7 @@ ggsave(paste0(result_dir_base, "/graphs/dist_tAll", FIGURE_TYPE), g1,
 
 # ---- Throughput over time ----
 data2 <- memaslap %>%
-  filter(type=="t" & time >= DROP_TIMES_BEFORE) %>%
+  filter(type=="t" & time >= DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
   group_by(time) %>%
   summarise(tps=sum(tps))
 
@@ -59,12 +61,12 @@ ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g2,
 
 # ---- Response time ----
 data3 <- memaslap %>%
-  filter(type=="t" & time >= DROP_TIMES_BEFORE) %>%
+  filter(type=="t" & time >= DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
   group_by(time, request_type) %>%
   summarise(avg=sum(avg * ops) / sum(ops))
 
 data3summarised <- memaslap %>%
-  filter(type=="t" & time >= DROP_TIMES_BEFORE) %>%
+  filter(type=="t" & time >= DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
   group_by(time) %>%
   summarise(avg=sum(avg * ops) / sum(ops),
             std=sqrt(sum(std*std*ops)/sum(ops)))
