@@ -28,11 +28,13 @@ data1 <- data %>%
   group_by(concurrency, repetition) %>%
   summarise(tps=sum(tps)) %>%  # Sum over the two clients
   group_by(concurrency) %>%
-  summarise(mean_tps=mean(tps))
+  summarise(mean_tps=mean(tps), std=sd(tps))
 
 g1 <- ggplot(data1, aes(x=concurrency, y=mean_tps, ymin=0)) +
+  geom_ribbon(aes(x=concurrency, ymin=mean_tps-std, ymax=mean_tps+std),
+              fill=color_light, alpha=0.5) + 
   geom_line(color=color_dark, size=2) +
-  geom_point(color=color_dark, size=3) + 
+  geom_point(color=color_dark, size=3) +
   xlab("Concurrency [# virtual clients]") +
   ylab("Total throughput [successful responses / s]") +
   asl_theme
@@ -46,7 +48,8 @@ data2 <- data %>%
             t_std=sqrt(sum(tstd*tstd*total_events)/sum(total_events)))  # TODO this is probably not good
 
 g2 <- ggplot(data2, aes(x=concurrency)) +
-  geom_errorbar(aes(ymin=t_mean-t_std, ymax=t_mean+t_std), color=color_light, size=1) +
+  geom_ribbon(aes(ymin=t_mean-t_std, ymax=t_mean+t_std),
+              fill=color_light, alpha=0.5, size=1) +
   geom_line(aes(y=t_mean), color=color_dark, size=2) +
   geom_point(aes(y=t_mean), color=color_dark, size=3) + 
   xlab("Concurrency [# virtual clients]") +
