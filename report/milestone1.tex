@@ -186,7 +186,7 @@ From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of mem
 
 From Figure~\ref{fig:baseline:responsetime} we observe that response time grows slowly up to 24 virtual clients, from which point mean response time starts to grow linearly with the number of clients, and the standard deviation of response time increases significantly. The mean increases because memcached is unable to service all incoming requests immediately so some requests have to wait.
 
-When the system starts to saturate, standard deviation also increases. Under normal load (no saturation), all requests enter processing almost immediately. Upon saturation however, each request needs to wait for some time
+When the system starts to saturate, standard deviation also increases. \todo{WHY?} Statistical explanation: heavy tail for this distribution.
 
 
 
