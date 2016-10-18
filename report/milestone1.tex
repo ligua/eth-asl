@@ -140,6 +140,8 @@ Secondly, \linkmain{WriteWorker} checks all memcached servers to see if any of t
 \todo{Estimate of latencies -- replicated and non-replicated}
 Give an estimate of the latencies the writing operation will incur, and generalize it to the replicated case. What do you expect will limit the rate at which writes can be carried out in the system (if anything)?
 
+The maximum rate at which writes can be carried out will likely be limited by \todo{}.
+
 \subsection{Read Operations and Thread Pool}\label{sec:desc:reads}
 
 The read operations are handled by \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/ReadWorker.java}{ReadWorker}s. Each \linkmain{ReadWorker} runs on one thread and has exactly one socket connection to its assigned memcached server.
@@ -227,11 +229,11 @@ Both the middleware and memcached servers were accessed through their private IP
 
 \subsection{Throughput}
 
-\todo{Explain that MW is functional and can handle a long-running workload without crashing or degrading in performance.}
-
 \todo{Explain the spikes in the graph.}
 
-See Figure~\ref{fig:rep3:throughput}.
+From Figure~\ref{fig:rep3:throughput} we can see that the throughput remains at the same level of roughly 3500 operations per second throughout the whole experiment and thus the middleware can handle a long-running workload without a degradation in performance. The spikes can partly be explained by the random nature of the experiment: it is affected by the conditions (especially network conditions) on Azure. However, \todo{sth about Java GC}.
+
+We can use the Interactive Response Time Law to evaluate whether the results are reasonable. Given that in the trace (excluding warm-up and cool-down) the mean response time is $r=52.8$ms, the number of clients is $n = 3 \cdot 64 = 192$, and the clients can be assumed to have no think time ($z=0$), the predicted throughput is $\frac{n}{r + z} = 3630$ operations per second. This is well in line with the actual throughput of 3650 operations per second.
 
 \begin{figure}[p]
 \centering
