@@ -2,7 +2,6 @@ package main.java.asl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.layout.StringBuilderEncoder;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
