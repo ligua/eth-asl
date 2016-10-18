@@ -67,15 +67,12 @@ Milestone}
 
 \subsection{Overall Architecture}\label{sec:desc:architecture}
 
-The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows. Note that whenever a Java class is referenced, it will appear as a link to GitLab, e.g. \linkmain{MiddlewareMain}. 
-
-\todo{Mention thread pool, ExecutorService, and number of threads I use.}
+The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows. Whenever a Java class is referenced, it will link to GitLab, e.g. \linkmain{MiddlewareMain}. 
 
 \begin{itemize}
-\item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware.
+\item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware, and creating the \code{ExecutorService} with a fixed thread pool of $(T+1) \cdot N + 1$ threads.
 \item \linkmain{Request} is a wrapper class for all GET- and SET-requests.
-\item \linkmain{LoadBalancer} is the front of the middleware. It reads all incoming requests from all clients using \code{java.nio}, hashes the requests using a \linkmain{Hasher} and forwards them to the correct servers for writing or reading.
-\item \linkmain{UniformHasher} implements the \linkmain{Hasher} interface and is responsible for mapping request keys to memcached servers. More in Section~\ref{sec:desc:hashing}.
+\item \linkmain{LoadBalancer} is the front of the middleware. It reads all incoming requests from all clients using \code{java.nio}, hashes the requests using \linkmain{UniformHasher} and forwards them to the correct servers for writing or reading. More in Section~\ref{sec:desc:hashing}.
 \item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the threads that process requests from those queues.
 \item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
 \end{itemize}
@@ -154,15 +151,7 @@ Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests concur
 
 \section{Memcached Baselines}\label{sec:baseline}
 
-\todo{}
-
-This section will report experimental results. All such parts will start with a short description of the experimental setup. The log files should be identified by a short name, or number, which will be explicitly listed at the end of the document (see Logfile Listing at the end).  \textbf{If this table is missing or the logfiles listed can't be found in your repository the experiment could be considered invalid, and no points will be awarded!}
-For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{sec:baseline:tput} and \ref{sec:baseline:rt}), one with aggregated throughput and one with average response time and standard deviation as a function of number of virtual clients. Increase these in steps from 1 to 128.
-
-\todo{Give a short explanation of memcache's behavior and find the number of virtual clients that saturate the server.}
-
-\todo{Explain high std: Upon examining logs manually, lalala distribution}
-
+\begin{center}
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
@@ -175,49 +164,46 @@ For baseline measurement of memcached provide \textbf{two} graphs (Section~\ref{
 \hline Log files & baseline-m*-c*-r* \\
 \hline 
 \end{tabular} }
+\end{center}
 \footnotetext{For concurrency=1, one client machine was run with 1 virtual client and the other machine was idle.}
 
+In the baseline experiments, two clients sent requests directly to one memcached server. 37 different values in the range $[1, 128]$ for the total number of virtual clients were tested with 5 repetitions for each. The machines were not restarted between repetitions; however, memcached was restarted after each repetition. Both the clients and the memcached server ran on Azure Basic\_A2 machines. All machines were accessed through their private IPs in the virtual network. Logs were parsed using Python and results plotted using R.
 
 
 
 \subsection{Throughput}\label{sec:baseline:tput}
 
-See Figure~\ref{fig:baseline:throughput}.
+From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of memcached grows almost linearly up to 24 virtual clients, from which point on it starts to saturate: throughput increases more slowly with additional virtual clients. At roughly 110 virtual clients, the system is completely saturated and additional virtual clients don't increase throughput any further. From the low standard deviation of throughput we can conclude that these results will not change much with further repetitions.
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/baseline/graphs/throughput.pdf}
 \label{fig:baseline:throughput}
-\caption{Throughput of memcached without middleware, as measured by memaslap.}
+\caption{Throughput of memcached without middleware, as measured by memaslap. Dark dots connected by a line show the mean throughput and the light ribbon surronding the line shows $\pm 1$ standard deviation of throughput over 5 repetitions.}
 \end{figure}
 
 \subsection{Response time}\label{sec:baseline:rt}
 
-See Figure~\ref{fig:baseline:responsetime}.
+From Figure~\ref{fig:baseline:responsetime} we observe that response time grows slowly up to 24 virtual clients, from which point mean response time starts to grow linearly with the number of clients, and the standard deviation of response time increases significantly. The mean increases because memcached is unable to service all incoming requests immediately so some requests have to wait.
+
+When the system starts to saturate, standard deviation also increases. Under normal load (no saturation), all requests enter processing almost immediately. Upon saturation however, each request needs to wait for some time
+
+
+
+\todo{Explain high std: Upon examining logs manually, lalala distribution}
 
 \todo{mention that even though stdev goes below 0, in reality it can't be there (physically impossible)}
-\todo{explain why stdev is so high}
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
 \label{fig:baseline:responsetime}
-\caption{Response time of memcached without middleware, as measured by memaslap.}
+\caption{Response time of memcached without middleware, as measured by memaslap. Dark dots connected by a line show the mean response time and the light ribbon surronding the line shows $\pm 1$ standard deviation aggregated over all requests sent with that concurrency. Standard deviation values from different repetitions were aggregated by a) calculating the variance for each repetitions, b) finding the weighted average of variance (where the weight is the number of successful requests in a repetition), and c) finding the square root of this sum. }
 \end{figure}
 
 \section{Stability Trace}\label{sec:trace}
 
-\todo{}
-
-In this section you will have to show that the middleware is functional and it can handle a long-running workload without crashing or degrading in performance. For this you will run it with full replication for one hour connected to three memcache instances and three load generator machines.
-You will have to provide two graphs. The x-axis is time and the y-axis is either throughput or response time. Include standard deviation whenever applicable. 
-
-\todo{mention that even though stdev goes below 0, in reality it can't be there (physically impossible)}
-
-\todo{explain why stdev is so high}
-
-\todo{explain that first 5 minutes of experiment are not shown in graph -- warmup phase}
-
+\begin{center}
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
@@ -225,15 +211,25 @@ You will have to provide two graphs. The x-axis is time and the y-axis is either
 \hline Number of client machines & 3 \\ 
 \hline Virtual clients / machine &  64 \\ 
 \hline Workload & Key 16B, Value 128B, Writes 1\% \\
-\hline Middleware & Replicate to all (R=3) \\ 
+\hline Middleware & Replicate to all ($R=3$) \\ 
 \hline Runtime x repetitions & 65min x 1 \\ 
 \hline Log files & trace-ms4, trace-ms5, trace-ms6, trace-mw, trace-req \\
 \hline 
 \end{tabular} }
+\end{center}
+
+The trace was run for 65 minutes; in the plots and analysis, the first 3 minutes and the last two minutes were removed to account for the warm-up and cool-down phase, respectively. The the number of read threads per server was set to $T=5$ for the trace. Memaslap was set to record statistics in 30-second intervals.
+
+The clients and the memcached server were run on Azure Basic\_A2 machines; the middleware was run on a Basic\_A4 instance. 
+Both the middleware and memcached servers were accessed through their private IPs in the virtual network. Logs were parsed using Python and results plotted using R.
 
 
 
 \subsection{Throughput}
+
+\todo{Explain that MW is functional and can handle a long-running workload without crashing or degrading in performance.}
+
+\todo{Explain the spikes in the graph.}
 
 See Figure~\ref{fig:rep3:throughput}.
 
@@ -248,6 +244,12 @@ See Figure~\ref{fig:rep3:throughput}.
 \subsection{Response time}
 
 See Figure~\ref{fig:rep3:responsetime}.
+
+\todo{Explain that MW is functional and can handle a long-running workload without crashing or degrading in performance.}
+
+\todo{mention that even though stdev goes below 0, in reality it can't be there (physically impossible)}
+
+\todo{explain why stdev is so high}
 
 \begin{figure}[p]
 \centering
