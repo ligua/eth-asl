@@ -9,9 +9,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-enum RequestType {GET, SET, UNKNOWN}
+enum RequestType {GET, SET, DELETE, UNKNOWN}
 
-enum ResponseFlag {NA, STORED, NOT_STORED, GET_MISS, GET_SUCCESS, UNKNOWN}
+enum ResponseFlag {NA, STORED, NOT_STORED, GET_MISS, GET_SUCCESS, DELETED, DEL_NOT_FOUND, UNKNOWN}
 
 public class Request {
 
@@ -135,22 +135,7 @@ public class Request {
     }
 
     /**
-     * Find if the requestRaw was a get, set or delete requestRaw.
-     */
-    public static RequestType getRequestType(String request) {
-        String firstThreeChars = request.substring(0, 3);
-
-        if (firstThreeChars.equals("set")) {
-            return RequestType.SET;
-        } else if (firstThreeChars.equals("get")) {
-            return RequestType.GET;
-        } else {
-            return RequestType.UNKNOWN;
-        }
-    }
-
-    /**
-     * Find if the request was a get or set.
+     * Find if the request was a get, set, or delete.
      */
     public static RequestType getRequestType(ByteBuffer buffer) {
         char firstChar = (char) buffer.get(0);
@@ -159,6 +144,8 @@ public class Request {
             return RequestType.SET;
         } else if (firstChar == 'g') {
             return RequestType.GET;
+        } else if (firstChar == 'd') {
+            return RequestType.DELETE;
         } else {
             return RequestType.UNKNOWN;
         }
@@ -228,6 +215,26 @@ public class Request {
     }
 
     /**
+     * Check if the given DELETE request is complete.
+     */
+    public static boolean isCompleteDeleteRequest(ByteBuffer buffer) {
+        int i = 0;
+        int passedSpaces = 0;
+        while(i < buffer.limit()) {
+            log.debug(String.format("i=%d, passed spaces: %d", i, passedSpaces));
+            char c = (char) buffer.get(i);
+            if(c == ' ') {
+                passedSpaces++;
+            } else if(c == '\r' && (passedSpaces == 1 || passedSpaces == 2)) {
+                return true;
+            }
+
+            i++;
+        }
+        return false;
+    }
+
+    /**
      * Check if buffer contains GET miss message.
      */
     public static boolean isGetMiss(ByteBuffer buffer) {
@@ -251,6 +258,8 @@ public class Request {
         } else if(firstChar == 'N') {
             if(fifthChar == 'S') {
                 return ResponseFlag.NOT_STORED;
+            } else if(fifthChar == 'F') {
+                return ResponseFlag.DEL_NOT_FOUND;
             }
         } else if(firstChar == 'E') {
             char secondChar = (char) buffer.get(1);
@@ -260,6 +269,8 @@ public class Request {
             }
         } else if(firstChar == 'V') {
             return ResponseFlag.GET_SUCCESS;
+        } else if(firstChar == 'D') {
+            return ResponseFlag.DELETED;
         }
         return ResponseFlag.UNKNOWN;
     }

@@ -138,7 +138,7 @@ public class LoadBalancer implements Runnable {
                             }
                             RequestType requestType = Request.getRequestType(buffer);
 
-                            if (requestType == RequestType.GET) {
+                            if (requestType == RequestType.GET ||requestType == RequestType.DELETE) {
                                 Request r = new Request(buffer, myKey);
 
                                 handleRequest(r, myKey);
