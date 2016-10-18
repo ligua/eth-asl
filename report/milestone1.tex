@@ -194,8 +194,6 @@ When the system starts to saturate, standard deviation also increases. \todo{WHY
 
 \todo{Explain high std: Upon examining logs manually, lalala distribution}
 
-\todo{mention that even though stdev goes below 0, in reality it can't be there (physically impossible)}
-
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
@@ -220,7 +218,7 @@ When the system starts to saturate, standard deviation also increases. \todo{WHY
 \end{tabular} }
 \end{center}
 
-The trace was run for 65 minutes; in the plots and analysis, the first 3 minutes and the last two minutes were removed to account for the warm-up and cool-down phase, respectively. The the number of read threads per server was set to $T=5$ for the trace. Memaslap was set to record statistics in 30-second intervals.
+The trace was run for 65 minutes; in the plots and analysis, the first three minutes and the last two minutes were removed to account for the warm-up and cool-down phase, respectively. The number of read threads per server was set to $T=5$ for the trace. Memaslap was set to record statistics in 30-second intervals.
 
 The clients and the memcached server were run on Azure Basic\_A2 machines; the middleware was run on a Basic\_A4 instance. 
 Both the middleware and memcached servers were accessed through their private IPs in the virtual network. Logs were parsed using Python and results plotted using R.
@@ -228,8 +226,6 @@ Both the middleware and memcached servers were accessed through their private IP
 
 
 \subsection{Throughput}
-
-\todo{Explain the spikes in the graph.}
 
 From Figure~\ref{fig:rep3:throughput} we can see that the throughput remains at the same level of roughly 3500 operations per second throughout the whole experiment and thus the middleware can handle a long-running workload without a degradation in performance. The spikes can partly be explained by the random nature of the experiment: it is affected by the conditions (especially network conditions) on Azure. However, \todo{sth about Java GC}.
 
@@ -239,17 +235,13 @@ We can use the Interactive Response Time Law to evaluate whether the results are
 \centering
 \includegraphics[width=\textwidth]{../results/trace_rep3/graphs/throughput.pdf}
 \label{fig:rep3:throughput}
-\caption{Throughput trace of the middleware as measured by memaslap.}
+\caption{Throughput trace of the middleware. The dark line shows the throughput, summed over the throughputs reported by the three clients.}
 \end{figure}
 
 
 \subsection{Response time}
 
-See Figure~\ref{fig:rep3:responsetime}.
-
-\todo{Explain that MW is functional and can handle a long-running workload without crashing or degrading in performance.}
-
-\todo{mention that even though stdev goes below 0, in reality it can't be there (physically impossible)}
+Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant around 50ms for the whole duration of the trace experiment.
 
 \todo{explain why stdev is so high}
 
@@ -257,7 +249,7 @@ See Figure~\ref{fig:rep3:responsetime}.
 \centering
 \includegraphics[width=\textwidth]{../results/trace_rep3/graphs/responsetime.pdf}
 \label{fig:rep3:responsetime}
-\caption{Response time trace of the middleware as measured by memaslap.}
+\caption{Response time trace of the middleware as measured by memaslap. The dark line shows the mean response time (calculated as the weighted average of mean response times reported by the three clients) and the light ribbon surrounding the line shows $\pm 1$ standard deviation. Standard deviation values from different repetitions were aggregated in the same way as in Section~\ref{sec:baseline}.}
 \end{figure}
 
 \subsection{Overhead of middleware}
