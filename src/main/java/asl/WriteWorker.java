@@ -93,11 +93,11 @@ class WriteWorker implements Runnable {
 
                 // region Take new element from write queue
                 if (!writeQueue.isEmpty()) {
-                    log.debug("Writequeue has " + writeQueue.size() + " elements.");
+                    //log.debug("Writequeue has " + writeQueue.size() + " elements.");
                     Request r = writeQueue.remove();
-                    log.debug(String.format("Took %s from queue...", r));
+                    //log.debug(String.format("Took %s from queue...", r));
                     r.setTimeDequeued();
-                    log.debug(getName() + " processing request " + r);
+                    //log.debug(getName() + " processing request " + r);
 
                     for(Integer targetMachine : targetMachines) {
 
@@ -105,7 +105,7 @@ class WriteWorker implements Runnable {
                         myKey.interestOps(SelectionKey.OP_WRITE);
 
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
-                        log.debug(String.format("Server %d is writable.", targetMachine));
+                        //log.debug(String.format("Server %d is writable.", targetMachine));
 
                         ByteBuffer buffer = r.getBuffer();
                         buffer.rewind();
@@ -132,7 +132,7 @@ class WriteWorker implements Runnable {
                     Integer targetMachine = (Integer) myKey.attachment();
 
                     if (myKey.isValid() && myKey.isReadable() && inQueues.get(targetMachine).size() > 0) {
-                        log.debug(String.format("Server %d is readable.", targetMachine));
+                        //log.debug(String.format("Server %d is readable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
 
                         ByteBuffer buffer = inBuffers.get(targetMachine);
@@ -145,28 +145,28 @@ class WriteWorker implements Runnable {
                             } else {
                                 Request r = inQueues.get(targetMachine).remove();
                                 Integer currentPosition = buffer.position();
-                                log.debug(String.format("Buffer position %d, limit %d, first request ends at %d.",
-                                        currentPosition, buffer.limit(), firstLimit));
+                                /*log.debug(String.format("Buffer position %d, limit %d, first request ends at %d.",
+                                        currentPosition, buffer.limit(), firstLimit));*/
 
                                 // Copy the first request from one buffer to the other
                                 byte[] array = new byte[firstLimit];
                                 for(int i=0; i<firstLimit; i++) {
                                     array[i] = buffer.get(i);
                                 }
-                                log.debug(String.format("Buffer: %s [len %d]",
-                                        Util.getNonemptyString(buffer), Util.getNonemptyString(buffer).length()));
+                                /*log.debug(String.format("Buffer: %s [len %d]",
+                                        Util.getNonemptyString(buffer), Util.getNonemptyString(buffer).length()));*/
                                 ByteBuffer responseBuffer = ByteBuffer.wrap(array);
                                 Integer numExtraBytes = buffer.position() - firstLimit;
                                 Util.copyToBeginning(buffer, firstLimit, numExtraBytes);
                                 buffer.position(numExtraBytes);
-                                log.debug(String.format("Buffer now: %s [len %d]",
+                                /*log.debug(String.format("Buffer now: %s [len %d]",
                                         Util.getNonemptyString(buffer), Util.getNonemptyString(buffer).length()));
                                 log.debug(String.format("Buffer position now %d, limit %d.",
-                                        buffer.position(), buffer.limit()));
+                                        buffer.position(), buffer.limit()));*/
                                 ResponseFlag responseFlag = Request.getResponseFlag(responseBuffer);
-                                log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
+                                //log.debug(String.format("Response flag from server %d: %s.", targetMachine, responseFlag));
                                 if(responseFlag == ResponseFlag.UNKNOWN) {
-                                    log.debug(String.format("Unknown response to %s: %s", r, Util.getNonemptyString(responseBuffer)));
+                                    log.warn(String.format("Unknown response to %s: %s", r, Util.getNonemptyString(responseBuffer)));
                                 }
 
                                 // Keep the worst response
@@ -178,7 +178,7 @@ class WriteWorker implements Runnable {
 
                                 // If we've collected all responses
                                 if(numResponses.get(r) == targetMachines.size()) {
-                                    log.debug("Collected all responses to request " + r + "");
+                                    //log.debug("Collected all responses to request " + r + "");
                                     r.setTimeReceived();
                                     r.respond();
                                     numResponses.remove(r);

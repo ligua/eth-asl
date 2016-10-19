@@ -57,7 +57,7 @@ public class LoadBalancer implements Runnable {
         buffer.limit(numBytesRead.get(selectionKey));
         numBytesRead.remove(selectionKey);
 
-        log.debug(String.format("Sending request %s to its primary machine #%d.", request, primaryMachine));
+        //log.debug(String.format("Sending request %s to its primary machine #%d.", request, primaryMachine));
 
         if(request.getType().equals(RequestType.GET)) {
             if(readRequestCounter % Request.LOG_SAMPLING_FREQUENCY == 0) {
@@ -125,7 +125,7 @@ public class LoadBalancer implements Runnable {
 
                         if(!requestMessageBuffer.containsKey(myKey)) {
                             // If this is the first time we hear from this connection
-                            log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
+                            //log.debug("SEEING KEY FOR FIRST TIME: " + myKey);
 
                             ByteBuffer buffer = ByteBuffer.allocate(MiddlewareMain.FULL_BUFFER_SIZE);
                             int read = client.read(buffer);
@@ -147,7 +147,7 @@ public class LoadBalancer implements Runnable {
                                 requestMessageBuffer.put(myKey, buffer);
                             }
                         } else {
-                            log.debug("ADDING STUFF TO KEY: " + myKey);
+                            //log.debug("ADDING STUFF TO KEY: " + myKey);
                             // If we have something already from this connection
                             ByteBuffer buffer = requestMessageBuffer.get(myKey);
                             int read = client.read(buffer);
@@ -157,7 +157,7 @@ public class LoadBalancer implements Runnable {
                         // If we already have the whole message, we can create a Request.
                         if(requestMessageBuffer.containsKey(myKey) &&
                                 Request.isCompleteSetRequest(requestMessageBuffer.get(myKey))) {
-                            log.debug("KEY IS COMPLETE: " + myKey);
+                            //log.debug("KEY IS COMPLETE: " + myKey);
                             Request r = new Request(requestMessageBuffer.get(myKey), myKey);
                             handleRequest(r, myKey);
                         }

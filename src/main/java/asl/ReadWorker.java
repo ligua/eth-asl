@@ -56,7 +56,7 @@ class ReadWorker implements Runnable {
                     try {
                         Request r = readQueue.take();
                         r.setTimeDequeued();
-                        log.debug(getName() + " processing request " + r);
+                        //log.debug(getName() + " processing request " + r);
 
                         // Write request
                         r.getBuffer().rewind();
@@ -98,7 +98,7 @@ class ReadWorker implements Runnable {
                         r.setResponseFlag(responseFlag);
                         r.respond();
 
-                        log.debug(String.format("Got response to " + r + ", %d bytes.", readTotal));
+                        //log.debug(String.format("Got response to " + r + ", %d bytes.", readTotal));
                     } catch (InterruptedException ex) {
                         log.error(ex);
                     }
