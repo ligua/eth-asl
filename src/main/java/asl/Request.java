@@ -209,7 +209,7 @@ public class Request {
             return true;
         }
 
-        log.debug(String.format("Declared %d chars in message, got %d.", declaredValueLength, actualValueLength));
+        //log.debug(String.format("Declared %d chars in message, got %d.", declaredValueLength, actualValueLength));
         return false;
     }
 
@@ -220,7 +220,7 @@ public class Request {
         int i = 0;
         int passedSpaces = 0;
         while(i < buffer.limit()) {
-            log.debug(String.format("i=%d, passed spaces: %d", i, passedSpaces));
+            //log.debug(String.format("i=%d, passed spaces: %d", i, passedSpaces));
             char c = (char) buffer.get(i);
             if(c == ' ') {
                 passedSpaces++;
