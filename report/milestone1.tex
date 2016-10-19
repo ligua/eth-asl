@@ -229,7 +229,7 @@ Both the middleware and memcached servers were accessed through their private IP
 
 \subsection{Throughput}
 
-From Figure~\ref{fig:rep3:throughput} we can see that the throughput remains at the same level of 7000 to 8000 operations per second throughout the whole experiment and thus the middleware can handle a long-running workload  without a degradation in performance. The spikes can partly be explained by the random nature of the experiment: it is affected by the conditions (especially network conditions) on Azure. However, \todo{sth about Java GC}.
+From Figure~\ref{fig:rep3:throughput} we can see that the throughput remains at the same level of 7000 to 8000 operations per second throughout the whole experiment and thus the middleware can handle a long-running workload  without a degradation in performance. The variance can partly be explained by the random nature of the experiment: it is affected by the conditions (especially network conditions) on Azure. However, the sudden falls in throughput in the graph are likely to be caused by the Java garbage collector starting its operation.
 
 We can use the Interactive Response Time Law to evaluate whether the results are reasonable. Given that in the trace (excluding warm-up and cool-down) the mean response time is $r=25.8$ms, the number of clients is $n = 3 \cdot 64 = 192$, and the clients can be assumed to have no think time ($z=0$), the predicted throughput is $\frac{n}{r + z} = 7430$ operations per second. This is well in line with the actual throughput of 7460 operations per second.
 
@@ -237,13 +237,13 @@ We can use the Interactive Response Time Law to evaluate whether the results are
 \centering
 \includegraphics[width=\textwidth]{../results/trace_rep3/graphs/throughput.pdf}
 \label{fig:rep3:throughput}
-\caption{Throughput trace of the middleware. The dark line shows the throughput, summed over the throughputs reported by the three clients.}
+\caption{Throughput trace of the middleware. The dark line shows the total throughput, i.e. the sum over throughputs reported by the three clients.}
 \end{figure}
 
 
 \subsection{Response time}
 
-Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant around 50ms for the whole duration of the trace experiment.
+Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant around 25ms for the whole duration of the trace experiment.
 
 \todo{explain why stdev is so high}
 
@@ -255,22 +255,19 @@ Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant a
 \end{figure}
 
 \subsection{Overhead of middleware}
-\todo{}
 
-In the trace experiment, three memcached servers need to service $3 \cdot 64 = 192$ clients, so the number of virtual clients per server is 64 (this assumes uniform load balancing, which was demonstrated in Section~\ref{sec:desc:hashing}). In the baseline experiments presented in Section~\ref{sec:baseline}, the throughput at 64 virtual clients was 32000 requests per second (standard deviation 526), and the mean response time is 2.0 ms with a standard deviation of 2.2 ms.
+In the trace experiment, three memcached servers need to service $3 \cdot 64 = 192$ clients, so the number of virtual clients per server is 64 (this assumes uniform load balancing, which was demonstrated in Section~\ref{sec:desc:hashing}). For this reason, we should compare the performance of the system with the performance of the baseline at 64 virtual clients. Since the trace is run with full replication, i.e. all writes are done to three servers instead of one, these two numbers are not be directly comparable. However, since write requests make up only 1\% of all requests, this difference is negligible.
 
-\todo{different because we have full replication -- but shouldnt make much difference because only 1\% are writes}
+The following table shows comparison of the baseline and actual (with middleware) performance of the system. Using the middleware introduces a roughly 4-fold decrease in throughput (decreasing it by 24540 requests per second) and roughly 12-fold increase in response time (adding 23.6 ms), which is a significant deterioration in performance.
 
-\begin{tabular}{|c|r|r|r|}
-\hline \textbf{Metric }& \textbf{No middleware} & \textbf{Middleware} & \textbf{Slow-down} \\ 
-\hline throughput & 32000 & 7460 & 4.3x \\ 
-\hline response time & 2.2 & 25.8 & 11.7x \\ 
+\begin{center}
+\begin{tabular}{|l|r|r|r|r|}
+\hline \textbf{Metric }& \textbf{Baseline} & \textbf{Middleware} & \textbf{Overhead} & \textbf{Slow-down} \\ 
+\hline throughput [requests/s] & 32000 & 7460 & -24540 & 4.3x \\ 
+\hline response time [ms] & 2.2 & 25.8 & 23.6 & 11.7x \\ 
 \hline 
 \end{tabular} 
-
-
-
-Compare the performance you expect based on the baselines and the one you observe in the trace and quantify the overheads introduced by the middleware (if any), Look at both response time and achievable throughput when making the comparison. Provide an overview of the overheads in a table form.
+\end{center}
 
 
 \pagebreak
