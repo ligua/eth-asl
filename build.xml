@@ -1,6 +1,6 @@
-<project name="Taivo's ASL middleware" default="compile" basedir=".">
+<project name="asl-fall16-project" default="jar" basedir=".">
     <description>
-        TODO simple example build file
+        ANT Build File for ASL Fall 2016 Project
     </description>
 
     <tstamp/>
