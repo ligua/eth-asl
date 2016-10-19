@@ -177,7 +177,7 @@ In the baseline experiments, two clients sent requests directly to one memcached
 
 \subsection{Throughput}\label{sec:baseline:tput}
 
-From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of memcached grows almost linearly up to 24 virtual clients, from which point on it starts to saturate: throughput increases more slowly with additional virtual clients. At roughly 110 virtual clients, the system is completely saturated and additional virtual clients don't increase throughput any further. From the low standard deviation of throughput we can conclude that these results will not change much with further repetitions.
+From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of memcached grows almost linearly up to 32 virtual clients, from which point on it starts to saturate: throughput increases more slowly with additional virtual clients. This means that the knee of the system is at roughly 32 virtual clients. At roughly 110 virtual clients, the system is completely saturated and additional virtual clients don't increase throughput any further. From the low standard deviation of throughput we can conclude that these results will not change much with further repetitions.
 
 \begin{figure}[p]
 \centering
@@ -188,13 +188,9 @@ From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of mem
 
 \subsection{Response time}\label{sec:baseline:rt}
 
-From Figure~\ref{fig:baseline:responsetime} we observe that response time grows slowly up to 24 virtual clients, from which point mean response time starts to grow linearly with the number of clients, and the standard deviation of response time increases significantly. The mean increases because memcached is unable to service all incoming requests immediately so some requests have to wait.
+From Figure~\ref{fig:baseline:responsetime} we observe that response time grows slowly up to 32 virtual clients, from which point mean response time starts to grow linearly with the number of clients, and the standard deviation of response time increases significantly. The mean increases because memcached is unable to service all incoming requests immediately so some requests have to wait.
 
-When the system starts to saturate, standard deviation also increases. \todo{WHY?} Statistical explanation: heavy tail for this distribution.
-
-
-
-\todo{Explain high std: Upon examining logs manually, lalala distribution}
+The high standard deviation is caused by the heavy-tailed distribution of response times, i.e. the distribution is not normal (nor symmetric). When the system starts to saturate, standard deviation also increases. This is caused by a queue forming at the memcached server: if the number of clients is low, the queue is almost always empty and every request will be processed instantaneously. When we increase the number of clients, the queue will be filled more often, and the amount of items in the queue at any time is varies, which in turn causes the the response time to vary more and thus a high variance in response times.
 
 \begin{figure}[p]
 \centering
@@ -243,9 +239,7 @@ We can use the Interactive Response Time Law to evaluate whether the results are
 
 \subsection{Response time}
 
-Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant around 25ms for the whole duration of the trace experiment.
-
-\todo{explain why stdev is so high}
+Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant around 25ms for the whole duration of the trace experiment, with the standard deviation in roughly the same range. The load is high enough so that the queues are not empty and the response time depends on the amount of items in the queue, which itself can vary significantly -- this causes variation in response time to be high similarly to the baseline experiment (coefficient of variation is roughly 1 here).
 
 \begin{figure}[p]
 \centering
