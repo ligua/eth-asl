@@ -140,6 +140,8 @@ Secondly, \linkmain{WriteWorker} checks all memcached servers to see if any of t
 \todo{Estimate of latencies -- replicated and non-replicated}
 Give an estimate of the latencies the writing operation will incur, and generalize it to the replicated case. What do you expect will limit the rate at which writes can be carried out in the system (if anything)?
 
+\todo{Joao:}  "I wrote something about the factors that limit the rate at which writes can be carried out (connection between machines, machine specs, nr. threads, lower bound on server response time...), but I still do not know how to tackle the latency estimate."
+
 The maximum rate at which writes can be carried out will likely be limited by \todo{}.
 
 \subsection{Read Operations and Thread Pool}\label{sec:desc:reads}
