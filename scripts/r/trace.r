@@ -36,7 +36,8 @@ data1 <- requests %>%
 
 g1 = ggplot(data1, aes(x=dtAll)) +
   geom_histogram(aes(y=..count../sum(..count..)), fill=color_dark) +
-  facet_wrap(~type, nrow=2, scales="free") +
+  facet_wrap(~type, nrow=2, scales="free_y") +
+  xlim(-10, 100) +
   xlab("Time from receiving request to responding (ms)") +
   ylab("Proportion of requests") +
   asl_theme
@@ -102,7 +103,8 @@ data4 <- requests %>%
 
 g4 <- ggplot(data4) +
   geom_histogram(aes(x=value, xmin=0, fill=type)) +
-  facet_wrap(~variable + type, ncol=2, scales="free") +
+  facet_wrap(~variable + type, ncol=2, scales="free_y") +
+  xlim(-10, 100) +
   xlab("Time spent (ms)") +
   ylab("Number of requests") +
   asl_theme
