@@ -25,6 +25,7 @@ requests2 <- requests %>%
             q05=quantile(totalTime, 0.5),
             q07=quantile(totalTime, 0.7),
             q09=quantile(totalTime, 0.9),
+            q099=quantile(totalTime, 0.99),
             mean=mean(totalTime),
             std=sd(totalTime)) %>%
   melt(id.vars=c("bucket", "type"))
