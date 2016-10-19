@@ -8,6 +8,7 @@ library(ggplot2, lib.loc=library_location)
 
 source("scripts/r/common.r")
 
+result_dir_base <- "results/trace_rep3"
 memaslap <- read.csv(paste0(result_dir_base, "/memaslap_stats.csv"), header=TRUE, sep=";") %>%
   mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000)
 

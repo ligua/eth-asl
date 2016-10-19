@@ -13,7 +13,7 @@ requests <- read.csv("results/trace_rep3/request.log", header=TRUE, sep=",")
 # Evolution of percentiles over time
 # exp_start = min(requests$timeCreated)
 # exp_end = min(requests$timeReturned)
-NUM_BUCKETS = 20
+NUM_BUCKETS = 120
 
 requests2 <- requests %>%
   mutate(bucket = as.numeric(cut(requests$timeCreated, NUM_BUCKETS)),
@@ -43,6 +43,22 @@ ggplot() +
   geom_ribbon(data=stds, aes(x=bucket, ymin=mean-std, ymax=mean+std),
               fill="black", alpha=0.4) +
   geom_line(data=quantiles, aes(x=bucket, y=value, color=variable), size=2) +
-  geom_line(data=stds, aes(x=bucket, y=mean), color="red", size=2) +
+  geom_line(data=stds, aes(x=bucket, y=mean), color="black", size=2) +
   facet_wrap(~type) +
+  asl_theme
+
+LIM_Y <- 50
+NUM_BUCKETS_Y <- min(LIM_Y, 0)
+data2 <- requests %>%
+  mutate(bucketx = as.numeric(cut(requests$timeCreated, NUM_BUCKETS)),
+         totalTime = timeReturned-timeCreated) %>%
+  select(totalTime, bucketx, type) %>%
+  filter(totalTime <= LIM_Y) %>%
+  mutate(buckety = as.numeric(cut(totalTime, NUM_BUCKETS_Y))) %>%
+  group_by(bucketx, buckety) %>%
+  summarise(count=n())
+  
+ggplot(data2) +
+  geom_raster(aes(x=bucketx, y=buckety, fill=count), alpha=0.6) +
+  scale_fill_gradient(low="gray", high="red") +
   asl_theme
