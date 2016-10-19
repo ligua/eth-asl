@@ -1,99 +1,99 @@
-2016-10-17 12:01:40,239 [__main__] - VM [94mforaslvms7m1[0m [Basic_A2]
-2016-10-17 12:01:40,399 [__main__] - Public host name: [92mpungast7foraslvms7m1.westeurope.cloudapp.azure.com[0m
-2016-10-17 12:01:40,465 [__main__] - Private host name: [92m10.0.0.8[0m
-2016-10-17 12:01:40,465 [__main__] - VM [94mforaslvms7m2[0m [Basic_A2]
-2016-10-17 12:01:40,515 [__main__] - Public host name: [92mpungast7foraslvms7m2.westeurope.cloudapp.azure.com[0m
-2016-10-17 12:01:40,576 [__main__] - Private host name: [92m10.0.0.5[0m
-2016-10-17 12:01:40,577 [__main__] - VM [94mforaslvms7m3[0m [Basic_A2]
-2016-10-17 12:01:40,624 [__main__] - Public host name: [92mpungast7foraslvms7m3.westeurope.cloudapp.azure.com[0m
-2016-10-17 12:01:40,674 [__main__] - Private host name: [92m10.0.0.10[0m
-2016-10-17 12:01:40,674 [__main__] - VM [94mforaslvms7m4[0m [Basic_A2]
-2016-10-17 12:01:40,731 [__main__] - Public host name: [92mpungast7foraslvms7m4.westeurope.cloudapp.azure.com[0m
-2016-10-17 12:01:40,839 [__main__] - Private host name: [92m10.0.0.7[0m
-2016-10-17 12:01:40,839 [__main__] - VM [94mforaslvms7m5[0m [Basic_A2]
-2016-10-17 12:01:40,891 [__main__] - Public host name: [92mpungast7foraslvms7m5.westeurope.cloudapp.azure.com[0m
-2016-10-17 12:01:40,943 [__main__] - Private host name: [92m10.0.0.6[0m
-2016-10-17 12:01:40,943 [__main__] - VM [94mforaslvms7m6[0m [Basic_A2]
-2016-10-17 12:01:40,994 [__main__] - Public host name: [92mpungast7foraslvms7m6.westeurope.cloudapp.azure.com[0m
-2016-10-17 12:01:41,046 [__main__] - Private host name: [92m10.0.0.9[0m
-2016-10-17 12:01:41,046 [__main__] - VM [94mforaslvms7m7[0m [Basic_A4]
-2016-10-17 12:01:41,097 [__main__] - Public host name: [92mpungast7foraslvms7m7.westeurope.cloudapp.azure.com[0m
-2016-10-17 12:01:41,147 [__main__] - Private host name: [92m10.0.0.4[0m
-2016-10-17 12:01:41,148 [__main__] - A2 machines: [0, 1, 2, 3, 4, 5]
-2016-10-17 12:01:41,148 [__main__] - A4 machine: 6
-2016-10-17 12:01:41,148 [__main__] - Setting up memcached on machine 0 (foraslvms7m1).
-2016-10-17 12:01:41,148 [__main__] - Setting up memcached on machine 1 (foraslvms7m2).
-2016-10-17 12:01:41,148 [__main__] - Setting up memcached on machine 2 (foraslvms7m3).
-2016-10-17 12:02:21,919 [__main__] - Setting up middleware on machine 6 (foraslvms7m7).
-2016-10-17 12:02:38,364 [__main__] - Sleeping for 5 seconds so middleware can start...
-2016-10-17 12:02:43,369 [__main__] - Setting up memaslap on machine 3 (foraslvms7m4).
-2016-10-17 12:02:43,370 [__main__] - Setting up memaslap on machine 4 (foraslvms7m5).
-2016-10-17 12:02:43,370 [__main__] - Setting up memaslap on machine 5 (foraslvms7m6).
-2016-10-17 12:03:24,470 [__main__] - Waiting for the experiment to finish, sleeping for 65 minutes.
-2016-10-17 12:04:24,473 [__main__] - Waiting for the experiment to finish, 1/65 minutes elapsed (2%).
-2016-10-17 12:05:24,473 [__main__] - Waiting for the experiment to finish, 2/65 minutes elapsed (3%).
-2016-10-17 12:06:24,475 [__main__] - Waiting for the experiment to finish, 3/65 minutes elapsed (5%).
-2016-10-17 12:07:24,476 [__main__] - Waiting for the experiment to finish, 4/65 minutes elapsed (6%).
-2016-10-17 12:08:24,477 [__main__] - Waiting for the experiment to finish, 5/65 minutes elapsed (8%).
-2016-10-17 12:09:24,477 [__main__] - Waiting for the experiment to finish, 6/65 minutes elapsed (9%).
-2016-10-17 12:10:24,484 [__main__] - Waiting for the experiment to finish, 7/65 minutes elapsed (11%).
-2016-10-17 12:11:24,493 [__main__] - Waiting for the experiment to finish, 8/65 minutes elapsed (12%).
-2016-10-17 12:12:24,492 [__main__] - Waiting for the experiment to finish, 9/65 minutes elapsed (14%).
-2016-10-17 12:13:24,492 [__main__] - Waiting for the experiment to finish, 10/65 minutes elapsed (15%).
-2016-10-17 12:14:24,493 [__main__] - Waiting for the experiment to finish, 11/65 minutes elapsed (17%).
-2016-10-17 12:15:24,495 [__main__] - Waiting for the experiment to finish, 12/65 minutes elapsed (18%).
-2016-10-17 12:16:24,497 [__main__] - Waiting for the experiment to finish, 13/65 minutes elapsed (20%).
-2016-10-17 12:17:24,498 [__main__] - Waiting for the experiment to finish, 14/65 minutes elapsed (22%).
-2016-10-17 12:18:24,505 [__main__] - Waiting for the experiment to finish, 15/65 minutes elapsed (23%).
-2016-10-17 12:19:24,508 [__main__] - Waiting for the experiment to finish, 16/65 minutes elapsed (25%).
-2016-10-17 12:20:24,508 [__main__] - Waiting for the experiment to finish, 17/65 minutes elapsed (26%).
-2016-10-17 12:21:24,510 [__main__] - Waiting for the experiment to finish, 18/65 minutes elapsed (28%).
-2016-10-17 12:22:24,512 [__main__] - Waiting for the experiment to finish, 19/65 minutes elapsed (29%).
-2016-10-17 12:23:24,515 [__main__] - Waiting for the experiment to finish, 20/65 minutes elapsed (31%).
-2016-10-17 12:24:24,516 [__main__] - Waiting for the experiment to finish, 21/65 minutes elapsed (32%).
-2016-10-17 12:25:24,519 [__main__] - Waiting for the experiment to finish, 22/65 minutes elapsed (34%).
-2016-10-17 12:26:24,521 [__main__] - Waiting for the experiment to finish, 23/65 minutes elapsed (35%).
-2016-10-17 12:27:24,522 [__main__] - Waiting for the experiment to finish, 24/65 minutes elapsed (37%).
-2016-10-17 12:28:24,523 [__main__] - Waiting for the experiment to finish, 25/65 minutes elapsed (38%).
-2016-10-17 12:29:24,527 [__main__] - Waiting for the experiment to finish, 26/65 minutes elapsed (40%).
-2016-10-17 12:30:24,529 [__main__] - Waiting for the experiment to finish, 27/65 minutes elapsed (42%).
-2016-10-17 12:31:24,528 [__main__] - Waiting for the experiment to finish, 28/65 minutes elapsed (43%).
-2016-10-17 12:32:24,529 [__main__] - Waiting for the experiment to finish, 29/65 minutes elapsed (45%).
-2016-10-17 12:33:24,532 [__main__] - Waiting for the experiment to finish, 30/65 minutes elapsed (46%).
-2016-10-17 12:34:24,536 [__main__] - Waiting for the experiment to finish, 31/65 minutes elapsed (48%).
-2016-10-17 12:35:24,539 [__main__] - Waiting for the experiment to finish, 32/65 minutes elapsed (49%).
-2016-10-17 12:36:24,540 [__main__] - Waiting for the experiment to finish, 33/65 minutes elapsed (51%).
-2016-10-17 12:37:24,540 [__main__] - Waiting for the experiment to finish, 34/65 minutes elapsed (52%).
-2016-10-17 12:38:24,543 [__main__] - Waiting for the experiment to finish, 35/65 minutes elapsed (54%).
-2016-10-17 12:39:24,543 [__main__] - Waiting for the experiment to finish, 36/65 minutes elapsed (55%).
-2016-10-17 12:40:24,546 [__main__] - Waiting for the experiment to finish, 37/65 minutes elapsed (57%).
-2016-10-17 12:41:24,549 [__main__] - Waiting for the experiment to finish, 38/65 minutes elapsed (58%).
-2016-10-17 12:42:24,548 [__main__] - Waiting for the experiment to finish, 39/65 minutes elapsed (60%).
-2016-10-17 12:43:24,550 [__main__] - Waiting for the experiment to finish, 40/65 minutes elapsed (62%).
-2016-10-17 12:44:24,554 [__main__] - Waiting for the experiment to finish, 41/65 minutes elapsed (63%).
-2016-10-17 12:45:24,554 [__main__] - Waiting for the experiment to finish, 42/65 minutes elapsed (65%).
-2016-10-17 12:46:24,553 [__main__] - Waiting for the experiment to finish, 43/65 minutes elapsed (66%).
-2016-10-17 12:47:24,555 [__main__] - Waiting for the experiment to finish, 44/65 minutes elapsed (68%).
-2016-10-17 12:48:24,558 [__main__] - Waiting for the experiment to finish, 45/65 minutes elapsed (69%).
-2016-10-17 12:49:24,562 [__main__] - Waiting for the experiment to finish, 46/65 minutes elapsed (71%).
-2016-10-17 12:50:24,564 [__main__] - Waiting for the experiment to finish, 47/65 minutes elapsed (72%).
-2016-10-17 12:51:24,564 [__main__] - Waiting for the experiment to finish, 48/65 minutes elapsed (74%).
-2016-10-17 12:52:24,573 [__main__] - Waiting for the experiment to finish, 49/65 minutes elapsed (75%).
-2016-10-17 12:53:24,573 [__main__] - Waiting for the experiment to finish, 50/65 minutes elapsed (77%).
-2016-10-17 12:54:24,573 [__main__] - Waiting for the experiment to finish, 51/65 minutes elapsed (78%).
-2016-10-17 12:55:24,575 [__main__] - Waiting for the experiment to finish, 52/65 minutes elapsed (80%).
-2016-10-17 12:56:24,577 [__main__] - Waiting for the experiment to finish, 53/65 minutes elapsed (82%).
-2016-10-17 12:57:24,580 [__main__] - Waiting for the experiment to finish, 54/65 minutes elapsed (83%).
-2016-10-17 12:58:24,584 [__main__] - Waiting for the experiment to finish, 55/65 minutes elapsed (85%).
-2016-10-17 12:59:24,585 [__main__] - Waiting for the experiment to finish, 56/65 minutes elapsed (86%).
-2016-10-17 13:00:24,587 [__main__] - Waiting for the experiment to finish, 57/65 minutes elapsed (88%).
-2016-10-17 13:01:24,589 [__main__] - Waiting for the experiment to finish, 58/65 minutes elapsed (89%).
-2016-10-17 13:02:24,593 [__main__] - Waiting for the experiment to finish, 59/65 minutes elapsed (91%).
-2016-10-17 13:03:24,593 [__main__] - Waiting for the experiment to finish, 60/65 minutes elapsed (92%).
-2016-10-17 13:04:24,595 [__main__] - Waiting for the experiment to finish, 61/65 minutes elapsed (94%).
-2016-10-17 13:05:24,596 [__main__] - Waiting for the experiment to finish, 62/65 minutes elapsed (95%).
-2016-10-17 13:06:24,598 [__main__] - Waiting for the experiment to finish, 63/65 minutes elapsed (97%).
-2016-10-17 13:07:24,600 [__main__] - Waiting for the experiment to finish, 64/65 minutes elapsed (98%).
-2016-10-17 13:08:24,602 [__main__] - Waiting for the experiment to finish, 65/65 minutes elapsed (100%).
-2016-10-17 13:08:24,602 [__main__] - Giving some extra time to memaslap, sleeping for 180 seconds.
-2016-10-17 13:14:43,665 [__main__] - Done.
+2016-10-19 17:20:06,682 [__main__] - VM [94mforaslvms7m1[0m [Basic_A2]
+2016-10-19 17:20:06,883 [__main__] - Public host name: [92mpungast7foraslvms7m1.westeurope.cloudapp.azure.com[0m
+2016-10-19 17:20:06,975 [__main__] - Private host name: [92m10.0.0.8[0m
+2016-10-19 17:20:06,975 [__main__] - VM [94mforaslvms7m2[0m [Basic_A2]
+2016-10-19 17:20:07,024 [__main__] - Public host name: [92mpungast7foraslvms7m2.westeurope.cloudapp.azure.com[0m
+2016-10-19 17:20:07,075 [__main__] - Private host name: [92m10.0.0.5[0m
+2016-10-19 17:20:07,075 [__main__] - VM [94mforaslvms7m3[0m [Basic_A2]
+2016-10-19 17:20:07,123 [__main__] - Public host name: [92mpungast7foraslvms7m3.westeurope.cloudapp.azure.com[0m
+2016-10-19 17:20:07,171 [__main__] - Private host name: [92m10.0.0.10[0m
+2016-10-19 17:20:07,171 [__main__] - VM [94mforaslvms7m4[0m [Basic_A2]
+2016-10-19 17:20:07,222 [__main__] - Public host name: [92mpungast7foraslvms7m4.westeurope.cloudapp.azure.com[0m
+2016-10-19 17:20:07,270 [__main__] - Private host name: [92m10.0.0.7[0m
+2016-10-19 17:20:07,270 [__main__] - VM [94mforaslvms7m5[0m [Basic_A2]
+2016-10-19 17:20:07,318 [__main__] - Public host name: [92mpungast7foraslvms7m5.westeurope.cloudapp.azure.com[0m
+2016-10-19 17:20:07,368 [__main__] - Private host name: [92m10.0.0.6[0m
+2016-10-19 17:20:07,368 [__main__] - VM [94mforaslvms7m6[0m [Basic_A2]
+2016-10-19 17:20:07,419 [__main__] - Public host name: [92mpungast7foraslvms7m6.westeurope.cloudapp.azure.com[0m
+2016-10-19 17:20:07,472 [__main__] - Private host name: [92m10.0.0.9[0m
+2016-10-19 17:20:07,472 [__main__] - VM [94mforaslvms7m7[0m [Basic_A4]
+2016-10-19 17:20:07,519 [__main__] - Public host name: [92mpungast7foraslvms7m7.westeurope.cloudapp.azure.com[0m
+2016-10-19 17:20:07,575 [__main__] - Private host name: [92m10.0.0.4[0m
+2016-10-19 17:20:07,575 [__main__] - A2 machines: [0, 1, 2, 3, 4, 5]
+2016-10-19 17:20:07,575 [__main__] - A4 machine: 6
+2016-10-19 17:20:07,575 [__main__] - Setting up memcached on machine 0 (foraslvms7m1).
+2016-10-19 17:20:07,576 [__main__] - Setting up memcached on machine 1 (foraslvms7m2).
+2016-10-19 17:20:07,576 [__main__] - Setting up memcached on machine 2 (foraslvms7m3).
+2016-10-19 17:20:50,349 [__main__] - Setting up middleware on machine 6 (foraslvms7m7).
+2016-10-19 17:21:05,389 [__main__] - Sleeping for 5 seconds so middleware can start...
+2016-10-19 17:21:10,393 [__main__] - Setting up memaslap on machine 3 (foraslvms7m4).
+2016-10-19 17:21:10,393 [__main__] - Setting up memaslap on machine 4 (foraslvms7m5).
+2016-10-19 17:21:10,393 [__main__] - Setting up memaslap on machine 5 (foraslvms7m6).
+2016-10-19 17:21:48,107 [__main__] - Waiting for the experiment to finish, sleeping for 65 minutes.
+2016-10-19 17:22:48,109 [__main__] - Waiting for the experiment to finish, 1/65 minutes elapsed (2%).
+2016-10-19 17:23:48,115 [__main__] - Waiting for the experiment to finish, 2/65 minutes elapsed (3%).
+2016-10-19 17:24:48,117 [__main__] - Waiting for the experiment to finish, 3/65 minutes elapsed (5%).
+2016-10-19 17:25:48,120 [__main__] - Waiting for the experiment to finish, 4/65 minutes elapsed (6%).
+2016-10-19 17:26:48,123 [__main__] - Waiting for the experiment to finish, 5/65 minutes elapsed (8%).
+2016-10-19 17:27:48,125 [__main__] - Waiting for the experiment to finish, 6/65 minutes elapsed (9%).
+2016-10-19 17:28:48,131 [__main__] - Waiting for the experiment to finish, 7/65 minutes elapsed (11%).
+2016-10-19 17:29:48,132 [__main__] - Waiting for the experiment to finish, 8/65 minutes elapsed (12%).
+2016-10-19 17:30:48,135 [__main__] - Waiting for the experiment to finish, 9/65 minutes elapsed (14%).
+2016-10-19 17:31:48,134 [__main__] - Waiting for the experiment to finish, 10/65 minutes elapsed (15%).
+2016-10-19 17:32:48,135 [__main__] - Waiting for the experiment to finish, 11/65 minutes elapsed (17%).
+2016-10-19 17:33:48,136 [__main__] - Waiting for the experiment to finish, 12/65 minutes elapsed (18%).
+2016-10-19 17:34:48,139 [__main__] - Waiting for the experiment to finish, 13/65 minutes elapsed (20%).
+2016-10-19 17:35:48,138 [__main__] - Waiting for the experiment to finish, 14/65 minutes elapsed (22%).
+2016-10-19 17:36:48,139 [__main__] - Waiting for the experiment to finish, 15/65 minutes elapsed (23%).
+2016-10-19 17:37:48,143 [__main__] - Waiting for the experiment to finish, 16/65 minutes elapsed (25%).
+2016-10-19 17:38:48,144 [__main__] - Waiting for the experiment to finish, 17/65 minutes elapsed (26%).
+2016-10-19 17:39:48,145 [__main__] - Waiting for the experiment to finish, 18/65 minutes elapsed (28%).
+2016-10-19 17:40:48,148 [__main__] - Waiting for the experiment to finish, 19/65 minutes elapsed (29%).
+2016-10-19 17:41:48,150 [__main__] - Waiting for the experiment to finish, 20/65 minutes elapsed (31%).
+2016-10-19 17:42:48,150 [__main__] - Waiting for the experiment to finish, 21/65 minutes elapsed (32%).
+2016-10-19 17:43:48,153 [__main__] - Waiting for the experiment to finish, 22/65 minutes elapsed (34%).
+2016-10-19 17:44:48,152 [__main__] - Waiting for the experiment to finish, 23/65 minutes elapsed (35%).
+2016-10-19 17:45:48,156 [__main__] - Waiting for the experiment to finish, 24/65 minutes elapsed (37%).
+2016-10-19 17:46:48,163 [__main__] - Waiting for the experiment to finish, 25/65 minutes elapsed (38%).
+2016-10-19 17:47:48,169 [__main__] - Waiting for the experiment to finish, 26/65 minutes elapsed (40%).
+2016-10-19 17:48:48,179 [__main__] - Waiting for the experiment to finish, 27/65 minutes elapsed (42%).
+2016-10-19 17:49:48,181 [__main__] - Waiting for the experiment to finish, 28/65 minutes elapsed (43%).
+2016-10-19 17:50:48,184 [__main__] - Waiting for the experiment to finish, 29/65 minutes elapsed (45%).
+2016-10-19 17:51:48,185 [__main__] - Waiting for the experiment to finish, 30/65 minutes elapsed (46%).
+2016-10-19 17:52:48,185 [__main__] - Waiting for the experiment to finish, 31/65 minutes elapsed (48%).
+2016-10-19 17:53:48,192 [__main__] - Waiting for the experiment to finish, 32/65 minutes elapsed (49%).
+2016-10-19 17:54:48,199 [__main__] - Waiting for the experiment to finish, 33/65 minutes elapsed (51%).
+2016-10-19 17:55:48,198 [__main__] - Waiting for the experiment to finish, 34/65 minutes elapsed (52%).
+2016-10-19 17:56:48,204 [__main__] - Waiting for the experiment to finish, 35/65 minutes elapsed (54%).
+2016-10-19 17:57:48,209 [__main__] - Waiting for the experiment to finish, 36/65 minutes elapsed (55%).
+2016-10-19 17:58:48,213 [__main__] - Waiting for the experiment to finish, 37/65 minutes elapsed (57%).
+2016-10-19 17:59:48,221 [__main__] - Waiting for the experiment to finish, 38/65 minutes elapsed (58%).
+2016-10-19 18:00:48,226 [__main__] - Waiting for the experiment to finish, 39/65 minutes elapsed (60%).
+2016-10-19 18:01:48,231 [__main__] - Waiting for the experiment to finish, 40/65 minutes elapsed (62%).
+2016-10-19 18:02:48,232 [__main__] - Waiting for the experiment to finish, 41/65 minutes elapsed (63%).
+2016-10-19 18:03:48,234 [__main__] - Waiting for the experiment to finish, 42/65 minutes elapsed (65%).
+2016-10-19 18:04:48,237 [__main__] - Waiting for the experiment to finish, 43/65 minutes elapsed (66%).
+2016-10-19 18:05:48,240 [__main__] - Waiting for the experiment to finish, 44/65 minutes elapsed (68%).
+2016-10-19 18:06:48,243 [__main__] - Waiting for the experiment to finish, 45/65 minutes elapsed (69%).
+2016-10-19 18:07:48,247 [__main__] - Waiting for the experiment to finish, 46/65 minutes elapsed (71%).
+2016-10-19 18:08:48,256 [__main__] - Waiting for the experiment to finish, 47/65 minutes elapsed (72%).
+2016-10-19 18:09:48,258 [__main__] - Waiting for the experiment to finish, 48/65 minutes elapsed (74%).
+2016-10-19 18:10:48,259 [__main__] - Waiting for the experiment to finish, 49/65 minutes elapsed (75%).
+2016-10-19 18:11:48,260 [__main__] - Waiting for the experiment to finish, 50/65 minutes elapsed (77%).
+2016-10-19 18:12:48,259 [__main__] - Waiting for the experiment to finish, 51/65 minutes elapsed (78%).
+2016-10-19 18:13:48,262 [__main__] - Waiting for the experiment to finish, 52/65 minutes elapsed (80%).
+2016-10-19 18:14:48,264 [__main__] - Waiting for the experiment to finish, 53/65 minutes elapsed (82%).
+2016-10-19 18:15:48,267 [__main__] - Waiting for the experiment to finish, 54/65 minutes elapsed (83%).
+2016-10-19 18:16:48,268 [__main__] - Waiting for the experiment to finish, 55/65 minutes elapsed (85%).
+2016-10-19 18:17:48,271 [__main__] - Waiting for the experiment to finish, 56/65 minutes elapsed (86%).
+2016-10-19 18:18:48,274 [__main__] - Waiting for the experiment to finish, 57/65 minutes elapsed (88%).
+2016-10-19 18:19:48,273 [__main__] - Waiting for the experiment to finish, 58/65 minutes elapsed (89%).
+2016-10-19 18:20:48,278 [__main__] - Waiting for the experiment to finish, 59/65 minutes elapsed (91%).
+2016-10-19 18:21:48,281 [__main__] - Waiting for the experiment to finish, 60/65 minutes elapsed (92%).
+2016-10-19 18:22:48,281 [__main__] - Waiting for the experiment to finish, 61/65 minutes elapsed (94%).
+2016-10-19 18:23:48,282 [__main__] - Waiting for the experiment to finish, 62/65 minutes elapsed (95%).
+2016-10-19 18:24:48,284 [__main__] - Waiting for the experiment to finish, 63/65 minutes elapsed (97%).
+2016-10-19 18:25:48,287 [__main__] - Waiting for the experiment to finish, 64/65 minutes elapsed (98%).
+2016-10-19 18:26:48,286 [__main__] - Waiting for the experiment to finish, 65/65 minutes elapsed (100%).
+2016-10-19 18:26:48,287 [__main__] - Giving some extra time to memaslap, sleeping for 300 seconds.
+2016-10-19 18:35:45,501 [__main__] - Done.
