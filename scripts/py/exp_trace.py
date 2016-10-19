@@ -13,8 +13,8 @@ from deployer import Deployer
 
 UPDATE_AND_INSTALL = False
 UPDATE_AND_INSTALL_ONLY_MIDDLEWARE = True
-EXPERIMENT_RUNTIME = 65  # minutes
-RUNTIME_BUFFER = 3 * 60     # seconds
+EXPERIMENT_RUNTIME = 10  # minutes
+RUNTIME_BUFFER = 1 * 60     # seconds
 EXPERIMENT_RUNTIME_STRING = "{}m".format(EXPERIMENT_RUNTIME)
 STATS_FREQUENCY = "30s"
 NUM_THREADS_IN_POOL = 5
@@ -204,8 +204,8 @@ e = Extractor()
 e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
 
 with fabric.api.settings(warn_only=True):
-    fabric.api.local("mkdir results/baseline/graphs")
-    fabric.api.local("Rscript scripts/r/baseline.r results/baseline")
+    fabric.api.local("mkdir results/trace/graphs")
+    fabric.api.local("Rscript scripts/r/trace.r results/trace")
 
 # endregion
 

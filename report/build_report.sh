@@ -9,4 +9,14 @@ cd report
 pdflatex milestone1.tex
 cd ..
 
+echo "Copying report to the right place..."
+cp report/milestone1.pdf pungast-milestone1.pdf
+
+echo "Pushing to GitHub..."
+git push origin master
+
+echo "Pushing to GitLab..."
+git push gitlab master
+
+
 echo "Done."

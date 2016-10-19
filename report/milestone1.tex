@@ -253,6 +253,20 @@ Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant a
 \end{figure}
 
 \subsection{Overhead of middleware}
+\todo{}
+
+In the trace experiment, three memcached servers need to service $3 \cdot 64 = 192$ clients, so the number of virtual clients per server is 64 (this assumes uniform load balancing, which was demonstrated in Section~\ref{sec:desc:hashing}). In the baseline experiments presented in Section~\ref{sec:baseline}, the throughput at 64 virtual clients was 32000 requests per second (standard deviation 526), and the mean response time is 2.0 ms with a standard deviation of 2.2 ms.
+
+\todo{different because we have full replication -- but shouldnt make much difference because only 1\% are writes}
+
+\begin{tabular}{|c|r|r|r|}
+\hline \textbf{Metric }& \textbf{Without middleware} & \textbf{With middleware} & \textbf{Slow-down} \\ 
+\hline throughput & 32000 & 3650 & 8.8x \\ 
+\hline response time & 2.2 & 52.8 & 24x \\ 
+\hline 
+\end{tabular} 
+
+
 
 Compare the performance you expect based on the baselines and the one you observe in the trace and quantify the overheads introduced by the middleware (if any), Look at both response time and achievable throughput when making the comparison. Provide an overview of the overheads in a table form.
 

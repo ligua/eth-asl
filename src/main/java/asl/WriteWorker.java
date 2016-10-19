@@ -170,7 +170,7 @@ class WriteWorker implements Runnable {
                                 }
 
                                 // Keep the worst response
-                                if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED) {
+                                if(r.getResponseFlag() == ResponseFlag.NA || r.getResponseFlag() == ResponseFlag.STORED || r.getResponseFlag() == ResponseFlag.DELETED) {
                                     r.setResponseFlag(responseFlag);
                                     r.setResponseBuffer(responseBuffer);
                                 }
