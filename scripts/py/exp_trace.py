@@ -204,8 +204,8 @@ e = Extractor()
 e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
 
 with fabric.api.settings(warn_only=True):
-    fabric.api.local("mkdir results/baseline/graphs")
-    fabric.api.local("Rscript scripts/r/baseline.r results/baseline")
+    fabric.api.local("mkdir results/trace/graphs")
+    fabric.api.local("Rscript scripts/r/trace.r results/trace")
 
 # endregion
 
