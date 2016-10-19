@@ -15,11 +15,16 @@ requests <- read.csv("results/trace_rep3/request.log", header=TRUE, sep=",")
 # exp_end = min(requests$timeReturned)
 NUM_BUCKETS = 120
 
-requests2 <- requests %>%
+start_time <- min(request$timeCreated)
+requests_filtered <- requests %>%
+  mutate(timeCreated=timeCreated/1000, timeReturned=timeReturned/1000) %>%
+  filter(timeCreated- >= 180 & timeCreated <= 3780)
+
+data1 <- requests_filtered %>%
   mutate(bucket = as.numeric(cut(requests$timeCreated, NUM_BUCKETS)),
          totalTime = timeReturned-timeCreated) %>%
-  select(totalTime, bucket, type) %>%
-  group_by(bucket, type) %>%
+  select(totalTime, bucket) %>%
+  group_by(bucket) %>%
   summarise(q01=quantile(totalTime, 0.1),
             q03=quantile(totalTime, 0.3),
             q05=quantile(totalTime, 0.5),
@@ -28,24 +33,25 @@ requests2 <- requests %>%
             q099=quantile(totalTime, 0.99),
             mean=mean(totalTime),
             std=sd(totalTime)) %>%
-  melt(id.vars=c("bucket", "type"))
+  melt(id.vars=c("bucket"))
 
-quantiles <- requests2 %>% filter(variable != "std" & variable != "mean")
-stds <- requests2 <- requests %>%
-  mutate(bucket = as.numeric(cut(requests$timeCreated, NUM_BUCKETS)),
+quantiles <- data1 %>% filter(variable != "std" & variable != "mean")
+stds <- requests_filtered %>%
+  mutate(bucket = as.numeric(cut(requests_filtered$timeCreated, NUM_BUCKETS)),
          totalTime = timeReturned-timeCreated) %>%
-  select(totalTime, bucket, type) %>%
-  group_by(bucket, type) %>%
+  select(totalTime, bucket) %>%
+  group_by(bucket) %>%
   summarise(mean=mean(totalTime),
             std=sd(totalTime))
 
-ggplot() +
-  geom_ribbon(data=stds, aes(x=bucket, ymin=mean-std, ymax=mean+std),
+g1 <- ggplot() +
+  geom_ribbon(data=stds, aes(x=bucket, ymin=pmax(0, mean-std), ymax=mean+std),
               fill="black", alpha=0.4) +
   geom_line(data=quantiles, aes(x=bucket, y=value, color=variable), size=2) +
-  geom_line(data=stds, aes(x=bucket, y=mean), color="black", size=2) +
-  facet_wrap(~type) +
+  geom_line(data=stds, aes(x=bucket, y=mean), color="black", size=1) +
   asl_theme
+ggsave(paste0(result_dir_base, "/graphs/quantiles", FIGURE_TYPE), g1,
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 LIM_Y <- 50
 NUM_BUCKETS_Y <- min(LIM_Y, 0)
