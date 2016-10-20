@@ -173,7 +173,7 @@ In the baseline experiments, two clients sent requests directly to one memcached
 
 \subsection{Throughput}\label{sec:baseline:tput}
 
-From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of memcached grows almost linearly up to 32 virtual clients, from which point on it starts to saturate: throughput increases more slowly with additional virtual clients. This means that the knee of the system is at roughly 32 virtual clients. At roughly 110 virtual clients, the system is completely saturated and additional virtual clients don't increase throughput any further. From the low standard deviation of throughput we can conclude that these results will not change much with further repetitions.
+From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of memcached grows almost linearly up to 32 virtual clients, from which point on it starts to saturate: throughput increases more slowly with additional virtual clients. The knee of the system can also be approximated and lies at roughly 32 virtual clients. At roughly 110 virtual clients, the system is completely saturated and additional virtual clients don't increase throughput any further. From the low standard deviation of throughput we can conclude that these results will not change much with further repetitions.
 
 \begin{figure}[p]
 \centering
