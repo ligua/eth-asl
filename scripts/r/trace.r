@@ -96,20 +96,24 @@ ggsave(paste0(result_dir_base, "/graphs/responsetime", FIGURE_TYPE), g3summarise
 
 # ---- Time spent in different parts of the system
 data4 <- requests %>%
+  filter(timeCreated >= min(requests$timeCreated) + 1000 * DROP_TIMES_BEFORE &
+         timeReturned <= min(requests$timeCreated) + 1000 * DROP_TIMES_AFTER) %>%
   mutate(tLoadBalancer=timeEnqueued-timeCreated,
          tQueue=timeDequeued-timeEnqueued,
          tWorker=timeForwarded-timeDequeued,
          tMemcached=timeReceived-timeForwarded,
-         tReturn=timeReturned-timeReceived) %>%
+         tReturn=timeReturned-timeReceived,
+         tAll=timeReturned-timeCreated) %>%
   select(type, tLoadBalancer:tReturn) %>%
   melt(id.vars=c("type"))
 
 g4 <- ggplot(data4) +
   geom_histogram(aes(x=value, xmin=0, fill=type)) +
   facet_wrap(~variable + type, ncol=2, scales="free_y") +
-  xlim(-10, 100) +
-  xlab("Time spent (ms)") +
+  xlim(-10, 50) +
+  xlab("Time spent [ms]") +
   ylab("Number of requests") +
+  ggtitle("Distribution of time that requests spend in different parts of SUT") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/time_breakdown", FIGURE_TYPE), g4,
-       width=fig_width, height=1.5*fig_width, device=cairo_pdf)
+       width=fig_width, height=1.3*fig_width, device=cairo_pdf)

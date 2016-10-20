@@ -71,7 +71,7 @@ The most important classes in this implementation all belong to the package \cod
 
 \begin{itemize}
 \item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware, and creating the \code{ExecutorService} with a fixed thread pool of $(T+1) \cdot N + 1$ threads, to which all components are submitted.
-\item \linkmain{Request} is a wrapper class for all requests. It contains the request body, the timestamps, and code for responding to the request.
+\item \linkmain{Request} is a wrapper class for all requests. It contains the request body, the timestamps, and code for responding to the request. It also logs the timestamps for every N-th request where $N$ is a parameter set to 100.
 \item \linkmain{LoadBalancer} is the front of the middleware. It runs an infinite loop in which it reads all incoming requests from all clients using \code{java.nio}, hashes the requests using \linkmain{UniformHasher} and forwards them to the correct servers for writing or reading. More in Section~\ref{sec:desc:hashing}.
 \item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the worker threads that process requests from those queues.
 \item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. \linkmain{WriteWorker} also handles DELETE requests. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
@@ -134,13 +134,15 @@ Firstly, if there are any requests available in the queue of SET-requests, it re
 
 Secondly, \linkmain{WriteWorker} checks all memcached servers to see if any of them have responded. This is done in a non-blocking manner using \code{java.nio}: if a server is not yet ready to respond, other servers will be checked; if no server is ready to respond, the first step is run again. \linkmain{WriteWorker} keeps track of all responses to the same request and once all servers have returned a response, the worst out of the $R$ responses is forwarded to the client. For the non-replicated case, this process reduces to just forwarding the response from memcached to the client.
 
+Figure~\ref{fig:rep3:time_breakdown} shows the amount of time spent in different parts of the middleware. 90\% of requests spend less than 10 ms in the queue, and 99\% of requests spend less than 20 ms. The roundtrip from middleware to memcached and back also takes a small amount of time: below 6 ms for 90\% of requests and below 13ms for 99\% of requests. Time spent on all other steps is negligible.
+
+This implies that the maximum rate at which writes can be carried out will be limited by the maximum throughput of the write thread -- we cannot add more than one write thread per server. To fix this bottleneck, we could add memcached servers (and keep $R$ fixed), in which case the bottleneck will be waiting for responses from all memcached servers.
 
 \todo{Estimate of latencies -- replicated and non-replicated}
-Give an estimate of the latencies the writing operation will incur, and generalize it to the replicated case. What do you expect will limit the rate at which writes can be carried out in the system (if anything)?
+Give an estimate of the latencies the writing operation will incur, and generalize it to the replicated case.
+\todo{OK, so} how long does it take to respond to a write request in replicated and non-replicated case?
 
-\todo{Joao:}  "I wrote something about the factors that limit the rate at which writes can be carried out (connection between machines, machine specs, nr. threads, lower bound on server response time...), but I still do not know how to tackle the latency estimate."
-
-The maximum rate at which writes can be carried out will likely be limited by \todo{}.
+The mean response time to SET requests in the fully replicated system is 25.8 ms (as measured by memaslap). Without running the trace with $R=1$, it is hard to estimate the latency for the non-replicated case; however, it should be lower (though not significantly so because responses from memcached are gathered in an async manner).
 
 \subsection{Read Operations and Thread Pool}\label{sec:desc:reads}
 
@@ -244,6 +246,13 @@ Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant a
 \includegraphics[width=\textwidth]{../results/trace_rep3/graphs/responsetime.pdf}
 \label{fig:rep3:responsetime}
 \caption{Response time trace of the middleware as measured by memaslap. The dark line shows the mean response time (calculated as the weighted average of mean response times reported by the three clients) and the light ribbon surrounding the line shows $\pm 1$ standard deviation. Standard deviation values from different repetitions were aggregated in the same way as in Section~\ref{sec:baseline}.}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\textwidth]{../results/trace_rep3/graphs/time_breakdown.pdf}
+\label{fig:rep3:time_breakdown}
+\caption{Distribution of time that requests spend in different parts of SUT during the trace experiment. Each plot shows the difference between two successive time stamps: $t_{LoadBalancer}=t_{enqueued}-t_{created}$, $t_{Queue}=t_{dequeued} - t_{enqueued}$, etc. The time (x) axis is cut off at 50ms. The graph shows only sampled requests (i.e. every 100th request) and excludes requests processed during the warm-up and cool-down periods.}
 \end{figure}
 
 \subsection{Overhead of middleware}
