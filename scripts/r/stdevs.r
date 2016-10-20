@@ -15,13 +15,13 @@ requests <- read.csv("results/trace_rep3/request.log", header=TRUE, sep=",")
 # exp_end = min(requests$timeReturned)
 NUM_BUCKETS = 120
 
-start_time <- min(request$timeCreated)
+start_time <- min(requests$timeCreated)
 requests_filtered <- requests %>%
-  mutate(timeCreated=timeCreated/1000, timeReturned=timeReturned/1000) %>%
-  filter(timeCreated- >= 180 & timeCreated <= 3780)
+  filter(timeCreated-start_time >= 180*1000 & timeCreated-start_time <= 3780*1000) %>%
+  mutate(timeCreated=timeCreated/1000, timeReturned=timeReturned/1000)
 
 data1 <- requests_filtered %>%
-  mutate(bucket = as.numeric(cut(requests$timeCreated, NUM_BUCKETS)),
+  mutate(bucket = as.numeric(cut(requests_filtered$timeCreated, NUM_BUCKETS)),
          totalTime = timeReturned-timeCreated) %>%
   select(totalTime, bucket) %>%
   group_by(bucket) %>%

@@ -55,6 +55,7 @@ g2 <- ggplot(data2) +
   geom_line(aes(x=time, y=tps, ymin=0), color=color_dark, size=2) +
   xlab("Time since start of experiment [s]") +
   ylab("Total throughput [successful responses / s]") +
+  ggtitle("Throughput of SUT in the trace experiment") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g2,
        width=fig_width, height=fig_height, device=cairo_pdf)
@@ -77,6 +78,7 @@ g3 <- ggplot(data3) +
   xlab("Time since start of experiment [s]") +
   ylab("Mean response time [ms]") +
   facet_wrap(~request_type, nrow=2, scales="free") +
+  ggtitle("Response time of SUT in the trace experiment") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/latency_breakdown", FIGURE_TYPE), g3,
        width=fig_width, height=fig_height, device=cairo_pdf)
@@ -87,6 +89,7 @@ g3summarised <- ggplot(data3summarised) +
   geom_line(aes(x=time, y=avg, ymin=0), color=color_dark, size=2) +
   xlab("Time since start of experiment [s]") +
   ylab("Mean response time [ms]") +
+  ggtitle("Response time of SUT in the trace experiment") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/responsetime", FIGURE_TYPE), g3summarised,
        width=fig_width, height=fig_height, device=cairo_pdf)

@@ -37,6 +37,7 @@ g1 <- ggplot(data1, aes(x=concurrency, y=mean_tps, ymin=0)) +
   geom_point(color=color_dark, size=3) +
   xlab("Concurrency [# virtual clients]") +
   ylab("Total throughput [successful responses / s]") +
+  ggtitle("Throughput of memcached as a function of concurrency") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/throughput", FIGURE_TYPE), g1,
        width=fig_width, height=fig_height, device=cairo_pdf)
@@ -54,6 +55,7 @@ g2 <- ggplot(data2, aes(x=concurrency)) +
   geom_point(aes(y=t_mean), color=color_dark, size=3) + 
   xlab("Concurrency [# virtual clients]") +
   ylab("Mean response time [ms]") +
+  ggtitle("Mean response time of memcached as a function of concurrency") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/responsetime", FIGURE_TYPE), g2,
        width=fig_width, height=fig_height, device=cairo_pdf)
