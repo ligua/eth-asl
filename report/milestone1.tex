@@ -70,11 +70,11 @@ Milestone}
 The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows. Whenever a Java class is referenced, it will link to GitLab, e.g. \linkmain{MiddlewareMain}. 
 
 \begin{itemize}
-\item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware, and creating the \code{ExecutorService} with a fixed thread pool of $(T+1) \cdot N + 1$ threads.
-\item \linkmain{Request} is a wrapper class for all GET- and SET-requests.
-\item \linkmain{LoadBalancer} is the front of the middleware. It reads all incoming requests from all clients using \code{java.nio}, hashes the requests using \linkmain{UniformHasher} and forwards them to the correct servers for writing or reading. More in Section~\ref{sec:desc:hashing}.
-\item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the threads that process requests from those queues.
-\item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
+\item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware, and creating the \code{ExecutorService} with a fixed thread pool of $(T+1) \cdot N + 1$ threads, to which all components are submitted.
+\item \linkmain{Request} is a wrapper class for all requests. It contains the request body, the timestamps, and code for responding to the request.
+\item \linkmain{LoadBalancer} is the front of the middleware. It runs an infinite loop in which it reads all incoming requests from all clients using \code{java.nio}, hashes the requests using \linkmain{UniformHasher} and forwards them to the correct servers for writing or reading. More in Section~\ref{sec:desc:hashing}.
+\item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the worker threads that process requests from those queues.
+\item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. \linkmain{WriteWorker} also handles DELETE requests. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
 \end{itemize}
 
 \begin{figure}[h]
@@ -89,12 +89,10 @@ The middleware is instrumented at six points that are also shown in Figure~\ref{
 \item $t_{created}$ -- when the request is received in \linkmain{LoadBalancer}.
 \item $t_{enqueued}$ -- when the request is added to the queue.
 \item $t_{dequeued}$ -- when the request is removed from the queue.
-\item $t_{forwarded}$ -- when the request has been sent to all the servers (one server for GET requests and $R$ servers for SET requests).
+\item $t_{forwarded}$ -- when the request has been sent to all the servers (one server for write requests and $R$ servers for read requests).
 \item $t_{received}$ -- when responses to the request have been received from all servers.
 \item $t_{returned}$ -- when the response is returned to the client.
 \end{enumerate}
-
-\todo{"Shortly outline the main design decisions?"}
 
 \subsection{Load Balancing and Hashing}\label{sec:desc:hashing}
 
