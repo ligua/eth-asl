@@ -138,11 +138,7 @@ Figure~\ref{fig:rep3:time_breakdown} shows the amount of time spent in different
 
 This implies that the maximum rate at which writes can be carried out will be limited by the maximum throughput of the write thread -- we cannot add more than one write thread per server. To fix this bottleneck, we could add memcached servers (and keep $R$ fixed), in which case the bottleneck will be waiting for responses from all memcached servers.
 
-\todo{Estimate of latencies -- replicated and non-replicated}
-Give an estimate of the latencies the writing operation will incur, and generalize it to the replicated case.
-\todo{OK, so} how long does it take to respond to a write request in replicated and non-replicated case?
-
-The mean response time to SET requests in the fully replicated system is 25.8 ms (as measured by memaslap). Without running the trace with $R=1$, it is hard to estimate the latency for the non-replicated case; however, it should be lower (though not significantly so because responses from memcached are gathered in an async manner).
+The mean response time to write requests in the fully replicated system is 25.8 ms (as measured by memaslap). Without running the trace with $R=1$, it is hard to estimate the latency for the non-replicated case. However, in my \linkmain{WriteWorker} implementation, there are two factors influencing this difference: a) how long it takes to write a single write request to each server, and b) what is the longest response time from of the $N$ memcached servers. a) is small because it consists only of writing a \code{ByteBuffer} to a \code{SocketChannel}. b) is slightly higher than the mean response time of a single server because we're sampling the same random variable (which has a distribution with a nonzero variance) multiple times and taking the maximum one. In summary: the non-replicated latency will not be significantly lower than in the replicated case in the implemented system.
 
 \subsection{Read Operations and Thread Pool}\label{sec:desc:reads}
 
@@ -259,12 +255,12 @@ Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant a
 
 In the trace experiment, three memcached servers need to service $3 \cdot 64 = 192$ clients, so the number of virtual clients per server is 64 (this assumes uniform load balancing, which was demonstrated in Section~\ref{sec:desc:hashing}). For this reason, we should compare the performance of the system with the performance of the baseline at 64 virtual clients. Since the trace is run with full replication, i.e. all writes are done to three servers instead of one, these two numbers are not be directly comparable. However, since write requests make up only 1\% of all requests, this difference is negligible.
 
-The following table shows comparison of the baseline and actual (with middleware) performance of the system. Using the middleware introduces a roughly 4-fold decrease in throughput (decreasing it by 24540 requests per second) and roughly 12-fold increase in response time (adding 23.6 ms), which is a significant deterioration in performance.
+The following table shows comparison of the baseline and actual (with middleware) performance of the system, shown with up to 3 significant digits. Using the middleware introduces a roughly 4-fold decrease in throughput (decreasing it by 24540 requests per second) and roughly 12-fold increase in response time (adding 23.6 ms), which is a significant deterioration in performance.
 
 \begin{center}
 \begin{tabular}{|l|r|r|r|r|}
 \hline \textbf{Metric }& \textbf{Baseline} & \textbf{Middleware} & \textbf{Overhead} & \textbf{Slow-down} \\ 
-\hline throughput [requests/s] & 32000 & 7460 & -24540 & 4.3x \\ 
+\hline throughput [requests/s] & 32000 & 7460 & -24500 & 4.3x \\ 
 \hline response time [ms] & 2.2 & 25.8 & 23.6 & 11.7x \\ 
 \hline 
 \end{tabular} 
