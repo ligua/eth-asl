@@ -67,12 +67,12 @@ Milestone}
 
 \subsection{Overall Architecture}\label{sec:desc:architecture}
 
-The most important classes in this implementation all belong to the package \code{main.java.asl} and are as follows. Whenever a Java class is referenced, it will link to GitLab, e.g. \linkmain{MiddlewareMain}. 
+The most important classes in this implementation belong to the package \code{main.java.asl} and are as follows. Whenever a Java class is referenced, it will link to GitLab, e.g. \linkmain{MiddlewareMain}. 
 
 \begin{itemize}
-\item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware, and creating the \code{ExecutorService} with a fixed thread pool of $(T+1) \cdot N + 1$ threads, to which all components are submitted.
+\item \linkmain{MiddlewareMain} is responsible for setting up all parts of the middleware, and creating the \code{ExecutorService} with a fixed thread pool of $(T+1) \cdot N + 1$ threads to which all components are submitted.
 \item \linkmain{Request} is a wrapper class for all requests. It contains the request body, the timestamps, and code for responding to the request. It also logs the timestamps for every N-th request where $N$ is a parameter set to 100.
-\item \linkmain{LoadBalancer} is the front of the middleware. It runs an infinite loop in which it reads all incoming requests from all clients using \code{java.nio}, hashes the requests using \linkmain{UniformHasher} and forwards them to the correct servers for writing or reading. More in Section~\ref{sec:desc:hashing}.
+\item \linkmain{LoadBalancer} is the front of the middleware. It runs an infinite loop in which it reads incoming requests from all clients using \code{java.nio}, hashes the requests using \linkmain{UniformHasher} and forwards them to the correct queue for writing or reading. More in Section~\ref{sec:desc:hashing}.
 \item \linkmain{MiddlewareComponent} is a lightweight class that holds the read and write queues for a given server, and starts the worker threads that process requests from those queues.
 \item \linkmain{WriteWorker} and \linkmain{ReadWorker} implement the write and read thread for a given \linkmain{MiddlewareComponent}. \linkmain{WriteWorker} also handles DELETE requests. More in Sections~\ref{sec:desc:writes} and \ref{sec:desc:reads}.
 \end{itemize}
@@ -89,20 +89,20 @@ The middleware is instrumented at six points that are also shown in Figure~\ref{
 \item $t_{created}$ -- when the request is received in \linkmain{LoadBalancer}.
 \item $t_{enqueued}$ -- when the request is added to the queue.
 \item $t_{dequeued}$ -- when the request is removed from the queue.
-\item $t_{forwarded}$ -- when the request has been sent to all the servers (one server for write requests and $R$ servers for read requests).
+\item $t_{forwarded}$ -- when the request has been forwarded to all the servers (one server for read requests and $R$ servers for write requests).
 \item $t_{received}$ -- when responses to the request have been received from all servers.
 \item $t_{returned}$ -- when the response is returned to the client.
 \end{enumerate}
 
 \subsection{Load Balancing and Hashing}\label{sec:desc:hashing}
 
-The hashing is implemented by \linkmain{UniformHasher}. The hashing scheme for a given key works as follows:
+The hashing is implemented by \linkmain{UniformHasher} via the \linkmain{Hasher} interface. The hashing scheme for a given key s works as follows:
 \begin{enumerate}
 \item s is hashed into a 32-bit signed integer $i$ using Java's native \code{String.hashCode()}.
 \item The index of the primary machine is calculated as $i \bmod N$ (adding $N$ if the modulus is negative) where $N$ is the number of servers.
 \end{enumerate}
 
-The uniformity of hashing was also validated in tests (see \linktest{UniformHasherTest}). For 1 million random strings and 13 target machines, the distribution to different machines was the following:
+The uniformity of hashing was validated in tests (see \linktest{UniformHasherTest}). For one million random strings and 13 target machines, the distribution to different machines was the following:
 
 \begin{verbatim}
 Machine   0 got      77229 hits.
@@ -130,23 +130,23 @@ The write operations are handled by \linkmain{WriteWorker}s. Each \linkmain{Writ
 
 \linkmain{WriteWorker} runs an infinite while-loop in which it does two distinct things.
 
-Firstly, if there are any requests available in the queue of SET-requests, it removes one request r from the queue. It then writes to each of the replication servers in a serial manner without waiting for a response, i.e. it writes the whole SET-request to the first server, then to the second server, and so on. For the non-replicated case, only one request is sent.
+Firstly, if there are any requests available in the queue of write requests (i.e. SETs or DELETEs), it removes one request r from the queue. It then writes to each of the replication servers in a serial manner without waiting for a response, i.e. it writes the whole request to the first server, then to the second server, and so on. For the non-replicated case, only one request is sent.
 
 Secondly, \linkmain{WriteWorker} checks all memcached servers to see if any of them have responded. This is done in a non-blocking manner using \code{java.nio}: if a server is not yet ready to respond, other servers will be checked; if no server is ready to respond, the first step is run again. \linkmain{WriteWorker} keeps track of all responses to the same request and once all servers have returned a response, the worst out of the $R$ responses is forwarded to the client. For the non-replicated case, this process reduces to just forwarding the response from memcached to the client.
 
-Figure~\ref{fig:rep3:time_breakdown} shows the amount of time spent in different parts of the middleware. 90\% of requests spend less than 10 ms in the queue, and 99\% of requests spend less than 20 ms. The roundtrip from middleware to memcached and back also takes a small amount of time: below 6 ms for 90\% of requests and below 13ms for 99\% of requests. Time spent on all other steps is negligible.
+Figure~\ref{fig:rep3:time_breakdown} shows the amount of time spent in different parts of the middleware. 90\% of requests spend less than 10 ms in the queue, and 99\% of requests spend less than 20 ms. The round-trip from middleware to memcached and back also takes a small amount of time: below 6 ms for 90\% of requests and below 13ms for 99\% of requests. Time spent on all other steps is negligible.
 
-This implies that the maximum rate at which writes can be carried out will be limited by the maximum throughput of the write thread -- we cannot add more than one write thread per server. To fix this bottleneck, we could add memcached servers (and keep $R$ fixed), in which case the bottleneck will be waiting for responses from all memcached servers.
+This implies that the maximum rate at which writes can be carried out will be limited by the maximum throughput of the write thread -- we cannot add more than one write thread per server. To fix this bottleneck, we could add memcached servers (and keep $R$ fixed), in which case waiting for responses from all memcached servers will become the bottleneck.
 
-The mean response time to write requests in the fully replicated system is 25.8 ms (as measured by memaslap). Without running the trace with $R=1$, it is hard to estimate the latency for the non-replicated case. However, in my \linkmain{WriteWorker} implementation, there are two factors influencing this difference: a) how long it takes to write a single write request to each server, and b) what is the longest response time from of the $N$ memcached servers. a) is small because it consists only of writing a \code{ByteBuffer} to a \code{SocketChannel}. b) is slightly higher than the mean response time of a single server because we're sampling the same random variable (which has a distribution with a nonzero variance) multiple times and taking the maximum one. In summary: the non-replicated latency will not be significantly lower than in the replicated case in the implemented system.
+The mean response time to write requests in the fully replicated system is 25.8 ms (as measured by memaslap). Without running the trace with $R=1$, it is hard to estimate the latency for the non-replicated case. However, in the \linkmain{WriteWorker} implementation, there are two factors influencing this difference: a) how long it takes to write a single write request to each server, and b) what is the longest response time from of the $N$ memcached servers. a) is small because it consists only of writing a \code{ByteBuffer} to a \code{SocketChannel}. b) is slightly higher than the mean response time of a single server because we're sampling the same random variable (which has a distribution with a nonzero variance) multiple times and taking the maximum one. In summary: latency of the non-replicated system is not significantly lower than that of the replicated system.
 
 \subsection{Read Operations and Thread Pool}\label{sec:desc:reads}
 
 The read operations are handled by \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/ReadWorker.java}{ReadWorker}s. Each \linkmain{ReadWorker} runs on one thread and has exactly one socket connection to its assigned memcached server.
 
-Every \linkmain{ReadWorker} runs an infinite while-loop in which it takes a request r from its assigned queue of GET-requests, writes the contents of r to its assigned memcached server, blocks until the response from memcached arrives, sets the response buffer of r to what it received from memcached and finally sends the response to the client corresponding to r.
+Every \linkmain{ReadWorker} runs an infinite while-loop in which it takes a request r from its assigned queue of GET-requests, writes the contents of r to its assigned memcached server, blocks until the response from memcached arrives and finally sends the response to the client corresponding to r.
 
-Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests concurrently and \linkmain{LoadBalancer} is inserting elements at the same time, the queue needs to be safe to concurrent access by multiple threads. For this reason, \code{BlockingQueue} was chosen; in particular, the \code{ArrayBlockingQueue} implementation of \code{BlockingQueue}. The maximum size of the queue was set to a constant 200 (defined in \code{MiddlewareMain.QUEUE_SIZE}), because 3 load generating machines each with 64 concurrent clients can generate a maximum of $3 \cdot 64 = 192 < 200$ requests at any time, which in the worst (although unlikely) case will all be forwarded to the same server.
+Since multiple \linkmain{ReadWorkers} take from the queue of GET-requests concurrently and \linkmain{LoadBalancer} is inserting elements at the same time, the queue needs to be safe for concurrent access by multiple threads. For this reason, \code{BlockingQueue} was chosen; in particular, the \code{ArrayBlockingQueue} implementation of \code{BlockingQueue}. The maximum size of the queue was set to a constant 200 (defined in \code{MiddlewareMain.QUEUE_SIZE}), because 3 load generating machines each with 64 concurrent clients can generate a maximum of $3 \cdot 64 = 192 < 200$ requests at any time, which in the worst (although unlikely) case will all be forwarded to the same server.
 
 
 \section{Memcached Baselines}\label{sec:baseline}
@@ -167,13 +167,13 @@ Since multiple \linkmain{ReadWorkers} read from the queue of GET-requests concur
 \end{center}
 \footnotetext{For concurrency=1, one client machine was run with 1 virtual client and the other machine was idle.}
 
-In the baseline experiments, two clients sent requests directly to one memcached server. 37 different values in the range $[1, 128]$ for the total number of virtual clients were tested with 5 repetitions for each. The machines were not restarted between repetitions; however, memcached was restarted after each repetition. Both the clients and the memcached server ran on Azure Basic\_A2 machines. All machines were accessed through their private IPs in the virtual network. Logs were parsed using Python and results plotted using R.
+In the baseline experiments, two client machines sent requests directly to one memcached server. 37 different values in the range $[1, 128]$ for the total number of virtual clients were tested with 5 repetitions for each. The machines were not restarted between repetitions; however, memcached was restarted after each repetition. Both the clients and the memcached server ran on Azure Basic A2 machines. All machines were accessed through their private IPs in the virtual network. Logs were parsed using Python and results plotted using R.
 
 
 
 \subsection{Throughput}\label{sec:baseline:tput}
 
-From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of memcached grows almost linearly up to 32 virtual clients, from which point on it starts to saturate: throughput increases more slowly with additional virtual clients. The knee of the system can also be approximated and lies at roughly 32 virtual clients. At roughly 110 virtual clients, the system is completely saturated and additional virtual clients don't increase throughput any further. From the low standard deviation of throughput we can conclude that these results will not change much with further repetitions.
+From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of memcached grows almost linearly up to 32 virtual clients, from which point on it starts to saturate: throughput increases more slowly with additional virtual clients; the knee of the system lies at approximately 32 virtual clients. At roughly 110 virtual clients, the system is completely saturated and additional virtual clients don't increase throughput any further. From the low standard deviation of throughput we can conclude that these results will not change much with further repetitions.
 
 \begin{figure}[p]
 \centering
@@ -184,15 +184,15 @@ From Figure~\ref{fig:baseline:throughput}, we observe that the throughput of mem
 
 \subsection{Response time}\label{sec:baseline:rt}
 
-From Figure~\ref{fig:baseline:responsetime} we observe that response time grows slowly up to 32 virtual clients, from which point mean response time starts to grow linearly with the number of clients, and the standard deviation of response time increases significantly. The mean increases because memcached is unable to service all incoming requests immediately so some requests have to wait.
+From Figure~\ref{fig:baseline:responsetime} we observe that response time grows slowly up to 32 virtual clients, from which point it starts to grow linearly with the number of clients, and the standard deviation of response time increases significantly. The mean increases with the number of virtual clients because memcached is unable to service all incoming requests immediately so some requests have to wait.
 
-The high standard deviation is caused by the heavy-tailed distribution of response times, i.e. the distribution is not normal (nor symmetric). When the system starts to saturate, standard deviation also increases. This is caused by a queue forming at the memcached server: if the number of clients is low, the queue is almost always empty and every request will be processed instantaneously. When we increase the number of clients, the queue will be filled more often, and the amount of items in the queue at any time is varies, which in turn causes the the response time to vary more and thus a high variance in response times.
+The high standard deviation is caused by the heavy-tailed distribution of response times -- the distribution is not normal (nor symmetric). When the system starts to saturate, standard deviation also increases. This is caused by a queue forming at the memcached server: if the number of clients is low, the queue is almost always empty and every request will be processed instantaneously. When we increase the number of clients, the queue will be filled more often, and the amount of items in the queue at any time is varies, which in turn causes the the response time to vary more. This results in high variance in response times.
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/baseline/graphs/responsetime.pdf}
 \label{fig:baseline:responsetime}
-\caption{Response time of memcached without middleware, as measured by memaslap. Dark dots connected by a line show the mean response time and the light ribbon surronding the line shows $\pm 1$ standard deviation aggregated over all requests sent with that concurrency. Standard deviation values from different repetitions were aggregated by a) calculating the variance for each repetitions, b) finding the weighted average of variance (where the weight is the number of successful requests in a repetition), and c) finding the square root of this sum. }
+\caption{Response time of memcached without middleware, as measured by memaslap. Dark dots connected by a line show the mean response time and the light ribbon surronding the line shows $\pm 1$ standard deviation over all requests sent with that concurrency. Standard deviation values from different repetitions were aggregated by a) calculating the variance for each repetition, b) finding the weighted average of variances (where the weight is the number of successful requests in a repetition), and c) finding the square root of this sum. }
 \end{figure}
 
 \section{Stability Trace}\label{sec:trace}
@@ -214,16 +214,16 @@ The high standard deviation is caused by the heavy-tailed distribution of respon
 
 The trace was run for 65 minutes; in the plots and analysis, the first three minutes and the last two minutes were removed to account for the warm-up and cool-down phase, respectively. The number of read threads per server was set to $T=5$ for the trace. Memaslap was set to record statistics in 30-second intervals.
 
-The clients and the memcached server were run on Azure Basic\_A2 machines; the middleware was run on a Basic\_A4 instance. 
+The clients and the memcached server were run on Azure Basic A2 machines; the middleware was run on a Basic A4 instance. 
 Both the middleware and memcached servers were accessed through their private IPs in the virtual network. Logs were parsed using Python and results plotted using R.
 
 
 
 \subsection{Throughput}
 
-From Figure~\ref{fig:rep3:throughput} we can see that the throughput remains at the same level of 7000 to 8000 operations per second throughout the whole experiment and thus the middleware can handle a long-running workload  without a degradation in performance. The variance can partly be explained by the random nature of the experiment: it is affected by the conditions (especially network conditions) on Azure. However, the sudden falls in throughput in the graph are likely to be caused by the Java garbage collector starting its operation.
+From Figure~\ref{fig:rep3:throughput} we can see that the throughput remains at a level of 7000 to 8000 operations per second throughout the whole experiment and thus the middleware can handle a long-running workload  without a degradation in performance. The variance can partly be explained by the random nature of the experiment: it is affected by the conditions (especially network conditions) on Azure. However, the sudden falls in throughput in the graph are likely to be caused by the Java garbage collector starting its operation.
 
-We can use the Interactive Response Time Law to evaluate whether the results are reasonable. Given that in the trace (excluding warm-up and cool-down) the mean response time is $r=25.8$ms, the number of clients is $n = 3 \cdot 64 = 192$, and the clients can be assumed to have no think time ($z=0$), the predicted throughput is $\frac{n}{r + z} = 7430$ operations per second. This is well in line with the actual throughput of 7460 operations per second.
+We can use the Interactive Response Time Law to evaluate whether the results are reasonable. Given that in the trace (excluding warm-up and cool-down) the mean response time is $r=25.8$ms, the number of clients is $n = 3 \cdot 64 = 192$, and the clients can be assumed to have almost no think time ($z=0$), the predicted throughput is $\frac{n}{r + z} = 7430$ operations per second. This is well in line with the actual throughput of 7460 operations per second.
 
 \begin{figure}[p]
 \centering
@@ -235,7 +235,7 @@ We can use the Interactive Response Time Law to evaluate whether the results are
 
 \subsection{Response time}
 
-Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant around 25ms for the whole duration of the trace experiment, with the standard deviation in roughly the same range. The load is high enough so that the queues are not empty and the response time depends on the amount of items in the queue, which itself can vary significantly -- this causes variation in response time to be high similarly to the baseline experiment (coefficient of variation is roughly 1 here).
+Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant around 25ms for the whole duration of the trace experiment, with standard deviation in roughly the same range. The load is high enough so that the queues are not empty and the response time depends on the amount of items in the queue, which itself can vary significantly -- this causes variation in response time to be high similarly to the baseline experiment (coefficient of variation is roughly 1 here).
 
 \begin{figure}[p]
 \centering
@@ -253,9 +253,9 @@ Figure~\ref{fig:rep3:responsetime} shows that the response time stays constant a
 
 \subsection{Overhead of middleware}
 
-In the trace experiment, three memcached servers need to service $3 \cdot 64 = 192$ clients, so the number of virtual clients per server is 64 (this assumes uniform load balancing, which was demonstrated in Section~\ref{sec:desc:hashing}). For this reason, we should compare the performance of the system with the performance of the baseline at 64 virtual clients. Since the trace is run with full replication, i.e. all writes are done to three servers instead of one, these two numbers are not be directly comparable. However, since write requests make up only 1\% of all requests, this difference is negligible.
+In the trace experiment, three memcached servers need to service $3 \cdot 64 = 192$ clients, so the number of virtual clients per memcached server is 64 (this assumes uniform load balancing, which was demonstrated in Section~\ref{sec:desc:hashing}). For this reason, we should compare the performance of the system with the performance of the baseline at 64 virtual clients. Since the trace is run with full replication, i.e. all writes are done to three servers instead of one, these two numbers are not directly comparable. However, since write requests make up only 1\% of all requests, and writes are processed in roughly the same time as reads, this difference is negligible.
 
-The following table shows comparison of the baseline and actual (with middleware) performance of the system, shown with up to 3 significant digits. Using the middleware introduces a roughly 4-fold decrease in throughput (decreasing it by 24540 requests per second) and roughly 12-fold increase in response time (adding 23.6 ms), which is a significant deterioration in performance.
+The following table shows comparison of the baseline and actual (with middleware) performance of the system with up to 3 significant digits. Using the middleware introduces a roughly 4-fold decrease in throughput (decreasing it by 24500 requests per second) and a roughly 12-fold increase in response time (adding 23.6 ms), which is a significant decrease.
 
 \begin{center}
 \begin{tabular}{|l|r|r|r|r|}
