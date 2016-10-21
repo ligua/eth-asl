@@ -102,7 +102,7 @@ The hashing is implemented by \linkmain{UniformHasher} via the \linkmain{Hasher}
 \item The index of the primary machine is calculated as $i \bmod N$ (adding $N$ if the modulus is negative) where $N$ is the number of servers.
 \end{enumerate}
 
-The uniformity of hashing was validated in tests (see \linktest{UniformHasherTest}). For one million random strings and 13 target machines, the distribution to different machines was the following:
+The uniformity of the key distribution follows from the assumption that input strings are random and the uniformity of \code{String.hashcode()}. This was also validated in tests (see \linktest{UniformHasherTest}): for one million random strings and 13 target machines, the distribution to different machines was the following:
 
 \begin{verbatim}
 Machine   0 got      77229 hits.
