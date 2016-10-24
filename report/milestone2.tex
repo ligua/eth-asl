@@ -1,16 +1,31 @@
 \documentclass[11pt]{article}
 \usepackage[a4paper, portrait, margin=1in]{geometry}
-
 \usepackage{mathtools}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=gray]{hyperref}
+
+
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+\newcommand{\code}[1]{\lstinline[language=Java]{#1}}
+\newcommand{\todo}[1]{\fcolorbox{black}{Apricot}{TODO: #1}}
+\newcommand{\linkmain}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/#1.java}{#1}}
+\newcommand{\linktest}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/test/java/asl/#1.java}{#1}}
+
+\newcommand{\resultsurl}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/#1}{gitlab.inf.ethz.ch/.../results/#1}}
+
+
+
 
 \begin{document}
 
 \title{Advanced Systems Lab (Fall'16) -- Second
 Milestone}
 
-\author{Name: \emph{Your name}\\Legi number: \emph{Your legi
-number}}
+\author{Name: \emph{Taivo Pungas}\\Legi number: \emph{15-928-336}}
 
 \date{
 \vspace{4cm}
@@ -50,14 +65,6 @@ Please feel free to structure the three sections of this report as it makes most
 
 \medskip
 
-\section*{Formatting guidelines (same as Milestone 1)}
-We expect you to use this template for the report, but in case you want to use Word or an other text processor, keep in mind the following:
-\begin{itemize}
-\item  We expect you to submit \textbf{a single PDF that has the same section structure as this template, and answers all points we outline here}. If you use this file, you should remove this page with notes, and the short description provided by us at the beginning of sections.
-\item Keep the same cover page as on this document and \textbf{fill out your name and legi number}. Leave the grading table empty.
-\item  The main text should be in \textbf{single-column format with 11pt font on A4 paper}. In case you don't start with one of the files provided by us, \textbf{for margins use 2.54 cm (1 inch) on all sides}.
-\end{itemize}
-
 \pagebreak
 
 \section{Maximum Throughput}
@@ -84,5 +91,17 @@ In this section, you should study the changes in throughput and response time of
 
 For what number of servers do you see the biggest impact (relative to base case) on performance? Investigate the main reason for the reduced performance and provide a detailed explanation of the behavior of the system. Provide the graphs and tables necessary to support your claims.
 
+
+
+\pagebreak
+
+\section*{Logfile listing}
+
+\begin{tabular}{|c|l|}
+\hline \textbf{Short name }& \textbf{Location} \\ 
+\hline baseline-m*-c*-r* & \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/baseline}{gitlab.inf.ethz.ch/.../results/baseline/baseline\_memaslap*\_conc*\_rep*.out} \\ 
+\hline trace-ms4 & \resultsurl{trace\_rep3/memaslap4.out} \\ 
+\hline 
+\end{tabular} 
  
 \end{document}
