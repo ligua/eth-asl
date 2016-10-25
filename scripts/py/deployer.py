@@ -161,6 +161,7 @@ class Deployer(object):
 
         return deletion_async_operation
 
+
     def destroy_wait(self):
         """Convenience method that blocks until deletion is done."""
         deletion_async_operation = self._destroy()
@@ -183,6 +184,22 @@ class Deployer(object):
                     break
 
         self.log.info("All operations done.")
+
+    @staticmethod
+    def hibernate_wait_static(resource_group):
+        d = Deployer(None, None, None)
+        d.log.info("Hibernating resource group {}".format(resource_group))
+        resources = d.resource_client.resource_groups.list_resources(resource_group)
+
+        async_ops = []
+
+        for resource in resources:
+            if resource.type == Deployer.TYPE_VIRTUAL_MACHINE:
+                d.log.info("Deallocating virtual machine {}...".format(resource.name))
+                async_op = d.compute_client.virtual_machines.deallocate(resource_group, resource.name)
+                async_ops.append(async_op)
+
+        d.wait_for_all_ops(async_ops)
 
     @staticmethod
     def kill(resource_group):
