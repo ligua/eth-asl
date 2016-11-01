@@ -139,8 +139,8 @@ class Experiment():
         mw_server.start()
     
         # Sleep a bit so middleware has time to start
-        if not mw_server.is_running():
-            sleep_for = 5
+        sleep_for = 5
+        while not mw_server.is_running():
             self.log.info("Sleeping for {} seconds so middleware can start...".format(sleep_for))
             time.sleep(sleep_for)
     
