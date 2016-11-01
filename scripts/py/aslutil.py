@@ -1,6 +1,7 @@
 import fabric.api
 import time
 import copy
+import re
 
 
 def server_is_online(ssh_username, ssh_address, ssh_key_filename):
@@ -35,3 +36,8 @@ def wait_for_servers(ssh_username, ssh_address_list, ssh_key_filename, log, chec
         else:
             log.info("All servers online.")
             break
+
+def server_name_to_number(server_name):
+    """'server1' -> 1 etc"""
+    regex = re.compile(r"[a-z]*(\d+)")
+    return regex.match(server_name).groups()[0]
