@@ -29,4 +29,6 @@ for S in S_values:
         for workload in workload_values:
             log.info("Starting experiment with S={}, R={}, workload={}".format(S, R, workload))
 
+# TODO catch any exception and do a force hibernate if exception
+
 

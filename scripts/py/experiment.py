@@ -1,6 +1,7 @@
 import os.path
 import logging
 import time
+import aslutil
 
 import fabric.api
 from memaslap import Memaslap
@@ -35,13 +36,12 @@ class Experiment():
             num_threads_in_pool = 5,
             replication_factor = 1,
             memaslap_workload = "smallvalue.cfg",
-            came_from_hibernation = False,
             hibernate_at_end = True,
             ssh_username = "pungast",
             num_memaslaps = 1,
             num_memcacheds = 1
     ):
-        experiment_runtime_string = "{}m".format(experiment_runtime),
+        experiment_runtime_string = "{}m".format(experiment_runtime)
     
         with fabric.api.settings(warn_only=True):
             fabric.api.local("rm -r {}/*".format(results_dir))
@@ -108,10 +108,9 @@ class Experiment():
         self.log.info("A2 machines: " + str(indices_smallmachines))
         self.log.info("A4 machine: " + str(index_a4))
 
-        # TODO sleep until I can SSH into the A4 machine (try every 30 seconds or sth)
-        if came_from_hibernation:
-            pass
-    
+        # Wait for all servers to be responsive
+        aslutil.wait_for_servers(ssh_username, public_hostnames, "~/.ssh/id_rsa_asl", self.log, check_every_n_sec=10)
+
         # Set up memcached servers
         memcached_port = 11211
         mc_servers = []
@@ -133,7 +132,8 @@ class Experiment():
                                num_threads_in_pool, replication_factor, mc_server_string_list, ssh_username=ssh_username)
         if update_and_install:
             mw_server.update_and_install()
-    
+
+        mw_server.stop()
         mw_server.clear_logs()
         mw_server.start()
     
@@ -149,7 +149,7 @@ class Experiment():
         for i in indices_smallmachines[num_memcacheds:num_memcacheds+num_memaslaps]:
             self.log.info("Setting up memaslap on machine {} ({}).".format(i, vm_names[i]))
             ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port, ssh_username=ssh_username,
-                                 id_number=i+1) # i is zero-indexed
+                                 id_number=int(aslutil.server_name_to_number(vm_names[i]))) # i is zero-indexed
             ms_servers.append(ms_server)
             if update_and_install:
                 if not first_memaslap:
