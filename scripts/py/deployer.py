@@ -171,8 +171,8 @@ class Deployer(object):
     def wait_for_all_ops(self, async_ops, log_every_n_seconds=5):
         """Wait for all operations in the list to finish"""
         self.log.info("Waiting for {} operations to finish...".format(len(async_ops)))
-
         start_time = time.time()
+
         while async_ops:
             if time.time() - start_time > log_every_n_seconds:
                 start_time = time.time()
@@ -187,7 +187,7 @@ class Deployer(object):
 
     @staticmethod
     def hibernate_wait_static(resource_group):
-        d = Deployer(None, None, None)
+        d = Deployer(resource_group, None, None)
         d.log.info("Hibernating resource group {}".format(resource_group))
         resources = d.resource_client.resource_groups.list_resources(resource_group)
 
@@ -205,7 +205,7 @@ class Deployer(object):
     def kill(resource_group):
         """Kill the given resource group."""
         print("Killing resource group {}...".format(resource_group))
-        d = Deployer(None, None, None)
+        d = Deployer(resource_group, None, None)
         deletion_async_operation = d.resource_client.resource_groups.delete(resource_group)
         print("Started killing resource group {}.".format(resource_group))
 
