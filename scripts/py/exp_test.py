@@ -17,15 +17,17 @@ log.addHandler(ch)
 
 # region ---- Experimental setup ----
 S = 7
-R = 1
+R = 7
+T = 1
 
 e = Experiment()
 
 e.start_experiment("results/testing",
                    update_and_install=False,
-                   experiment_runtime=2,
+                   experiment_runtime=10,
                    runtime_buffer=1,
                    replication_factor=R,
+                   num_threads_in_pool=T,
                    num_memaslaps=3,
-                   num_memcacheds=7,
+                   num_memcacheds=S,
                    hibernate_at_end=False)

@@ -124,6 +124,10 @@ class Experiment():
                 mc_server.update_and_install()
         for s in mc_servers:
             s.start()
+
+        sleep_for = 5
+        self.log.info("Sleeping for {} seconds so memcached servers can start...".format(sleep_for))
+        time.sleep(sleep_for)
     
         # Set up middleware server
         middleware_port = 11212
