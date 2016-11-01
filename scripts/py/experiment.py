@@ -132,6 +132,7 @@ class Experiment():
                                num_threads_in_pool, replication_factor, mc_server_string_list, ssh_username=ssh_username)
         if update_and_install:
             mw_server.update_and_install()
+        mw_server.upload_jar()
 
         mw_server.stop()
         mw_server.clear_logs()

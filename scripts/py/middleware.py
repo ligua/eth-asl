@@ -61,6 +61,11 @@ class Middleware(object):
             fa.local("scp -i {} lib/* {}:~/asl/lib"
                      .format(self.ssh_key_filename, self.host_string))
 
+        self.upload_jar()
+
+    def upload_jar(self):
+        """Build newest JAR and upload it to server."""
+        with fa.settings(**self.fab_settings):
             # Build JAR locally and copy to server
             fa.local("ant jar")
             fa.local("scp -i {} dist/{} {}:~/asl/dist"
