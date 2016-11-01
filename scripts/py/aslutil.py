@@ -23,6 +23,7 @@ def server_is_online(ssh_username, ssh_address, ssh_key_filename):
 
 def wait_for_servers(ssh_username, ssh_address_list, ssh_key_filename, log, check_every_n_sec=20):
     """Wait for all servers in given list to come online."""
+    log.info("Checking if all servers are responding to ssh...")
     not_done = copy.deepcopy(ssh_address_list)
     while True:
         not_done = [x for x in not_done if not server_is_online(ssh_username, x, ssh_key_filename)]
