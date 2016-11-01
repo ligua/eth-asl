@@ -67,12 +67,54 @@ Please feel free to structure the three sections of this report as it makes most
 
 \pagebreak
 
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
 \section{Maximum Throughput}
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
 
 Find the highest throughput of your system for 5 servers with no replication and a read-only workload configuration. What is the minimum number of threads and clients (rounded to multiple of 10) that together achieve this throughput? Explain why the system reaches its maximum throughput at these points and show how the performance changes around these configurations. Provide a detailed breakdown of the time spent in the middleware for each operation type.
 
+\subsection{Experimental question}
+\begin{itemize}
+\item Define the „system(s) under test“
+\item Define what to measure and understand why
+\end{itemize}
 
+\subsection{Hypothesis}
+\begin{itemize}
+\item Draw graphs with expected results
+\item Even try to predict variance and statistical properties
+\item Make bullet points with explanations
+\item Use „modeling“ to make hypothesis
+\item Formulate a number of questions on what you expect to see, develop a hypothesis around the behavior that is expected, explain the hypothesis, and write it all down
+\end{itemize}
+
+\subsection{Experiments}
+\begin{center}
+\small{
+\smallskip
+\begin{tabular}{|c|c|}
+\hline Number of servers & 5 \\ 
+\hline Number of client machines & 3 \\ 
+\hline Virtual clients / machine & \todo{} \\ 
+\hline Workload & Key 16B, Value 128B, Writes 0\% \todo{} \\
+\hline Middleware: replication factor & 1 \\ 
+\hline Middleware: read threads & \todo{} \\ 
+\hline Runtime x repetitions & 60s x 5 \todo{} \\ 
+\hline Log files & \todo{} \\
+\hline 
+\end{tabular} }
+\end{center}
+
+\subsection{Results}
+Reporting experiment results. Comparison of hypothesis and experiment results.
+
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
 \section{Effect of Replication}
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
 
 Explore how the behavior of your system changes for a 5\%-write workload with S=3,5 and 7 server backends and the following three replication factors:
 \begin{itemize} 
@@ -83,14 +125,87 @@ Explore how the behavior of your system changes for a 5\%-write workload with S=
 
 Answer at least the following questions: Are \texttt{get} and \texttt{set} requests impacted the same way by different setups? If yes/no, why? Which operations become more expensive inside the middleware as the configuration changes? How does the scalability of your system compare to that of an ideal implementation? Provide the graphs and tables necessary to support your claims.
 
- 
 
+\subsection{Experimental question}
+\begin{itemize}
+\item Define the „system(s) under test“
+\item Define what to measure and understand why
+\end{itemize}
+
+\subsection{Hypothesis}
+\begin{itemize}
+\item Draw graphs with expected results
+\item Even try to predict variance and statistical properties
+\item Make bullet points with explanations
+\item Use „modeling“ to make hypothesis
+\item Formulate a number of questions on what you expect to see, develop a hypothesis around the behavior that is expected, explain the hypothesis, and write it all down
+\end{itemize}
+
+\subsection{Experiments}
+\begin{center}
+\small{
+\smallskip
+\begin{tabular}{|c|c|}
+\hline Number of servers & $\in \{3, 5, 7\}$ \\ 
+\hline Number of client machines & 3 \\ 
+\hline Virtual clients / machine & \todo{} \\ 
+\hline Workload & Key 16B, Value 128B, Writes 5\% \todo{} \\
+\hline Middleware: replication factor & $\in \{1, ceil(S/2), S\}$ \\ 
+\hline Middleware: read threads & \todo{} \\ 
+\hline Runtime x repetitions & 60s x 5 \todo{} \\ 
+\hline Log files & \todo{} \\
+\hline 
+\end{tabular} }
+\end{center}
+
+\subsection{Results}
+Reporting experiment results. Comparison of hypothesis and experiment results.
+ 
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
 \section{Effect of Writes}
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
 
 In this section, you should study the changes in throughput and response time of your system as the percentage of write operations increases. Use a combination of 3 to 7 servers and vary the number of writes between 1\% and 10\% (e.g. 1\%, 5\% and 10\%). The experiments need to be carried out for the replication factors R=1 and R=all.  
 
 For what number of servers do you see the biggest impact (relative to base case) on performance? Investigate the main reason for the reduced performance and provide a detailed explanation of the behavior of the system. Provide the graphs and tables necessary to support your claims.
 
+
+\subsection{Experimental question}
+\begin{itemize}
+\item Define the „system(s) under test“
+\item Define what to measure and understand why
+\end{itemize}
+
+\subsection{Hypothesis}
+\begin{itemize}
+\item Draw graphs with expected results
+\item Even try to predict variance and statistical properties
+\item Make bullet points with explanations
+\item Use „modeling“ to make hypothesis
+\item Formulate a number of questions on what you expect to see, develop a hypothesis around the behavior that is expected, explain the hypothesis, and write it all down
+\end{itemize}
+
+\subsection{Experiments}
+\begin{center}
+\small{
+\smallskip
+\begin{tabular}{|c|c|}
+\hline Number of servers & $\in \{3, 4, 5, 6, 7\}$ \\ 
+\hline Number of client machines & 3 \\ 
+\hline Virtual clients / machine & \todo{} \\ 
+\hline Workload & Key 16B, Value 128B, Writes $\in \{1\%, 5\%, 10\%\}$ \todo{} \\
+\hline Middleware: replication factor & $\in \{1, S\}$ \\ 
+\hline Middleware: read threads & \todo{} \\ 
+\hline Runtime x repetitions & 60s x 5 \todo{} \\ 
+\hline Log files & \todo{} \\
+\hline 
+\end{tabular} }
+\end{center}
+
+\subsection{Results}
+Reporting experiment results. Comparison of hypothesis and experiment results.
 
 
 \pagebreak
