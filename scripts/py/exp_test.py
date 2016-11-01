@@ -17,7 +17,7 @@ log.addHandler(ch)
 
 # region ---- Experimental setup ----
 S = 7
-R = 7
+R = 1
 
 e = Experiment()
 
@@ -27,4 +27,5 @@ e.start_experiment("results/testing",
                    runtime_buffer=1,
                    replication_factor=R,
                    num_memaslaps=3,
-                   num_memcacheds=R)
+                   num_memcacheds=7,
+                   hibernate_at_end=False)

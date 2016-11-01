@@ -134,15 +134,15 @@ class Experiment():
             mw_server.update_and_install()
         mw_server.upload_jar()
 
-        mw_server.stop()
         mw_server.clear_logs()
         mw_server.start()
     
         # Sleep a bit so middleware has time to start
-        sleep_for = 5
         while not mw_server.is_running():
+            sleep_for = 5
             self.log.info("Sleeping for {} seconds so middleware can start...".format(sleep_for))
             time.sleep(sleep_for)
+        time.sleep(10)
     
         # Set up memaslap servers
         ms_servers = []
@@ -152,6 +152,7 @@ class Experiment():
             ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port, ssh_username=ssh_username,
                                  id_number=int(aslutil.server_name_to_number(vm_names[i]))) # i is zero-indexed
             ms_servers.append(ms_server)
+            ms_server.clear_logs()
             if update_and_install:
                 if not first_memaslap:
                     ms_server.upload_built_files()
