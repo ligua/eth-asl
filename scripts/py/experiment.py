@@ -39,7 +39,8 @@ class Experiment():
             hibernate_at_end = True,
             ssh_username = "pungast",
             num_memaslaps = 1,
-            num_memcacheds = 1
+            num_memcacheds = 1,
+            concurrency = 64
     ):
         experiment_runtime_string = "{}m".format(experiment_runtime)
     
@@ -170,8 +171,7 @@ class Experiment():
         for s in ms_servers:
             s.clear_logs()
             s.start(runtime=experiment_runtime_string, log_filename="memaslap{}.out".format(s.id_number),
-                    stats_freq=stats_frequency,
-                    workload_filename=memaslap_workload)
+                    stats_freq=stats_frequency, workload_filename=memaslap_workload, concurrency=concurrency)
     
         # endregion
     
