@@ -93,7 +93,9 @@ The reason for that lies in my implementation: since each thread runs through an
 
 Note that the middleware can be easily changed to change this non-optimal behaviour by making the threads sleep for a short period if there is nothing to do.
 
-\paragraph{Number of clients} Throughput will be maximised at \todo{x} virtual clients. Let's assume that $T=1$. Since there are 5 servers with no replication, we can estimate the total throughput for GET requests as 5 times the throughput of a single read thread: $tp=5 \cdot tp_1$ (this assumes that requests spend negligible time in LoadBalancer).
+\paragraph{Number of clients} Throughput will be maximised at roughly 110 virtual clients per memcached server, so 550 virtual clients in total. This is based on the fact that in the Milestone 1 baseline experiment, the throughput of a single memcached server without middleware saturated at around 110 virtual clients. It is likely to be an overestimate since the SUT here has an additional part (the middleware), but 550 clients is a reasonable upper bound.
+
+\paragraph{Throughput} Since in the trace experiment, the throughput was roughly 7500 requests per second, we have a lower bound for the expected throughput. Naively assuming that the throughput of GET requests scales linearly with the number of servers $S$ would yield an expected throughput of $\frac{5}{3} \cdot 7500 = 12500$ requests per second. However, this does not take into account our different experimental setup compared to the trace experiment (the number of writes). Thus I expect the maximum throughput to be definitely more than 7500 and near 12500 requests per second.
 
 \begin{itemize}
 \item Draw graphs with expected results
