@@ -93,8 +93,7 @@ The reason for that lies in my implementation: since each thread runs through an
 
 Note that the middleware can be easily changed to change this non-optimal behaviour by making the threads sleep for a short period if there is nothing to do.
 
-\paragraph{Number of clients} Throughput will be maximised at \todo{x} virtual clients. Let's assume that $T=1$. Since there are 5 servers with no replication, we can estimate the total throughput for GET requests as 5 times the throughput of a single read thread: $tp=5 \cdot tp_1$ (this assumes that requests spend negligible time in LoadBalancer). Since in the milestone 1 trace experiment we used 3 servers and GET requests are not replicated, we know that $3 \cdot tp_1 = 7460$ (the throughput in the trace experiment), we get $tp = \frac{5}{3} \cdot tp_1 = $
-
+\paragraph{Number of clients} Throughput will be maximised at \todo{x} virtual clients. Let's assume that $T=1$. Since there are 5 servers with no replication, we can estimate the total throughput for GET requests as 5 times the throughput of a single read thread: $tp=5 \cdot tp_1$ (this assumes that requests spend negligible time in LoadBalancer).
 
 \begin{itemize}
 \item Draw graphs with expected results
