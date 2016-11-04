@@ -76,12 +76,26 @@ Please feel free to structure the three sections of this report as it makes most
 Find the highest throughput of your system for 5 servers with no replication and a read-only workload configuration. What is the minimum number of threads and clients (rounded to multiple of 10) that together achieve this throughput? Explain why the system reaches its maximum throughput at these points and show how the performance changes around these configurations. Provide a detailed breakdown of the time spent in the middleware for each operation type.
 
 \subsection{Experimental question}
-\begin{itemize}
-\item Define the „system(s) under test“
-\item Define what to measure and understand why
-\end{itemize}
+
+The system under test (SUT), in this section and hereafter, is the middleware together with the memcached servers running on virtual machines in the Azure cloud.
+
+In this section, I will run experiments to find out a) the maximum throughput of the SUT, b) the number of read threads ($T$) in the middleware that achieves this c) the number of virtual clients ($C$) that achieves this.
+
+To this end, I will measure throughput (the number of requests the SUT successfully responds to, per unit of time) as a function of $T$ and $C$. I will find the maximum sustained throughput of the SUT, i.e. the throughput with which the response time does not increase rapidly with additional clients.
 
 \subsection{Hypothesis}
+
+I predict the following.
+
+\paragraph{Number of threads} Throughput will be maximised at a very low value of $T=1$, after which the throughput will start to decrease rapidly.
+
+The reason for that lies in my implementation: since each thread runs through an infinite while-loop even if there are no requests to process, the threads almost never wait or sleep and use 100\% of the resources allocated to them by the scheduler. For this reason, once $T$ is high enough that not all threads can run concurrently, threads need to wait to be allocated time, and this waiting decreases throughput significantly. The total number of threads used by the system is given as $S * (T + 1) + 1$; for $S=5$ and $T=1$, the system uses 11 threads. This is more than what's available in a Basic A4 machine, so increasing $T$ will only decrease throughput.
+
+Note that the middleware can be easily changed to change this non-optimal behaviour by making the threads sleep for a short period if there is nothing to do.
+
+\paragraph{Number of clients} Throughput will be maximised at \todo{x} virtual clients. Let's assume that $T=1$. Since there are 5 servers with no replication, we can estimate the total throughput for GET requests as 5 times the throughput of a single read thread: $tp=5 \cdot tp_1$ (this assumes that requests spend negligible time in LoadBalancer). Since in the milestone 1 trace experiment we used 3 servers and GET requests are not replicated, we know that $3 \cdot tp_1 = 7460$ (the throughput in the trace experiment), we get $tp = \frac{5}{3} \cdot tp_1 = $
+
+
 \begin{itemize}
 \item Draw graphs with expected results
 \item Even try to predict variance and statistical properties
