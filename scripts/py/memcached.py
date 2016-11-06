@@ -7,13 +7,15 @@ class Memcached(object):
     def __init__(self, serve_port, ssh_hostname,
                  ssh_key_filename=os.path.expanduser("~/.ssh/id_rsa_asl"),
                  ssh_username="pungast",
-                 sudo_password="4D0$1QcK5:Nsn:jd!'1j4Uw'j*"):
+                 sudo_password="4D0$1QcK5:Nsn:jd!'1j4Uw'j*",
+                 id_number=None):
         self.ssh_hostname = ssh_hostname
         self.ssh_key_filename = ssh_key_filename
         self.ssh_username = ssh_username
         self.sudo_password = sudo_password
         self.host_string = "{}@{}".format(self.ssh_username, self.ssh_hostname)
         self.serve_port = serve_port
+        self.id_number = id_number
 
         self.fab_settings = dict(
             user=self.ssh_username,
@@ -32,7 +34,7 @@ class Memcached(object):
         ch.setLevel(LOG_LEVEL)
         ch.setFormatter(formatter)
 
-        self.log = logging.getLogger(__name__)
+        self.log = logging.getLogger(__name__ + str(self.id_number))
         self.log.setLevel(LOG_LEVEL)
         self.log.addHandler(ch)
         # endregion

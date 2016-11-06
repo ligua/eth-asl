@@ -35,7 +35,7 @@ class Memaslap(object):
         ch.setLevel(LOG_LEVEL)
         ch.setFormatter(formatter)
 
-        self.log = logging.getLogger(__name__)
+        self.log = logging.getLogger(__name__ + str(self.id_number))
         self.log.setLevel(LOG_LEVEL)
         self.log.addHandler(ch)
         # endregion
@@ -71,6 +71,7 @@ class Memaslap(object):
         verbose_string = " -b" if verbose else ""
         verify_string = " -v 1" if verify else ""
         with fa.settings(**self.fab_settings):
+            fa.run("mkdir logs")
             command = "./libmemcached-1.0.18/clients/memaslap{}{} -s {}:{} -T {} -c {} -o0.9 -S {} -t {} -F ~/resources/{}"\
                 .format(verbose_string, verify_string, self.memcached_hostname, self.memcached_port, concurrency, concurrency, stats_freq,
                         runtime, workload_filename)
