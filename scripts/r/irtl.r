@@ -1,11 +1,3 @@
-# Rscript crap
-library_location <- "/Users/taivo/Library/R/3.2/library"
-library.path <- cat(.libPaths())
-
-library(dplyr, lib.loc=library_location)
-library(reshape2, lib.loc=library_location)
-library(ggplot2, lib.loc=library_location)
-
 source("scripts/r/common.r")
 
 result_dir_base <- "results/trace_rep3"
