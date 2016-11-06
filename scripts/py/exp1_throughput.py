@@ -1,4 +1,5 @@
 import fabric.api
+import msrestazure.azure_exceptions
 from experiment import Experiment
 from deployer import Deployer
 from extractor import Extractor
@@ -6,8 +7,8 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [1, 180] #[1] + list(range(48, 500, 48))
-num_threads_values = [1]
+virtual_clients_values = [1] + list(range(48, 240, 48))
+num_threads_values = [1, 2, 4, 8]
 
 experiment_runtime = 10
 runtime_buffer = 1
@@ -48,10 +49,14 @@ try:
                 with fabric.api.settings(warn_only=True):
                     fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
 
+    Deployer.hibernate_wait_static("template11vms")
+
+except msrestazure.azure_exceptions.CloudError as e:
+    print("DEPLOYMENT EXCEPTION " + e.__class__.__name__ + ": " + str(e))
+    if e.message.find("Unable to edit or replace deployment") == -1:
+        Deployer.hibernate_wait_static("template11vms")
 
 
 except Exception as e:
-    print("DEPLOYMENT EXCEPTION: " + str(e))
-finally:
+    print("DEPLOYMENT EXCEPTION " + e.__class__.__name__ + ": " + str(e))
     Deployer.hibernate_wait_static("template11vms")
-
