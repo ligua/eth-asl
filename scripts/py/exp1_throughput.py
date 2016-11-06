@@ -6,7 +6,7 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [180] #[1] + list(range(48, 500, 48))
+virtual_clients_values = [1, 180] #[1] + list(range(48, 500, 48))
 num_threads_values = [1]
 
 experiment_runtime = 10
@@ -37,6 +37,7 @@ try:
                                    num_threads_in_pool=num_threads,
                                    num_memaslaps=num_memaslaps,
                                    num_memcacheds=S,
+                                   memaslap_workload=workload_filename,
                                    hibernate_at_end=False,
                                    concurrency=concurrency)
 

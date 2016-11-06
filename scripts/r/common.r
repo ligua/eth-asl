@@ -5,6 +5,7 @@ library.path <- cat(.libPaths())
 library(dplyr, lib.loc=library_location)
 library(ggplot2, lib.loc=library_location)
 library(reshape2, lib.loc=library_location)
+library(stringr, lib.loc=library_location)
 
 # ---- Theme ----
 
