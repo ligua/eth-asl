@@ -47,6 +47,7 @@ class Experiment():
         with fabric.api.settings(warn_only=True):
             fabric.api.local("rm -r {}/*".format(results_dir))
             fabric.api.local("mkdir -p {}".format(results_dir))
+            fabric.api.local("mkdir {}/graphs".format(results_dir))
     
         # region ---- Parameters ----
         TOTAL_MACHINE_COUNT = 11  # this is fixed by the template
@@ -105,9 +106,15 @@ class Experiment():
         index_a4 = vm_types.index("Basic_A4")
         indices_smallmachines = list(range(TOTAL_MACHINE_COUNT))
         indices_smallmachines.remove(index_a4)
+        memcached_machines = [vm_names.index("foraslvms" + str(x)) for x in Experiment.default_memcached_machines()]
+        memcached_machines = memcached_machines[0:num_memcacheds]
+        memaslap_machines = [vm_names.index("foraslvms" + str(x)) for x in Experiment.default_memaslap_machines()]
+        memaslap_machines = memaslap_machines[0:num_memaslaps]
     
-        self.log.info("A2 machines: " + str(indices_smallmachines))
         self.log.info("A4 machine: " + str(index_a4))
+        self.log.info("A2 machines: " + str(indices_smallmachines))
+        self.log.info("Memcached machines: " + str(memcached_machines))
+        self.log.info("Memaslap machines: " + str(memaslap_machines))
 
         # Wait for all servers to be responsive
         aslutil.wait_for_servers(ssh_username, public_hostnames, "~/.ssh/id_rsa_asl", self.log, check_every_n_sec=10)
@@ -116,9 +123,10 @@ class Experiment():
         memcached_port = 11211
         mc_servers = []
         mc_server_string_list = []
-        for i in indices_smallmachines[0:num_memcacheds]:
+        for i in memcached_machines:
             self.log.info("Setting up memcached on machine {} ({}).".format(i, vm_names[i]))
-            mc_server = Memcached(memcached_port, public_hostnames[i], ssh_username=ssh_username)
+            mc_server = Memcached(memcached_port, public_hostnames[i], ssh_username=ssh_username,
+                                  id_number=int(aslutil.server_name_to_number(vm_names[i])))
             mc_servers.append(mc_server)
             mc_server_string_list.append("{}:{}".format(private_hostnames[i], memcached_port))
             if update_and_install:
@@ -152,7 +160,7 @@ class Experiment():
         # Set up memaslap servers
         ms_servers = []
         first_memaslap = True
-        for i in indices_smallmachines[num_memcacheds:num_memcacheds+num_memaslaps]:
+        for i in memaslap_machines:
             self.log.info("Setting up memaslap on machine {} ({}).".format(i, vm_names[i]))
             ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port, ssh_username=ssh_username,
                                  id_number=int(aslutil.server_name_to_number(vm_names[i]))) # i is zero-indexed
@@ -214,8 +222,12 @@ class Experiment():
     
         self.log.info("Done.")
 
-
-
+    @staticmethod
+    def default_memaslap_machines():
+        return [7, 8, 9]
+    @staticmethod
+    def default_memcached_machines():
+        return [1, 2, 3, 4, 5, 6, 10]
 
 
 
