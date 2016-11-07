@@ -117,7 +117,7 @@ mc_servers = []
 mc_server_string_list = []
 for i in indices_smallmachines[0:3]:
     log.info("Setting up memcached on machine {} ({}).".format(i, vm_names[i]))
-    mc_server = Memcached(memcached_port, public_hostnames[i], ssh_username=ssh_username)
+    mc_server = Memcached(memcached_port, public_hostnames[i], ssh_username=ssh_username, id_number=i+1)
     mc_servers.append(mc_server)
     mc_server_string_list.append("{}:{}".format(private_hostnames[i], memcached_port))
     if UPDATE_AND_INSTALL:

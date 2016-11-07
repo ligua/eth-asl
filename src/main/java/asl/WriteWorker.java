@@ -91,8 +91,11 @@ class WriteWorker implements Runnable {
 
             while (true) {
 
+                boolean didNothing = true;
+
                 // region Take new element from write queue
                 if (!writeQueue.isEmpty()) {
+                    didNothing = false;
                     //log.debug("Writequeue has " + writeQueue.size() + " elements.");
                     Request r = writeQueue.remove();
                     //log.debug(String.format("Took %s from queue...", r));
@@ -132,6 +135,7 @@ class WriteWorker implements Runnable {
                     Integer targetMachine = (Integer) myKey.attachment();
 
                     if (myKey.isValid() && myKey.isReadable() && inQueues.get(targetMachine).size() > 0) {
+                        didNothing = false;
                         //log.debug(String.format("Server %d is readable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
 
@@ -188,6 +192,11 @@ class WriteWorker implements Runnable {
                     }
                 }
                 // endregion
+
+                // Sleep if did nothing
+                if(didNothing) {
+                    Thread.sleep(MiddlewareMain.WRITE_WORKER_SLEEP_TIME);
+                }
             }
         } catch (Exception ex) {
             log.error(ex);

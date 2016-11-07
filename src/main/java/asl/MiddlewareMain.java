@@ -20,7 +20,8 @@ public class MiddlewareMain implements Runnable {
     public static final Integer FULL_BUFFER_SIZE = 2048;
     public static final Integer RESPONSE_BUFFER_SIZE = 1024;
     public static final Integer QUEUE_SIZE = 200;
-    public static final long WORKER_SLEEP_TIME = 1;  // ms
+    public static final long WRITE_WORKER_SLEEP_TIME = 1;  // ms
+    public static final long LOAD_BALANCER_SLEEP_TIME = 1;  // ms
 
     public static List<String> memcachedAddresses;
 
@@ -40,7 +41,7 @@ public class MiddlewareMain implements Runnable {
         this("localhost",
                 11212,
                 new ArrayList<String>(Arrays.asList("localhost:11211", "localhost:11210")),
-                1,
+                10,
                 2);
     }
 
