@@ -47,7 +47,7 @@ try:
             print("\tFile {}/{} exists, skipping.".format(results_dir, memaslap_summary_filename))
             continue
 
-        """e.start_experiment(results_dir,
+        e.start_experiment(results_dir,
                            update_and_install=False,
                            experiment_runtime=experiment_runtime,
                            runtime_buffer=runtime_buffer,
@@ -64,16 +64,15 @@ try:
                                        csv_path="{}/{}".format(results_dir, memaslap_summary_filename))
         # Plot graphs
         with fabric.api.settings(warn_only=True):
-            fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))"""
+            fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
 
-    #Deployer.hibernate_wait_static("template11vms")
+    Deployer.hibernate_wait_static("template11vms")
 
 except msrestazure.azure_exceptions.CloudError as e:
     print("DEPLOYMENT EXCEPTION " + e.__class__.__name__ + ": " + str(e))
     if e.message.find("Unable to edit or replace deployment") == -1:
         Deployer.hibernate_wait_static("template11vms")
 
-
 except Exception as e:
-    print("DEPLOYMENT EXCEPTION " + e.__class__.__name__ + ": " + str(e))
+    print("UNKNOWN DEPLOYMENT EXCEPTION " + e.__class__.__name__ + ": " + str(e))
     Deployer.hibernate_wait_static("template11vms")
