@@ -32,4 +32,3 @@ kill $MEMASLAP_PID
 kill $MEMCACHED_PID1
 kill $MEMCACHED_PID2
 pkill -f java
-pkill -f ant
