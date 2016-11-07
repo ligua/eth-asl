@@ -93,7 +93,7 @@ class Memaslap(object):
 
     def is_running(self):
         """Check if there is a memaslap process running on this machine."""
-        with fa.settings(**self.fab_settings):
+        with fa.settings(**self.fab_settings), fa.hide("output"):
             result = fa.run("pgrep memaslap")
             if result.return_code:
                 return False
