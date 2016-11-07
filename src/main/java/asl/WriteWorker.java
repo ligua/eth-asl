@@ -130,15 +130,12 @@ class WriteWorker implements Runnable {
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
 
-                if(!selectedKeys.isEmpty()) {
-                    didNothing = false;
-                }
-
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
                     Integer targetMachine = (Integer) myKey.attachment();
 
                     if (myKey.isValid() && myKey.isReadable() && inQueues.get(targetMachine).size() > 0) {
+                        didNothing = false;
                         //log.debug(String.format("Server %d is readable.", targetMachine));
                         SocketChannel socketChannel = (SocketChannel) myKey.channel();
 
