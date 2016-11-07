@@ -1,6 +1,7 @@
 import os
 import fabric.api
 import aslutil
+import math
 import msrestazure.azure_exceptions
 from experiment import Experiment
 from deployer import Deployer
@@ -13,7 +14,7 @@ virtual_clients_values = [1] + list(range(48, 240, 48))
 num_threads_values = [1, 2, 4, 8]
 
 experiment_runtime = 10
-runtime_buffer = 3
+runtime_buffer = 5
 num_repetitions = 1
 workload_filename = "smallvalue_nowrites.cfg"
 
@@ -26,7 +27,11 @@ for virtual_clients in virtual_clients_values:
 SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
 
-    # endregion
+# endregion
+
+def extra_buffer(num_clients, num_threads):
+    buf = (num_threads) * (1 + num_clients / 100)
+    return 0 if buf < 1 else math.ceil(buf)
 
 try:
     e = Experiment()
@@ -47,7 +52,10 @@ try:
             print("\tFile {}/{} exists, skipping.".format(results_dir, memaslap_summary_filename))
             continue
 
-        e.start_experiment(results_dir,
+        additional_buffer = extra_buffer(virtual_clients, num_threads)
+        print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
+
+        """e.start_experiment(results_dir,
                            update_and_install=False,
                            experiment_runtime=experiment_runtime,
                            runtime_buffer=runtime_buffer,
@@ -64,9 +72,9 @@ try:
                                        csv_path="{}/{}".format(results_dir, memaslap_summary_filename))
         # Plot graphs
         with fabric.api.settings(warn_only=True):
-            fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
+            fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))"""
 
-    Deployer.hibernate_wait_static("template11vms")
+    #Deployer.hibernate_wait_static("template11vms")
 
 except msrestazure.azure_exceptions.CloudError as e:
     print("DEPLOYMENT EXCEPTION " + e.__class__.__name__ + ": " + str(e))
