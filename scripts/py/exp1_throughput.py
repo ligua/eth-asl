@@ -23,6 +23,7 @@ for virtual_clients in virtual_clients_values:
     for num_threads in num_threads_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
+combinations = [()]
 
 SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
