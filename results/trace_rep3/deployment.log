@@ -1,99 +1,761 @@
-2016-10-19 17:20:06,682 [__main__] - VM [94mforaslvms7m1[0m [Basic_A2]
-2016-10-19 17:20:06,883 [__main__] - Public host name: [92mpungast7foraslvms7m1.westeurope.cloudapp.azure.com[0m
-2016-10-19 17:20:06,975 [__main__] - Private host name: [92m10.0.0.8[0m
-2016-10-19 17:20:06,975 [__main__] - VM [94mforaslvms7m2[0m [Basic_A2]
-2016-10-19 17:20:07,024 [__main__] - Public host name: [92mpungast7foraslvms7m2.westeurope.cloudapp.azure.com[0m
-2016-10-19 17:20:07,075 [__main__] - Private host name: [92m10.0.0.5[0m
-2016-10-19 17:20:07,075 [__main__] - VM [94mforaslvms7m3[0m [Basic_A2]
-2016-10-19 17:20:07,123 [__main__] - Public host name: [92mpungast7foraslvms7m3.westeurope.cloudapp.azure.com[0m
-2016-10-19 17:20:07,171 [__main__] - Private host name: [92m10.0.0.10[0m
-2016-10-19 17:20:07,171 [__main__] - VM [94mforaslvms7m4[0m [Basic_A2]
-2016-10-19 17:20:07,222 [__main__] - Public host name: [92mpungast7foraslvms7m4.westeurope.cloudapp.azure.com[0m
-2016-10-19 17:20:07,270 [__main__] - Private host name: [92m10.0.0.7[0m
-2016-10-19 17:20:07,270 [__main__] - VM [94mforaslvms7m5[0m [Basic_A2]
-2016-10-19 17:20:07,318 [__main__] - Public host name: [92mpungast7foraslvms7m5.westeurope.cloudapp.azure.com[0m
-2016-10-19 17:20:07,368 [__main__] - Private host name: [92m10.0.0.6[0m
-2016-10-19 17:20:07,368 [__main__] - VM [94mforaslvms7m6[0m [Basic_A2]
-2016-10-19 17:20:07,419 [__main__] - Public host name: [92mpungast7foraslvms7m6.westeurope.cloudapp.azure.com[0m
-2016-10-19 17:20:07,472 [__main__] - Private host name: [92m10.0.0.9[0m
-2016-10-19 17:20:07,472 [__main__] - VM [94mforaslvms7m7[0m [Basic_A4]
-2016-10-19 17:20:07,519 [__main__] - Public host name: [92mpungast7foraslvms7m7.westeurope.cloudapp.azure.com[0m
-2016-10-19 17:20:07,575 [__main__] - Private host name: [92m10.0.0.4[0m
-2016-10-19 17:20:07,575 [__main__] - A2 machines: [0, 1, 2, 3, 4, 5]
-2016-10-19 17:20:07,575 [__main__] - A4 machine: 6
-2016-10-19 17:20:07,575 [__main__] - Setting up memcached on machine 0 (foraslvms7m1).
-2016-10-19 17:20:07,576 [__main__] - Setting up memcached on machine 1 (foraslvms7m2).
-2016-10-19 17:20:07,576 [__main__] - Setting up memcached on machine 2 (foraslvms7m3).
-2016-10-19 17:20:50,349 [__main__] - Setting up middleware on machine 6 (foraslvms7m7).
-2016-10-19 17:21:05,389 [__main__] - Sleeping for 5 seconds so middleware can start...
-2016-10-19 17:21:10,393 [__main__] - Setting up memaslap on machine 3 (foraslvms7m4).
-2016-10-19 17:21:10,393 [__main__] - Setting up memaslap on machine 4 (foraslvms7m5).
-2016-10-19 17:21:10,393 [__main__] - Setting up memaslap on machine 5 (foraslvms7m6).
-2016-10-19 17:21:48,107 [__main__] - Waiting for the experiment to finish, sleeping for 65 minutes.
-2016-10-19 17:22:48,109 [__main__] - Waiting for the experiment to finish, 1/65 minutes elapsed (2%).
-2016-10-19 17:23:48,115 [__main__] - Waiting for the experiment to finish, 2/65 minutes elapsed (3%).
-2016-10-19 17:24:48,117 [__main__] - Waiting for the experiment to finish, 3/65 minutes elapsed (5%).
-2016-10-19 17:25:48,120 [__main__] - Waiting for the experiment to finish, 4/65 minutes elapsed (6%).
-2016-10-19 17:26:48,123 [__main__] - Waiting for the experiment to finish, 5/65 minutes elapsed (8%).
-2016-10-19 17:27:48,125 [__main__] - Waiting for the experiment to finish, 6/65 minutes elapsed (9%).
-2016-10-19 17:28:48,131 [__main__] - Waiting for the experiment to finish, 7/65 minutes elapsed (11%).
-2016-10-19 17:29:48,132 [__main__] - Waiting for the experiment to finish, 8/65 minutes elapsed (12%).
-2016-10-19 17:30:48,135 [__main__] - Waiting for the experiment to finish, 9/65 minutes elapsed (14%).
-2016-10-19 17:31:48,134 [__main__] - Waiting for the experiment to finish, 10/65 minutes elapsed (15%).
-2016-10-19 17:32:48,135 [__main__] - Waiting for the experiment to finish, 11/65 minutes elapsed (17%).
-2016-10-19 17:33:48,136 [__main__] - Waiting for the experiment to finish, 12/65 minutes elapsed (18%).
-2016-10-19 17:34:48,139 [__main__] - Waiting for the experiment to finish, 13/65 minutes elapsed (20%).
-2016-10-19 17:35:48,138 [__main__] - Waiting for the experiment to finish, 14/65 minutes elapsed (22%).
-2016-10-19 17:36:48,139 [__main__] - Waiting for the experiment to finish, 15/65 minutes elapsed (23%).
-2016-10-19 17:37:48,143 [__main__] - Waiting for the experiment to finish, 16/65 minutes elapsed (25%).
-2016-10-19 17:38:48,144 [__main__] - Waiting for the experiment to finish, 17/65 minutes elapsed (26%).
-2016-10-19 17:39:48,145 [__main__] - Waiting for the experiment to finish, 18/65 minutes elapsed (28%).
-2016-10-19 17:40:48,148 [__main__] - Waiting for the experiment to finish, 19/65 minutes elapsed (29%).
-2016-10-19 17:41:48,150 [__main__] - Waiting for the experiment to finish, 20/65 minutes elapsed (31%).
-2016-10-19 17:42:48,150 [__main__] - Waiting for the experiment to finish, 21/65 minutes elapsed (32%).
-2016-10-19 17:43:48,153 [__main__] - Waiting for the experiment to finish, 22/65 minutes elapsed (34%).
-2016-10-19 17:44:48,152 [__main__] - Waiting for the experiment to finish, 23/65 minutes elapsed (35%).
-2016-10-19 17:45:48,156 [__main__] - Waiting for the experiment to finish, 24/65 minutes elapsed (37%).
-2016-10-19 17:46:48,163 [__main__] - Waiting for the experiment to finish, 25/65 minutes elapsed (38%).
-2016-10-19 17:47:48,169 [__main__] - Waiting for the experiment to finish, 26/65 minutes elapsed (40%).
-2016-10-19 17:48:48,179 [__main__] - Waiting for the experiment to finish, 27/65 minutes elapsed (42%).
-2016-10-19 17:49:48,181 [__main__] - Waiting for the experiment to finish, 28/65 minutes elapsed (43%).
-2016-10-19 17:50:48,184 [__main__] - Waiting for the experiment to finish, 29/65 minutes elapsed (45%).
-2016-10-19 17:51:48,185 [__main__] - Waiting for the experiment to finish, 30/65 minutes elapsed (46%).
-2016-10-19 17:52:48,185 [__main__] - Waiting for the experiment to finish, 31/65 minutes elapsed (48%).
-2016-10-19 17:53:48,192 [__main__] - Waiting for the experiment to finish, 32/65 minutes elapsed (49%).
-2016-10-19 17:54:48,199 [__main__] - Waiting for the experiment to finish, 33/65 minutes elapsed (51%).
-2016-10-19 17:55:48,198 [__main__] - Waiting for the experiment to finish, 34/65 minutes elapsed (52%).
-2016-10-19 17:56:48,204 [__main__] - Waiting for the experiment to finish, 35/65 minutes elapsed (54%).
-2016-10-19 17:57:48,209 [__main__] - Waiting for the experiment to finish, 36/65 minutes elapsed (55%).
-2016-10-19 17:58:48,213 [__main__] - Waiting for the experiment to finish, 37/65 minutes elapsed (57%).
-2016-10-19 17:59:48,221 [__main__] - Waiting for the experiment to finish, 38/65 minutes elapsed (58%).
-2016-10-19 18:00:48,226 [__main__] - Waiting for the experiment to finish, 39/65 minutes elapsed (60%).
-2016-10-19 18:01:48,231 [__main__] - Waiting for the experiment to finish, 40/65 minutes elapsed (62%).
-2016-10-19 18:02:48,232 [__main__] - Waiting for the experiment to finish, 41/65 minutes elapsed (63%).
-2016-10-19 18:03:48,234 [__main__] - Waiting for the experiment to finish, 42/65 minutes elapsed (65%).
-2016-10-19 18:04:48,237 [__main__] - Waiting for the experiment to finish, 43/65 minutes elapsed (66%).
-2016-10-19 18:05:48,240 [__main__] - Waiting for the experiment to finish, 44/65 minutes elapsed (68%).
-2016-10-19 18:06:48,243 [__main__] - Waiting for the experiment to finish, 45/65 minutes elapsed (69%).
-2016-10-19 18:07:48,247 [__main__] - Waiting for the experiment to finish, 46/65 minutes elapsed (71%).
-2016-10-19 18:08:48,256 [__main__] - Waiting for the experiment to finish, 47/65 minutes elapsed (72%).
-2016-10-19 18:09:48,258 [__main__] - Waiting for the experiment to finish, 48/65 minutes elapsed (74%).
-2016-10-19 18:10:48,259 [__main__] - Waiting for the experiment to finish, 49/65 minutes elapsed (75%).
-2016-10-19 18:11:48,260 [__main__] - Waiting for the experiment to finish, 50/65 minutes elapsed (77%).
-2016-10-19 18:12:48,259 [__main__] - Waiting for the experiment to finish, 51/65 minutes elapsed (78%).
-2016-10-19 18:13:48,262 [__main__] - Waiting for the experiment to finish, 52/65 minutes elapsed (80%).
-2016-10-19 18:14:48,264 [__main__] - Waiting for the experiment to finish, 53/65 minutes elapsed (82%).
-2016-10-19 18:15:48,267 [__main__] - Waiting for the experiment to finish, 54/65 minutes elapsed (83%).
-2016-10-19 18:16:48,268 [__main__] - Waiting for the experiment to finish, 55/65 minutes elapsed (85%).
-2016-10-19 18:17:48,271 [__main__] - Waiting for the experiment to finish, 56/65 minutes elapsed (86%).
-2016-10-19 18:18:48,274 [__main__] - Waiting for the experiment to finish, 57/65 minutes elapsed (88%).
-2016-10-19 18:19:48,273 [__main__] - Waiting for the experiment to finish, 58/65 minutes elapsed (89%).
-2016-10-19 18:20:48,278 [__main__] - Waiting for the experiment to finish, 59/65 minutes elapsed (91%).
-2016-10-19 18:21:48,281 [__main__] - Waiting for the experiment to finish, 60/65 minutes elapsed (92%).
-2016-10-19 18:22:48,281 [__main__] - Waiting for the experiment to finish, 61/65 minutes elapsed (94%).
-2016-10-19 18:23:48,282 [__main__] - Waiting for the experiment to finish, 62/65 minutes elapsed (95%).
-2016-10-19 18:24:48,284 [__main__] - Waiting for the experiment to finish, 63/65 minutes elapsed (97%).
-2016-10-19 18:25:48,287 [__main__] - Waiting for the experiment to finish, 64/65 minutes elapsed (98%).
-2016-10-19 18:26:48,286 [__main__] - Waiting for the experiment to finish, 65/65 minutes elapsed (100%).
-2016-10-19 18:26:48,287 [__main__] - Giving some extra time to memaslap, sleeping for 300 seconds.
-2016-10-19 18:35:45,501 [__main__] - Done.
+2016-11-07 13:24:15,006 [deployer] - Resource group already exists:
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mforaslvms7m1[0m[0m
+	Type: Microsoft.Compute/virtualMachines
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Compute/virtualMachines/foraslvms7m1
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mforaslvms7m2[0m[0m
+	Type: Microsoft.Compute/virtualMachines
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Compute/virtualMachines/foraslvms7m2
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mforaslvms7m3[0m[0m
+	Type: Microsoft.Compute/virtualMachines
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Compute/virtualMachines/foraslvms7m3
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mforaslvms7m4[0m[0m
+	Type: Microsoft.Compute/virtualMachines
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Compute/virtualMachines/foraslvms7m4
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mforaslvms7m5[0m[0m
+	Type: Microsoft.Compute/virtualMachines
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Compute/virtualMachines/foraslvms7m5
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mforaslvms7m6[0m[0m
+	Type: Microsoft.Compute/virtualMachines
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Compute/virtualMachines/foraslvms7m6
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mforaslvms7m7[0m[0m
+	Type: Microsoft.Compute/virtualMachines
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Compute/virtualMachines/foraslvms7m7
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mMyNetworkInterface7m1[0m[0m
+	Type: Microsoft.Network/networkInterfaces
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/networkInterfaces/MyNetworkInterface7m1
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mMyNetworkInterface7m2[0m[0m
+	Type: Microsoft.Network/networkInterfaces
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/networkInterfaces/MyNetworkInterface7m2
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mMyNetworkInterface7m3[0m[0m
+	Type: Microsoft.Network/networkInterfaces
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/networkInterfaces/MyNetworkInterface7m3
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mMyNetworkInterface7m4[0m[0m
+	Type: Microsoft.Network/networkInterfaces
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/networkInterfaces/MyNetworkInterface7m4
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,168 [deployer] - 	Name: [94m[1mMyNetworkInterface7m5[0m[0m
+	Type: Microsoft.Network/networkInterfaces
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/networkInterfaces/MyNetworkInterface7m5
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mMyNetworkInterface7m6[0m[0m
+	Type: Microsoft.Network/networkInterfaces
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/networkInterfaces/MyNetworkInterface7m6
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mMyNetworkInterface7m7[0m[0m
+	Type: Microsoft.Network/networkInterfaces
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/networkInterfaces/MyNetworkInterface7m7
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mforaslvms7m1[0m[0m
+	Type: Microsoft.Network/publicIPAddresses
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/publicIPAddresses/foraslvms7m1
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mforaslvms7m2[0m[0m
+	Type: Microsoft.Network/publicIPAddresses
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/publicIPAddresses/foraslvms7m2
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mforaslvms7m3[0m[0m
+	Type: Microsoft.Network/publicIPAddresses
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/publicIPAddresses/foraslvms7m3
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mforaslvms7m4[0m[0m
+	Type: Microsoft.Network/publicIPAddresses
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/publicIPAddresses/foraslvms7m4
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mforaslvms7m5[0m[0m
+	Type: Microsoft.Network/publicIPAddresses
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/publicIPAddresses/foraslvms7m5
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mforaslvms7m6[0m[0m
+	Type: Microsoft.Network/publicIPAddresses
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/publicIPAddresses/foraslvms7m6
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mforaslvms7m7[0m[0m
+	Type: Microsoft.Network/publicIPAddresses
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/publicIPAddresses/foraslvms7m7
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mMyVNet7m[0m[0m
+	Type: Microsoft.Network/virtualNetworks
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Network/virtualNetworks/MyVNet7m
+	Location: westeurope
+	Tags: None
+
+
+2016-11-07 13:24:15,169 [deployer] - 	Name: [94m[1mhukqxm2gwajpcethasl[0m[0m
+	Type: Microsoft.Storage/storageAccounts
+	Id: /subscriptions/0003c64e-455e-4794-8665-a59c04a8961b/resourceGroups/template7vms/providers/Microsoft.Storage/storageAccounts/hukqxm2gwajpcethasl
+	Location: westeurope
+	Tags: {}
+
+
+2016-11-07 13:24:15,169 [deployer] - Deploying with resource group 'template7vms' and template at 'azure-templates/template7vms.json'.
+2016-11-07 13:24:15,169 [deployer] - Parameters: {'networkInterfaces_name': 'MyNetworkInterface7m', 'uniquedns': 'pungast7', 'virtualNetworks_testeth_vnet_name': 'MyVNet7m', 'key': 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGoWAm6akvexY/EhauDoAwCcJTSwuIbiElevgWj9f/AfbYFJopY1jprCgmrIdCMwEuQtqffwuZKsxkcOY9RPBDXy4yNp9nOl5Pe++AWy/huRrxfB2B2Nq/dnTN1iK1S5hywImqRfKDu2mTKtTRxzcAs5GBRgeXK2xBu7pc54e9hvyjbf02Ruqvl0WhOM+njt6ZkGWMWVTwaHYc/7OSUKzSSzUN6+LpBGPGPBpY01C3QZJg/p5yuHeg20+o9sUtklz61dYZjtlzvgHn1W6HnAIeshv25fLw1ulNPF0cHkiwjZrmo7iHdyFFGsnt+uTLpHTQ6NGoO3NdKV2loWZhFrzJ', 'virtualMachines_name': 'foraslvms7m', 'virtualMachines_adminPassword': "U6Mh=be:vma+&>R'pcMwFVls?="}
+2016-11-07 13:24:15,447 [deployer] - Started deployment of resource group template7vms.
+2016-11-07 13:24:46,785 [deployer] - Starting virtual machine foraslvms7m1...
+2016-11-07 13:24:46,786 [deployer] - Starting virtual machine foraslvms7m2...
+2016-11-07 13:24:46,788 [deployer] - Starting virtual machine foraslvms7m3...
+2016-11-07 13:24:46,791 [deployer] - Starting virtual machine foraslvms7m4...
+2016-11-07 13:24:46,793 [deployer] - Starting virtual machine foraslvms7m5...
+2016-11-07 13:24:46,795 [deployer] - Starting virtual machine foraslvms7m6...
+2016-11-07 13:24:46,797 [deployer] - Starting virtual machine foraslvms7m7...
+2016-11-07 13:24:46,799 [deployer] - Waiting for 7 operations to finish...
+2016-11-07 13:24:51,800 [deployer] - 7 operations still not done.
+2016-11-07 13:24:56,800 [deployer] - 7 operations still not done.
+2016-11-07 13:25:01,800 [deployer] - 7 operations still not done.
+2016-11-07 13:25:06,800 [deployer] - 7 operations still not done.
+2016-11-07 13:25:11,800 [deployer] - 7 operations still not done.
+2016-11-07 13:25:16,800 [deployer] - 7 operations still not done.
+2016-11-07 13:25:17,595 [deployer] - All operations done.
+2016-11-07 13:25:17,595 [deployer] - Deployment complete, resource group template7vms created.
+2016-11-07 13:25:17,718 [__main__] - VM [94mforaslvms7m1[0m [Basic_A2]
+2016-11-07 13:25:17,861 [__main__] - Public host name: [92mpungast7foraslvms7m1.westeurope.cloudapp.azure.com[0m
+2016-11-07 13:25:17,916 [__main__] - Private host name: [92m10.0.0.4[0m
+2016-11-07 13:25:17,916 [__main__] - VM [94mforaslvms7m2[0m [Basic_A2]
+2016-11-07 13:25:17,959 [__main__] - Public host name: [92mpungast7foraslvms7m2.westeurope.cloudapp.azure.com[0m
+2016-11-07 13:25:18,011 [__main__] - Private host name: [92m10.0.0.10[0m
+2016-11-07 13:25:18,011 [__main__] - VM [94mforaslvms7m3[0m [Basic_A2]
+2016-11-07 13:25:18,054 [__main__] - Public host name: [92mpungast7foraslvms7m3.westeurope.cloudapp.azure.com[0m
+2016-11-07 13:25:18,097 [__main__] - Private host name: [92m10.0.0.7[0m
+2016-11-07 13:25:18,097 [__main__] - VM [94mforaslvms7m4[0m [Basic_A2]
+2016-11-07 13:25:18,144 [__main__] - Public host name: [92mpungast7foraslvms7m4.westeurope.cloudapp.azure.com[0m
+2016-11-07 13:25:18,229 [__main__] - Private host name: [92m10.0.0.6[0m
+2016-11-07 13:25:18,229 [__main__] - VM [94mforaslvms7m5[0m [Basic_A2]
+2016-11-07 13:25:18,273 [__main__] - Public host name: [92mpungast7foraslvms7m5.westeurope.cloudapp.azure.com[0m
+2016-11-07 13:25:18,320 [__main__] - Private host name: [92m10.0.0.9[0m
+2016-11-07 13:25:18,320 [__main__] - VM [94mforaslvms7m6[0m [Basic_A2]
+2016-11-07 13:25:18,364 [__main__] - Public host name: [92mpungast7foraslvms7m6.westeurope.cloudapp.azure.com[0m
+2016-11-07 13:25:18,414 [__main__] - Private host name: [92m10.0.0.8[0m
+2016-11-07 13:25:18,414 [__main__] - VM [94mforaslvms7m7[0m [Basic_A4]
+2016-11-07 13:25:18,456 [__main__] - Public host name: [92mpungast7foraslvms7m7.westeurope.cloudapp.azure.com[0m
+2016-11-07 13:25:18,509 [__main__] - Private host name: [92m10.0.0.5[0m
+2016-11-07 13:25:18,509 [__main__] - A2 machines: [0, 1, 2, 3, 4, 5]
+2016-11-07 13:25:18,509 [__main__] - A4 machine: 6
+2016-11-07 13:25:18,509 [__main__] - Setting up memcached on machine 0 (foraslvms7m1).
+2016-11-07 13:25:18,510 [__main__] - Setting up memcached on machine 1 (foraslvms7m2).
+2016-11-07 13:25:18,510 [__main__] - Setting up memcached on machine 2 (foraslvms7m3).
+2016-11-07 13:25:18,510 [memcached1] - Before starting, killing previous instances...
+2016-11-07 13:25:18,510 [memcached1] - Stopping memcached on machine pungast7foraslvms7m1.westeurope.cloudapp.azure.com.
+[localhost] local: rm -r results/trace/*
+[localhost] local: mkdir -p results/trace
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] run: pgrep memcached
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] out: 7511
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] out: 
+2016-11-07 13:25:19,814 [memcached1] - Killing PID=7511
+2016-11-07 13:25:19,970 [memcached1] - Starting memcached on machine pungast7foraslvms7m1.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:20,091 [memcached1] - Memcached started.
+2016-11-07 13:25:20,092 [memcached2] - Before starting, killing previous instances...
+2016-11-07 13:25:20,092 [memcached2] - Stopping memcached on machine pungast7foraslvms7m2.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] run: sudo kill 7511
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] run: nohup memcached -p 11211 -t 1 > /dev/null 2>&1 &
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] run: pgrep memcached
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] out: 7517
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] out: 
+2016-11-07 13:25:21,290 [memcached2] - Killing PID=7517
+2016-11-07 13:25:21,452 [memcached2] - Starting memcached on machine pungast7foraslvms7m2.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:21,582 [memcached2] - Memcached started.
+2016-11-07 13:25:21,583 [memcached3] - Before starting, killing previous instances...
+2016-11-07 13:25:21,583 [memcached3] - Stopping memcached on machine pungast7foraslvms7m3.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] run: sudo kill 7517
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] run: nohup memcached -p 11211 -t 1 > /dev/null 2>&1 &
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] run: pgrep memcached
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] out: 7521
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] out: 
+2016-11-07 13:25:22,751 [memcached3] - Killing PID=7521
+2016-11-07 13:25:22,905 [memcached3] - Starting memcached on machine pungast7foraslvms7m3.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:23,015 [memcached3] - Memcached started.
+2016-11-07 13:25:23,015 [__main__] - Setting up middleware on machine 6 (foraslvms7m7).
+2016-11-07 13:25:23,015 [middleware] Updating and installing middleware on machine pungast7foraslvms7m7.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] run: sudo kill 7521
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] run: nohup memcached -p 11211 -t 1 > /dev/null 2>&1 &
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: export DEBIAN_FRONTEND=noninteractive
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: sudo apt-get --assume-yes update
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 0% [Working]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:             
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Ign http://azure.archive.ubuntu.com trusty InRelease
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:             
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 12% [Connecting to security.ubuntu.com (91.189.88.149)]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                        
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty-updates InRelease
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 20% [Connecting to security.ubuntu.com (91.189.88.149)]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                        
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 20% [InRelease gpgv 65.9 kB] [Waiting for headers] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                                         
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty Release.gpg
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                                         
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 33% [InRelease gpgv 65.9 kB] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                   
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty Release
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 33% [InRelease gpgv 65.9 kB] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                   
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://security.ubuntu.com trusty-security InRelease
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                   
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 33% [InRelease gpgv 65.9 kB]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                             
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 25% [Working]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:              
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 25% [Release gpgv 58.5 kB] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty-updates/main Sources
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 33% [Release gpgv 58.5 kB]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                           
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 25% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 25% [InRelease gpgv 65.9 kB] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                   
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty-updates/universe Sources
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                   
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 30% [InRelease gpgv 65.9 kB]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                             
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty-updates/main amd64 Packages
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 35% [InRelease gpgv 65.9 kB]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                             
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty-updates/universe amd64 Packages
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 40% [InRelease gpgv 65.9 kB]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                             
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty-updates/main Translation-en
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 45% [InRelease gpgv 65.9 kB]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                             
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 38% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty-updates/universe Translation-en
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 42% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty/main Sources
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty/universe Sources
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty/main amd64 Packages
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty/universe amd64 Packages
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 58% [Waiting for headers] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://security.ubuntu.com trusty-security/main Sources
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 62% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty/main Translation-en
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 65% [Waiting for headers] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://azure.archive.ubuntu.com trusty/universe Translation-en
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 69% [Waiting for headers] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://security.ubuntu.com trusty-security/universe Sources
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 73% [Waiting for headers] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Ign http://azure.archive.ubuntu.com trusty/main Translation-en_US
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 77% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://security.ubuntu.com trusty-security/main amd64 Packages
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 81% [Waiting for headers] [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Ign http://azure.archive.ubuntu.com trusty/universe Translation-en_US
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                                                
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 85% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://security.ubuntu.com trusty-security/universe amd64 Packages
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 88% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://security.ubuntu.com trusty-security/main Translation-en
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 92% [Waiting for headers]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Hit http://security.ubuntu.com trusty-security/universe Translation-en
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:                          
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 96% [Working]
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out:              
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 0%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 0%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 1%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 9%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 9%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 16%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 31%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 43%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 45%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 45%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 49%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 49%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 68%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 70%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 70%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 77%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 77%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 80%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 80%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 85%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 87%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 87%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 88%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 88%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 92%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 92%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 93%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 93%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 98%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 98%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 99%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 99%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... Done
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: sudo apt-get --assume-yes install openjdk-7-jre
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 0%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... 100%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading package lists... Done
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Building dependency tree... 0%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Building dependency tree... 0%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Building dependency tree... 50%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Building dependency tree... 50%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Building dependency tree       
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading state information... 0%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading state information... 0%
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: Reading state information... Done
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: openjdk-7-jre is already the newest version.
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 0 upgraded, 0 newly installed, 0 to remove and 206 not upgraded.
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+Warning: Permanently added 'pungast7foraslvms7m7.westeurope.cloudapp.azure.com,168.63.102.221' (ECDSA) to the list of known hosts.
+Buildfile: /Users/taivo/Google Drive/ETH/asl/eth-asl/build.xml
+
+clean:
+   [delete] Deleting directory /Users/taivo/Google Drive/ETH/asl/eth-asl/build
+   [delete] Deleting directory /Users/taivo/Google Drive/ETH/asl/eth-asl/dist
+
+init:
+    [mkdir] Created dir: /Users/taivo/Google Drive/ETH/asl/eth-asl/build
+
+compile:
+    [javac] /Users/taivo/Google Drive/ETH/asl/eth-asl/build.xml:37: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+    [javac] Compiling 10 source files to /Users/taivo/Google Drive/ETH/asl/eth-asl/build
+    [javac] warning: [options] bootstrap class path not set in conjunction with -source 1.7
+
+jar:
+    [mkdir] Created dir: /Users/taivo/Google Drive/ETH/asl/eth-asl/dist
+  [copydir] DEPRECATED - The copydir task is deprecated.  Use copy instead.
+  [copydir] Copying 8 files to /Users/taivo/Google Drive/ETH/asl/eth-asl/build
+      [jar] Building jar: /Users/taivo/Google Drive/ETH/asl/eth-asl/dist/middleware-pungast.jar
+
+BUILD SUCCESSFUL
+Total time: 1 second
+Warning: Permanently added 'pungast7foraslvms7m7.westeurope.cloudapp.azure.com,168.63.102.221' (ECDSA) to the list of known hosts.
+2016-11-07 13:25:34,632 [middleware] Clearing middleware logs on machine pungast7foraslvms7m7.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:34,716 [middleware] Starting middleware on machine pungast7foraslvms7m7.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:34,832 [middleware] Middleware started.
+
+Warning: run() received nonzero return code 1 while executing 'lsof -i:11212'!
+
+2016-11-07 13:25:34,985 [__main__] - Sleeping for 5 seconds so middleware can start...
+2016-11-07 13:25:39,989 [__main__] - Setting up memaslap on machine 3 (foraslvms7m4).
+2016-11-07 13:25:39,989 [__main__] - Setting up memaslap on machine 4 (foraslvms7m5).
+2016-11-07 13:25:39,989 [__main__] - Setting up memaslap on machine 5 (foraslvms7m6).
+2016-11-07 13:25:39,990 [memaslap4] - Clearing memaslap logs on machine pungast7foraslvms7m4.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:41,211 [memaslap4] - Starting memaslap on machine pungast7foraslvms7m4.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: mkdir -p ~/asl/lib ~/asl/dist
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: mkdir -p ~/asl/log
+[localhost] local: scp -i /Users/taivo/.ssh/id_rsa_asl lib/* pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com:~/asl/lib
+[localhost] local: ant jar
+[localhost] local: scp -i /Users/taivo/.ssh/id_rsa_asl dist/middleware-pungast.jar pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com:~/asl/dist
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: rm ~/asl/log/*.log
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: cd ~/asl; nohup java -classpath lib/ -jar dist/middleware-pungast.jar -l 10.0.0.5 -p 11212 -t 5 -r 3 -m 10.0.0.4:11211 10.0.0.10:11211 10.0.0.7:11211 > /dev/null 2>&1 &
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: lsof -i:11212
+[pungast7@pungast7foraslvms7m4.westeurope.cloudapp.azure.com] run: rm ~/logs/*.out
+[pungast7@pungast7foraslvms7m4.westeurope.cloudapp.azure.com] run: mkdir logs
+[pungast7@pungast7foraslvms7m4.westeurope.cloudapp.azure.com] out: mkdir: cannot create directory ‘logs’: File exists
+[pungast7@pungast7foraslvms7m4.westeurope.cloudapp.azure.com] out: 
+
+Warning: run() received nonzero return code 1 while executing 'mkdir logs'!
+
+2016-11-07 13:25:41,465 [memaslap4] - Memaslap started.
+2016-11-07 13:25:41,465 [memaslap5] - Clearing memaslap logs on machine pungast7foraslvms7m5.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:42,795 [memaslap5] - Starting memaslap on machine pungast7foraslvms7m5.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m4.westeurope.cloudapp.azure.com] run: nohup ./libmemcached-1.0.18/clients/memaslap -s 10.0.0.5:11212 -T 64 -c 64 -o0.9 -S 30s -t 65m -F ~/resources/smallvalue.cfg > logs/memaslap4.out 2>&1 &
+[pungast7@pungast7foraslvms7m5.westeurope.cloudapp.azure.com] run: rm ~/logs/*.out
+[pungast7@pungast7foraslvms7m5.westeurope.cloudapp.azure.com] run: mkdir logs
+[pungast7@pungast7foraslvms7m5.westeurope.cloudapp.azure.com] out: mkdir: cannot create directory ‘logs’: File exists
+[pungast7@pungast7foraslvms7m5.westeurope.cloudapp.azure.com] out: 
+
+Warning: run() received nonzero return code 1 while executing 'mkdir logs'!
+
+2016-11-07 13:25:43,063 [memaslap5] - Memaslap started.
+2016-11-07 13:25:43,063 [memaslap6] - Clearing memaslap logs on machine pungast7foraslvms7m6.westeurope.cloudapp.azure.com.
+2016-11-07 13:25:44,270 [memaslap6] - Starting memaslap on machine pungast7foraslvms7m6.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m5.westeurope.cloudapp.azure.com] run: nohup ./libmemcached-1.0.18/clients/memaslap -s 10.0.0.5:11212 -T 64 -c 64 -o0.9 -S 30s -t 65m -F ~/resources/smallvalue.cfg > logs/memaslap5.out 2>&1 &
+[pungast7@pungast7foraslvms7m6.westeurope.cloudapp.azure.com] run: rm ~/logs/*.out
+[pungast7@pungast7foraslvms7m6.westeurope.cloudapp.azure.com] run: mkdir logs
+[pungast7@pungast7foraslvms7m6.westeurope.cloudapp.azure.com] out: mkdir: cannot create directory ‘logs’: File exists
+[pungast7@pungast7foraslvms7m6.westeurope.cloudapp.azure.com] out: 
+
+Warning: run() received nonzero return code 1 while executing 'mkdir logs'!
+
+2016-11-07 13:25:44,538 [memaslap6] - Memaslap started.
+2016-11-07 13:25:44,539 [__main__] - Waiting for the experiment to finish, sleeping for 65 minutes.
+2016-11-07 13:26:44,542 [__main__] - Waiting for the experiment to finish, 1/65 minutes elapsed (2%).
+2016-11-07 13:27:44,544 [__main__] - Waiting for the experiment to finish, 2/65 minutes elapsed (3%).
+2016-11-07 13:28:44,547 [__main__] - Waiting for the experiment to finish, 3/65 minutes elapsed (5%).
+2016-11-07 13:29:44,552 [__main__] - Waiting for the experiment to finish, 4/65 minutes elapsed (6%).
+2016-11-07 13:30:44,556 [__main__] - Waiting for the experiment to finish, 5/65 minutes elapsed (8%).
+2016-11-07 13:31:44,559 [__main__] - Waiting for the experiment to finish, 6/65 minutes elapsed (9%).
+2016-11-07 13:32:44,563 [__main__] - Waiting for the experiment to finish, 7/65 minutes elapsed (11%).
+2016-11-07 13:33:44,564 [__main__] - Waiting for the experiment to finish, 8/65 minutes elapsed (12%).
+2016-11-07 13:34:44,566 [__main__] - Waiting for the experiment to finish, 9/65 minutes elapsed (14%).
+2016-11-07 13:35:44,570 [__main__] - Waiting for the experiment to finish, 10/65 minutes elapsed (15%).
+2016-11-07 13:36:44,570 [__main__] - Waiting for the experiment to finish, 11/65 minutes elapsed (17%).
+2016-11-07 13:37:44,577 [__main__] - Waiting for the experiment to finish, 12/65 minutes elapsed (18%).
+2016-11-07 13:38:44,586 [__main__] - Waiting for the experiment to finish, 13/65 minutes elapsed (20%).
+2016-11-07 13:39:44,587 [__main__] - Waiting for the experiment to finish, 14/65 minutes elapsed (22%).
+2016-11-07 13:40:44,588 [__main__] - Waiting for the experiment to finish, 15/65 minutes elapsed (23%).
+2016-11-07 13:41:44,591 [__main__] - Waiting for the experiment to finish, 16/65 minutes elapsed (25%).
+2016-11-07 13:42:44,591 [__main__] - Waiting for the experiment to finish, 17/65 minutes elapsed (26%).
+2016-11-07 13:43:44,592 [__main__] - Waiting for the experiment to finish, 18/65 minutes elapsed (28%).
+2016-11-07 13:44:44,593 [__main__] - Waiting for the experiment to finish, 19/65 minutes elapsed (29%).
+2016-11-07 13:45:44,594 [__main__] - Waiting for the experiment to finish, 20/65 minutes elapsed (31%).
+2016-11-07 13:46:44,598 [__main__] - Waiting for the experiment to finish, 21/65 minutes elapsed (32%).
+2016-11-07 13:47:44,602 [__main__] - Waiting for the experiment to finish, 22/65 minutes elapsed (34%).
+2016-11-07 13:48:44,604 [__main__] - Waiting for the experiment to finish, 23/65 minutes elapsed (35%).
+2016-11-07 13:49:44,607 [__main__] - Waiting for the experiment to finish, 24/65 minutes elapsed (37%).
+2016-11-07 13:50:44,607 [__main__] - Waiting for the experiment to finish, 25/65 minutes elapsed (38%).
+2016-11-07 13:51:44,610 [__main__] - Waiting for the experiment to finish, 26/65 minutes elapsed (40%).
+2016-11-07 13:52:44,613 [__main__] - Waiting for the experiment to finish, 27/65 minutes elapsed (42%).
+2016-11-07 13:53:44,614 [__main__] - Waiting for the experiment to finish, 28/65 minutes elapsed (43%).
+2016-11-07 13:54:44,618 [__main__] - Waiting for the experiment to finish, 29/65 minutes elapsed (45%).
+2016-11-07 13:55:44,624 [__main__] - Waiting for the experiment to finish, 30/65 minutes elapsed (46%).
+2016-11-07 13:56:44,629 [__main__] - Waiting for the experiment to finish, 31/65 minutes elapsed (48%).
+2016-11-07 13:57:44,628 [__main__] - Waiting for the experiment to finish, 32/65 minutes elapsed (49%).
+2016-11-07 13:58:44,636 [__main__] - Waiting for the experiment to finish, 33/65 minutes elapsed (51%).
+2016-11-07 13:59:44,640 [__main__] - Waiting for the experiment to finish, 34/65 minutes elapsed (52%).
+2016-11-07 14:00:44,640 [__main__] - Waiting for the experiment to finish, 35/65 minutes elapsed (54%).
+2016-11-07 14:01:44,644 [__main__] - Waiting for the experiment to finish, 36/65 minutes elapsed (55%).
+2016-11-07 14:02:44,646 [__main__] - Waiting for the experiment to finish, 37/65 minutes elapsed (57%).
+2016-11-07 14:03:44,649 [__main__] - Waiting for the experiment to finish, 38/65 minutes elapsed (58%).
+2016-11-07 14:04:44,648 [__main__] - Waiting for the experiment to finish, 39/65 minutes elapsed (60%).
+2016-11-07 14:05:44,648 [__main__] - Waiting for the experiment to finish, 40/65 minutes elapsed (62%).
+2016-11-07 14:06:44,648 [__main__] - Waiting for the experiment to finish, 41/65 minutes elapsed (63%).
+2016-11-07 14:07:44,650 [__main__] - Waiting for the experiment to finish, 42/65 minutes elapsed (65%).
+2016-11-07 14:08:44,649 [__main__] - Waiting for the experiment to finish, 43/65 minutes elapsed (66%).
+2016-11-07 14:09:44,648 [__main__] - Waiting for the experiment to finish, 44/65 minutes elapsed (68%).
+2016-11-07 14:10:44,648 [__main__] - Waiting for the experiment to finish, 45/65 minutes elapsed (69%).
+2016-11-07 14:11:44,651 [__main__] - Waiting for the experiment to finish, 46/65 minutes elapsed (71%).
+2016-11-07 14:12:44,652 [__main__] - Waiting for the experiment to finish, 47/65 minutes elapsed (72%).
+2016-11-07 14:13:44,653 [__main__] - Waiting for the experiment to finish, 48/65 minutes elapsed (74%).
+2016-11-07 14:14:44,653 [__main__] - Waiting for the experiment to finish, 49/65 minutes elapsed (75%).
+2016-11-07 14:15:44,660 [__main__] - Waiting for the experiment to finish, 50/65 minutes elapsed (77%).
+2016-11-07 14:16:44,668 [__main__] - Waiting for the experiment to finish, 51/65 minutes elapsed (78%).
+2016-11-07 14:17:44,676 [__main__] - Waiting for the experiment to finish, 52/65 minutes elapsed (80%).
+2016-11-07 14:18:44,677 [__main__] - Waiting for the experiment to finish, 53/65 minutes elapsed (82%).
+2016-11-07 14:19:44,683 [__main__] - Waiting for the experiment to finish, 54/65 minutes elapsed (83%).
+2016-11-07 14:20:44,692 [__main__] - Waiting for the experiment to finish, 55/65 minutes elapsed (85%).
+2016-11-07 14:21:44,693 [__main__] - Waiting for the experiment to finish, 56/65 minutes elapsed (86%).
+2016-11-07 14:22:44,702 [__main__] - Waiting for the experiment to finish, 57/65 minutes elapsed (88%).
+2016-11-07 14:23:44,702 [__main__] - Waiting for the experiment to finish, 58/65 minutes elapsed (89%).
+2016-11-07 14:24:44,705 [__main__] - Waiting for the experiment to finish, 59/65 minutes elapsed (91%).
+2016-11-07 14:25:44,707 [__main__] - Waiting for the experiment to finish, 60/65 minutes elapsed (92%).
+2016-11-07 14:26:44,706 [__main__] - Waiting for the experiment to finish, 61/65 minutes elapsed (94%).
+2016-11-07 14:27:44,708 [__main__] - Waiting for the experiment to finish, 62/65 minutes elapsed (95%).
+2016-11-07 14:28:44,708 [__main__] - Waiting for the experiment to finish, 63/65 minutes elapsed (97%).
+2016-11-07 14:29:44,707 [__main__] - Waiting for the experiment to finish, 64/65 minutes elapsed (98%).
+2016-11-07 14:30:44,710 [__main__] - Waiting for the experiment to finish, 65/65 minutes elapsed (100%).
+2016-11-07 14:30:44,711 [__main__] - Giving some extra time to memaslap, sleeping for 300 seconds.
+2016-11-07 14:35:44,708 [memaslap4] - Stopping memaslap on machine pungast7foraslvms7m4.westeurope.cloudapp.azure.com.
+
+Warning: run() received nonzero return code 1 while executing 'pgrep memaslap'!
+
+2016-11-07 14:35:44,802 [memaslap5] - Stopping memaslap on machine pungast7foraslvms7m5.westeurope.cloudapp.azure.com.
+
+Warning: run() received nonzero return code 1 while executing 'pgrep memaslap'!
+
+2016-11-07 14:35:44,968 [memaslap6] - Stopping memaslap on machine pungast7foraslvms7m6.westeurope.cloudapp.azure.com.
+
+Warning: run() received nonzero return code 1 while executing 'pgrep memaslap'!
+
+2016-11-07 14:35:45,075 [middleware] Stopping middleware on machine pungast7foraslvms7m7.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m6.westeurope.cloudapp.azure.com] run: nohup ./libmemcached-1.0.18/clients/memaslap -s 10.0.0.5:11212 -T 64 -c 64 -o0.9 -S 30s -t 65m -F ~/resources/smallvalue.cfg > logs/memaslap6.out 2>&1 &
+[pungast7@pungast7foraslvms7m4.westeurope.cloudapp.azure.com] run: pgrep memaslap
+[pungast7@pungast7foraslvms7m5.westeurope.cloudapp.azure.com] run: pgrep memaslap
+[pungast7@pungast7foraslvms7m6.westeurope.cloudapp.azure.com] run: pgrep memaslap
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: pgrep java
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 9570
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] out: 
+2016-11-07 14:35:45,171 [middleware] Killing PID=9570
+2016-11-07 14:35:45,331 [memcached1] - Stopping memcached on machine pungast7foraslvms7m1.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com] run: sudo kill 9570
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] run: pgrep memcached
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] out: 7580
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] out: 
+2016-11-07 14:35:45,438 [memcached1] - Killing PID=7580
+2016-11-07 14:35:45,595 [memcached2] - Stopping memcached on machine pungast7foraslvms7m2.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m1.westeurope.cloudapp.azure.com] run: sudo kill 7580
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] run: pgrep memcached
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] out: 7586
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] out: 
+2016-11-07 14:35:45,698 [memcached2] - Killing PID=7586
+2016-11-07 14:35:45,859 [memcached3] - Stopping memcached on machine pungast7foraslvms7m3.westeurope.cloudapp.azure.com.
+
+[pungast7@pungast7foraslvms7m2.westeurope.cloudapp.azure.com] run: sudo kill 7586
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] run: pgrep memcached
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] out: 7590
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] out: 
+2016-11-07 14:35:45,959 [memcached3] - Killing PID=7590
+2016-11-07 14:35:46,119 [middleware] Downloading memaslap logs from machine pungast7foraslvms7m7.westeurope.cloudapp.azure.com to results/trace.
+Warning: Permanently added 'pungast7foraslvms7m7.westeurope.cloudapp.azure.com,168.63.102.221' (ECDSA) to the list of known hosts.
+2016-11-07 14:35:52,374 [memaslap4] - Downloading memaslap logs from machine pungast7foraslvms7m4.westeurope.cloudapp.azure.com to results/trace.
+Warning: Permanently added 'pungast7foraslvms7m4.westeurope.cloudapp.azure.com,168.63.96.139' (ECDSA) to the list of known hosts.
+2016-11-07 14:35:53,751 [memaslap5] - Downloading memaslap logs from machine pungast7foraslvms7m5.westeurope.cloudapp.azure.com to results/trace.
+Warning: Permanently added 'pungast7foraslvms7m5.westeurope.cloudapp.azure.com,168.63.98.26' (ECDSA) to the list of known hosts.
+2016-11-07 14:35:55,317 [memaslap6] - Downloading memaslap logs from machine pungast7foraslvms7m6.westeurope.cloudapp.azure.com to results/trace.
+Warning: Permanently added 'pungast7foraslvms7m6.westeurope.cloudapp.azure.com,168.63.99.145' (ECDSA) to the list of known hosts.
+/Users/taivo/Library/R/3.2/library /Library/Frameworks/R.framework/Versions/3.2/Resources/library
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Warning messages:
+1: Removed 1863 rows containing non-finite values (stat_bin). 
+2: Removed 2 rows containing missing values (geom_bar). 
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Warning messages:
+1: Removed 4390 rows containing non-finite values (stat_bin). 
+2: Removed 10 rows containing missing values (geom_bar). 
+2016-11-07 14:36:12,459 [deployer] - Hibernating resource group template7vms.
+2016-11-07 14:36:15,387 [deployer] - Deallocating virtual machine foraslvms7m1...
+2016-11-07 14:36:15,388 [deployer] - Deallocating virtual machine foraslvms7m2...
+2016-11-07 14:36:15,391 [deployer] - Deallocating virtual machine foraslvms7m3...
+2016-11-07 14:36:15,392 [deployer] - Deallocating virtual machine foraslvms7m4...
+2016-11-07 14:36:15,403 [deployer] - Deallocating virtual machine foraslvms7m5...
+2016-11-07 14:36:15,409 [deployer] - Deallocating virtual machine foraslvms7m6...
+2016-11-07 14:36:15,420 [deployer] - Deallocating virtual machine foraslvms7m7...
+2016-11-07 14:36:15,428 [deployer] - Not deleting network interface MyNetworkInterface7m1.
+2016-11-07 14:36:15,428 [deployer] - Not deleting network interface MyNetworkInterface7m2.
+2016-11-07 14:36:15,428 [deployer] - Not deleting network interface MyNetworkInterface7m3.
+2016-11-07 14:36:15,428 [deployer] - Not deleting network interface MyNetworkInterface7m4.
+2016-11-07 14:36:15,428 [deployer] - Not deleting network interface MyNetworkInterface7m5.
+2016-11-07 14:36:15,434 [deployer] - Not deleting network interface MyNetworkInterface7m6.
+2016-11-07 14:36:15,434 [deployer] - Not deleting network interface MyNetworkInterface7m7.
+2016-11-07 14:36:15,434 [deployer] - Not deleting public IP foraslvms7m1.
+2016-11-07 14:36:15,434 [deployer] - Not deleting public IP foraslvms7m2.
+2016-11-07 14:36:15,434 [deployer] - Not deleting public IP foraslvms7m3.
+2016-11-07 14:36:15,434 [deployer] - Not deleting public IP foraslvms7m4.
+2016-11-07 14:36:15,435 [deployer] - Not deleting public IP foraslvms7m5.
+2016-11-07 14:36:15,435 [deployer] - Not deleting public IP foraslvms7m6.
+2016-11-07 14:36:15,435 [deployer] - Not deleting public IP foraslvms7m7.
+2016-11-07 14:36:15,435 [deployer] - Not deleting virtual network MyVNet7m.
+2016-11-07 14:36:15,435 [deployer] - Not deleting storage account hukqxm2gwajpcethasl.
+2016-11-07 14:36:15,435 [deployer] - Waiting for 7 operations to finish...
+2016-11-07 14:36:20,435 [deployer] - 7 operations still not done.
+2016-11-07 14:36:25,435 [deployer] - 7 operations still not done.
+2016-11-07 14:36:30,435 [deployer] - 7 operations still not done.
+2016-11-07 14:36:35,435 [deployer] - 7 operations still not done.
+2016-11-07 14:36:40,435 [deployer] - 7 operations still not done.
+2016-11-07 14:36:45,435 [deployer] - 7 operations still not done.
+2016-11-07 14:36:50,436 [deployer] - 7 operations still not done.
+2016-11-07 14:36:55,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:00,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:05,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:10,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:15,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:20,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:25,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:30,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:35,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:40,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:45,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:50,435 [deployer] - 7 operations still not done.
+2016-11-07 14:37:55,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:00,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:05,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:10,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:15,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:20,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:25,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:30,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:35,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:40,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:45,435 [deployer] - 7 operations still not done.
+2016-11-07 14:38:50,435 [deployer] - 3 operations still not done.
+2016-11-07 14:38:55,435 [deployer] - 3 operations still not done.
+2016-11-07 14:39:00,435 [deployer] - 3 operations still not done.
+2016-11-07 14:39:05,435 [deployer] - 3 operations still not done.
+2016-11-07 14:39:10,435 [deployer] - 3 operations still not done.
+2016-11-07 14:39:15,435 [deployer] - 3 operations still not done.
+2016-11-07 14:39:17,047 [deployer] - All operations done.
+2016-11-07 14:39:17,047 [__main__] - Done.
+
+[pungast7@pungast7foraslvms7m3.westeurope.cloudapp.azure.com] run: sudo kill 7590
+[localhost] local: mkdir -p results/trace
+[localhost] local: scp -i /Users/taivo/.ssh/id_rsa_asl pungast7@pungast7foraslvms7m7.westeurope.cloudapp.azure.com:~/asl/log/*.log results/trace
+[localhost] local: mkdir -p results/trace
+[localhost] local: scp -i /Users/taivo/.ssh/id_rsa_asl pungast7@pungast7foraslvms7m4.westeurope.cloudapp.azure.com:~/logs/*.out results/trace
+[localhost] local: mkdir -p results/trace
+[localhost] local: scp -i /Users/taivo/.ssh/id_rsa_asl pungast7@pungast7foraslvms7m5.westeurope.cloudapp.azure.com:~/logs/*.out results/trace
+[localhost] local: mkdir -p results/trace
+[localhost] local: scp -i /Users/taivo/.ssh/id_rsa_asl pungast7@pungast7foraslvms7m6.westeurope.cloudapp.azure.com:~/logs/*.out results/trace
+results/trace/memaslap4.out
+results/trace/memaslap5.out
+results/trace/memaslap6.out
+[localhost] local: mkdir results/trace/graphs
+[localhost] local: Rscript scripts/r/trace.r results/trace

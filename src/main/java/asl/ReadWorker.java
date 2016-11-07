@@ -52,56 +52,54 @@ class ReadWorker implements Runnable {
             log.info(String.format("%s started.", getName()));
 
             while (true) {
-                if (!readQueue.isEmpty()) {
-                    try {
-                        Request r = readQueue.take();
-                        r.setTimeDequeued();
-                        //log.debug(getName() + " processing request " + r);
+                try {
+                    Request r = readQueue.take();
+                    r.setTimeDequeued();
+                    //log.debug(getName() + " processing request " + r);
 
-                        // Write request
-                        r.getBuffer().rewind();
-                        channelOut.write(r.getBuffer());
-                        r.setTimeForwarded();
+                    // Write request
+                    r.getBuffer().rewind();
+                    channelOut.write(r.getBuffer());
+                    r.setTimeForwarded();
 
-                        // Read response
-                        byte[] buffer = new byte[MiddlewareMain.FULL_BUFFER_SIZE];
-                        int readTotal = 0;
-                        int read = streamIn.read(buffer);
+                    // Read response
+                    byte[] buffer = new byte[MiddlewareMain.FULL_BUFFER_SIZE];
+                    int readTotal = 0;
+                    int read = streamIn.read(buffer);
 
-                        // If the message from memcached continued
-                        while(read != -1) {
-                            readTotal += read;
+                    // If the message from memcached continued
+                    while(read != -1) {
+                        readTotal += read;
 
-                            if(readTotal == 5) {
-                                if(buffer[0] == 'E') {// END
-                                    break;
-                                }
-                            }
-
-                            if(readTotal > 0) {
-                                if(buffer[readTotal-5] == 'E' && buffer[readTotal-4] == 'N' && buffer[readTotal-3] == 'D') {
-                                    break;
-                                }
-                            }
-                            if(streamIn.available() > 0) {
-                                read = streamIn.read(buffer);
-                            } else {
-                                read = 0;
+                        if(readTotal == 5) {
+                            if(buffer[0] == 'E') {// END
+                                break;
                             }
                         }
-                        r.setTimeReceived();
 
-                        ByteBuffer wrapped = ByteBuffer.wrap(buffer);
-                        wrapped.limit(readTotal);
-                        r.setResponseBuffer(wrapped);
-                        ResponseFlag responseFlag = Request.getResponseFlag(wrapped);
-                        r.setResponseFlag(responseFlag);
-                        r.respond();
-
-                        //log.debug(String.format("Got response to " + r + ", %d bytes.", readTotal));
-                    } catch (InterruptedException ex) {
-                        log.error(ex);
+                        if(readTotal > 0) {
+                            if(buffer[readTotal-5] == 'E' && buffer[readTotal-4] == 'N' && buffer[readTotal-3] == 'D') {
+                                break;
+                            }
+                        }
+                        if(streamIn.available() > 0) {
+                            read = streamIn.read(buffer);
+                        } else {
+                            read = 0;
+                        }
                     }
+                    r.setTimeReceived();
+
+                    ByteBuffer wrapped = ByteBuffer.wrap(buffer);
+                    wrapped.limit(readTotal);
+                    r.setResponseBuffer(wrapped);
+                    ResponseFlag responseFlag = Request.getResponseFlag(wrapped);
+                    r.setResponseFlag(responseFlag);
+                    r.respond();
+
+                    //log.debug(String.format("Got response to " + r + ", %d bytes.", readTotal));
+                } catch (InterruptedException ex) {
+                    log.error(ex);
                 }
             }
         } catch(Exception ex) {
