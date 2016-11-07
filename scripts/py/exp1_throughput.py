@@ -13,7 +13,7 @@ R = 1                   # replication factor
 virtual_clients_values = [1] + list(range(48, 240, 48))
 num_threads_values = [1, 2, 4, 8]
 
-experiment_runtime = 10
+experiment_runtime = 2 # TODO
 runtime_buffer = 5
 num_repetitions = 1
 workload_filename = "smallvalue_nowrites.cfg"
@@ -23,7 +23,7 @@ for virtual_clients in virtual_clients_values:
     for num_threads in num_threads_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
-combinations = [(48, 4, 1)]
+combinations = [(3, 1, 1)] # override combinations TODO
 
 SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
@@ -50,7 +50,7 @@ try:
                                   and os.path.exists("{}/memaslap7.out".format(results_dir))\
                                   and aslutil.is_complete_memaslap_result("{}/memaslap7.out".format(results_dir))
         if SKIP_IF_EXISTS and experiment_already_done:
-            print("\tFile {}/{} exists, skipping.".format(results_dir, memaslap_summary_filename))
+            print("\tComplete memaslap results exist, skipping.")
             continue
 
         additional_buffer = extra_buffer(virtual_clients, num_threads)
