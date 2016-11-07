@@ -12,6 +12,15 @@ if(length(args) == 0) {
 
 # ---- Helper function ----
 rep_summary <- function(df) {
+  if(nrow(df) == 0) {
+    res <- list()
+    res$mean_tps <- NA
+    res$std_tps <- NA
+    res$mean_response_time <- NA
+    res$std_response_time <- NA
+    return(res)
+  } 
+
   DROP_TIMES_BEFORE = 3 * 60 # How many seconds in the beginning we want to drop
   DROP_TIMES_AFTER = max((df %>% filter(type=="t"))$time) - 2 * 60
   
@@ -32,19 +41,29 @@ rep_summary <- function(df) {
 
 
 # ---- Loop over result dirs ----
-dir_name_regex <- "results/throughput/clients(\\d{1,3})_threads(\\d{1,2})_rep(\\d{1,2})$"
-unfiltered_dirs <- list.dirs("results/throughput")
-filtered_dirs <- grep(dir_name_regex, unfiltered_dirs, value=TRUE, perl=TRUE)
+file_name_regex <- "results/throughput/clients(\\d{1,3})_threads(\\d{1,2})_rep(\\d{1,2})/memaslap_stats\\.csv$"
+unfiltered_files <- list.files(path=".", "memaslap_stats.csv", recursive=TRUE)
+filtered_files <- grep(file_name_regex, unfiltered_files, value=TRUE, perl=TRUE)
 
-result_params <- as.data.frame(str_match(filtered_dirs, dir_name_regex))
+result_params <- as.data.frame(str_match(filtered_files, file_name_regex))
 colnames(result_params) <- c("path", "clients", "threads", "repetition")
+result_params <- result_params  %>%
+  mutate(path=as.character(path))
 
 results <- NA
 
 for(i in 1:nrow(result_params)) {
+  print(results)
   params <- result_params[i,]
-  df <- read.csv(paste0(params$path, "/memaslap_stats.csv"), header=TRUE, sep=";")
-  result <- as.data.frame(rep_summary(df))
+  file_path <- params$path
+  print(file_path)
+  if(file.exists(file_path)) {
+    df <- read.csv(file_path, header=TRUE, sep=";")
+    result <- as.data.frame(rep_summary(df))
+  } else {
+    result <- data.frame()
+  }
+  
   if(is.na(results)) {
     results <- result
   } else {
@@ -52,8 +71,17 @@ for(i in 1:nrow(result_params)) {
   }
 }
 
+all_results <- cbind(result_params, results) %>%
+  mutate(clients=as.numeric(clients),
+         threads=as.numeric(threads),
+         repetition=as.numeric(repetition))
 
-
+data1 <- all_results %>%
+  filter(!is.na(mean_tps))
+ggplot(data1, aes(x=clients, y=mean_tps)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~threads)
 
 
 
