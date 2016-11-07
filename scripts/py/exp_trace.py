@@ -11,7 +11,7 @@ from middleware import Middleware
 from colors import Colors
 from deployer import Deployer
 
-UPDATE_AND_INSTALL = False
+UPDATE_AND_INSTALL = True
 UPDATE_AND_INSTALL_ONLY_MIDDLEWARE = True
 EXPERIMENT_RUNTIME = 65  # minutes
 RUNTIME_BUFFER = 5 * 60     # seconds
@@ -117,7 +117,7 @@ mc_servers = []
 mc_server_string_list = []
 for i in indices_smallmachines[0:3]:
     log.info("Setting up memcached on machine {} ({}).".format(i, vm_names[i]))
-    mc_server = Memcached(memcached_port, public_hostnames[i], ssh_username=ssh_username)
+    mc_server = Memcached(memcached_port, public_hostnames[i], ssh_username=ssh_username, id_number=i+1)
     mc_servers.append(mc_server)
     mc_server_string_list.append("{}:{}".format(private_hostnames[i], memcached_port))
     if UPDATE_AND_INSTALL:
