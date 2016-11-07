@@ -184,7 +184,7 @@ class Experiment():
         # endregion
     
         sleep_time = experiment_runtime + runtime_buffer
-        self.log.info("Waiting for the experiment to finish, sleeping for {} minutes.".format(sleep_time))
+        self.log.info("Waiting for the experiment to finish, sleeping for up to {} minutes.".format(sleep_time))
         already_slept = 0
         while True:
             time.sleep(60)
@@ -192,7 +192,7 @@ class Experiment():
 
             num_running_memaslaps = sum([s.is_running() for s in ms_servers])
 
-            self.log.info("Waiting for the {}min experiment to finish, {:.0f}/{} minutes elapsed ({:.0f}%), {} memaslaps running."
+            self.log.info("Waiting for the {}-minute experiment to finish, {:.0f}/{} minutes elapsed ({:.0f}%), {} memaslaps running."
                      .format(experiment_runtime,
                              already_slept / 60, sleep_time,
                              100 * already_slept / 60.0 / sleep_time,
