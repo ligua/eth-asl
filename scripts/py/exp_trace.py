@@ -11,7 +11,7 @@ from middleware import Middleware
 from colors import Colors
 from deployer import Deployer
 
-UPDATE_AND_INSTALL = True
+UPDATE_AND_INSTALL = False
 UPDATE_AND_INSTALL_ONLY_MIDDLEWARE = True
 EXPERIMENT_RUNTIME = 65  # minutes
 RUNTIME_BUFFER = 5 * 60     # seconds
