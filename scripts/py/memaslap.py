@@ -91,6 +91,14 @@ class Memaslap(object):
                 self.log.info("Killing PID={}".format(pid))
                 fa.run("sudo kill {}".format(pid))
 
+    def is_running(self):
+        """Check if there is a memaslap process running on this machine."""
+        with fa.settings(**self.fab_settings):
+            result = fa.run("pgrep memaslap")
+            if result.return_code:
+                return False
+        return True
+
     def download_logs(self, local_path="results/baseline"):
         """Download memaslap logs to specified local directory."""
         self.log.info("Downloading memaslap logs from machine {} to {}.".format(self.ssh_hostname, local_path))
