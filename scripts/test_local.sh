@@ -31,5 +31,4 @@ echo `tail -n 1 $LOG_DIR/memaslap.out` | grep --color -e 'TPS: \d\{1,10\}'
 kill $MEMASLAP_PID
 kill $MEMCACHED_PID1
 kill $MEMCACHED_PID2
-pkill -f java
 pkill -f ant
