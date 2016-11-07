@@ -48,6 +48,9 @@ class Memaslap(object):
             fa.run("sudo apt-get --assume-yes update")
             fa.run("sudo apt-get --assume-yes install build-essential libevent-dev")
 
+            fa.local("scp -i {} resources/*.cfg {}:~/resources"
+                     .format(self.ssh_key_filename, self.host_string))
+
             result = fa.run("ls libmemcached-1.0.18/clients/memaslap")
             if result.return_code:
                 self.log.info("Memaslap not found, building...")
@@ -59,8 +62,6 @@ class Memaslap(object):
                        "cd ..")
                 fa.run("mkdir ~/logs")
                 fa.run("mkdir ~/resources")
-                fa.local("scp -i {} resources/*.cfg {}:~/resources"
-                         .format(self.ssh_key_filename, self.host_string))
             else:
                 self.log.info("Memaslap already built.")
 
