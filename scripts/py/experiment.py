@@ -192,10 +192,10 @@ class Experiment():
 
             num_running_memaslaps = sum([s.is_running() for s in ms_servers])
 
-            self.log.info("Waiting for the {}-minute experiment to finish, {:.0f}/{} minutes elapsed ({:.0f}%), {} memaslaps running."
-                     .format(experiment_runtime,
-                             already_slept / 60, sleep_time,
-                             100 * already_slept / 60.0 / sleep_time,
+            self.log.info("Waiting for the experiment to finish (total {} minutes), {:.0f}/{} minutes elapsed ({:.0f}%), {} memaslaps running."
+                     .format(sleep_time,
+                             already_slept / 60, experiment_runtime,
+                             100 * already_slept / 60.0 / experiment_runtime,
                              num_running_memaslaps))
             if already_slept >= sleep_time * 60 or num_running_memaslaps == 0:
                 break
