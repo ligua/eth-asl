@@ -188,9 +188,14 @@ class Experiment():
         while True:
             time.sleep(60)
             already_slept += 60
-            self.log.info("Waiting for the experiment to finish, {:.0f}/{} minutes elapsed ({:.0f}%)."
-                     .format(already_slept / 60, experiment_runtime, 100 * already_slept / 60.0 / experiment_runtime))
-            if already_slept >= experiment_runtime * 60:
+
+            num_running_memaslaps = sum([s.is_running() for s in ms_servers])
+
+            self.log.info("Waiting for the experiment to finish, {:.0f}/{} minutes elapsed ({:.0f}%), {} memaslaps running."
+                     .format(already_slept / 60, experiment_runtime,
+                             100 * already_slept / 60.0 / experiment_runtime,
+                             num_running_memaslaps))
+            if already_slept >= experiment_runtime * 60 or num_running_memaslaps == 0:
                 break
     
         self.log.info("Giving some extra time to memaslap, sleeping for {} minutes.".format(runtime_buffer))
