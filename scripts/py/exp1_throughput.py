@@ -10,11 +10,11 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [1] + list(range(48, 240, 48))
-num_threads_values = [1, 2, 4, 8]
+virtual_clients_values = [1] + list(range(48, 300, 48))
+num_threads_values = [1, 16, 32, 64]
 
-experiment_runtime = 2 # TODO
-runtime_buffer = 5
+experiment_runtime = 10
+runtime_buffer = 30 # will be cut off when memaslaps are done
 num_repetitions = 1
 workload_filename = "smallvalue_nowrites.cfg"
 
@@ -23,10 +23,12 @@ for virtual_clients in virtual_clients_values:
     for num_threads in num_threads_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
-combinations = [(3, 1, 1)] # override combinations TODO
+#combinations = [(3, 1, 1)] # override combinations
 
 SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
+print("Running {} experiments with a maximum of {} minutes per experiment."
+      .format(len(combinations), experiment_runtime+runtime_buffer))
 
 # endregion
 
