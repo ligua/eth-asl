@@ -102,6 +102,8 @@ class ReadWorker implements Runnable {
                     } catch (InterruptedException ex) {
                         log.error(ex);
                     }
+                } else {
+                    Thread.sleep(MiddlewareMain.READ_WORKER_SLEEP_TIME);
                 }
             }
         } catch(Exception ex) {

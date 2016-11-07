@@ -91,8 +91,11 @@ class WriteWorker implements Runnable {
 
             while (true) {
 
+                boolean didNothing = true;
+
                 // region Take new element from write queue
                 if (!writeQueue.isEmpty()) {
+                    didNothing = false;
                     //log.debug("Writequeue has " + writeQueue.size() + " elements.");
                     Request r = writeQueue.remove();
                     //log.debug(String.format("Took %s from queue...", r));
@@ -126,6 +129,10 @@ class WriteWorker implements Runnable {
                 selector.select(SELECTOR_TIMEOUT);
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
+
+                if(!selectedKeys.isEmpty()) {
+                    didNothing = false;
+                }
 
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
@@ -188,6 +195,11 @@ class WriteWorker implements Runnable {
                     }
                 }
                 // endregion
+
+                // Sleep if did nothing
+                if(didNothing) {
+                    Thread.sleep(MiddlewareMain.WRITE_WORKER_SLEEP_TIME);
+                }
             }
         } catch (Exception ex) {
             log.error(ex);
