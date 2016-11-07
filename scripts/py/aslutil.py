@@ -42,3 +42,19 @@ def server_name_to_number(server_name):
     """'server1' -> 1 etc"""
     regex = re.compile(r"[a-z]*(\d+)")
     return regex.match(server_name).groups()[0]
+
+def is_complete_memaslap_result(filename):
+    """Check if memaslap was able to complete in required time."""
+    with open(filename) as f:
+        for line in f:
+            last = line
+        if last[0:9] == "Run time:":
+            return True
+        return False
+
+
+
+if __name__ == "__main__":
+    print(is_complete_memaslap_result("results/throughput/clients1_threads1_rep0/memaslap7.out"))
+    print(is_complete_memaslap_result("results/throughput/clients144_threads4_rep0/memaslap7.out"))
+    print(is_complete_memaslap_result("results/trace_rep3/memaslap4.out"))
