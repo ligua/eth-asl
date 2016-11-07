@@ -88,6 +88,8 @@ class Extractor:
 
                 with open(filename) as log_file:
 
+                    has_set_summary = False
+
                     for line in log_file:
                         if not total_line_passed:
                             type = "t"
@@ -117,7 +119,10 @@ class Extractor:
                                 csv_writer.writerow(row)
                         else:
                             type = "global"
-                            if Extractor.re_total_set_events.match(line):
+                            if Extractor.re_total_set_events.match(line) or Extractor.re_total_events.match(line):
+                                if Extractor.re_total_set_events.match(line):
+                                    has_set_summary = True
+
                                 row_get = [memaslap_number, type, request_type, "NA", ops, tps, "NA", min, max,
                                        avg, std]
                                 csv_writer.writerow(row)
@@ -144,7 +149,8 @@ class Extractor:
                                 row_get[3] = run_time       # TODO if I add stuff to beginning, this will fail silently
                                 row_get[6] = get_misses
                                 csv_writer.writerow(row_get)
-                                csv_writer.writerow(row_set)
+                                if has_set_summary:
+                                    csv_writer.writerow(row_set)
 
                     print(filename)
 
@@ -152,4 +158,5 @@ class Extractor:
 if __name__ == "__main__":
     e = Extractor()
     #e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
-    e.summarise_baseline_logs()
+    e.summarise_trace_logs(logs_pattern="results/throughput/clients3_threads1_rep1/memaslap*.out",
+                           csv_path="results/throughput/clients3_threads1_rep1/memaslap_stats.csv")
