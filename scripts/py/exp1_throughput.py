@@ -23,7 +23,7 @@ for virtual_clients in virtual_clients_values:
     for num_threads in num_threads_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
-combinations = [()]
+combinations = [(48, 4, 1)]
 
 SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
@@ -56,7 +56,11 @@ try:
         additional_buffer = extra_buffer(virtual_clients, num_threads)
         print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
 
-        """e.start_experiment(results_dir,
+        hibernate_at_end = False
+        if (virtual_clients, num_threads, repetition) == combinations[-1]: # last one
+            hibernate_at_end = True
+
+        e.start_experiment(results_dir,
                            update_and_install=False,
                            experiment_runtime=experiment_runtime,
                            runtime_buffer=runtime_buffer,
@@ -65,7 +69,7 @@ try:
                            num_memaslaps=num_memaslaps,
                            num_memcacheds=S,
                            memaslap_workload=workload_filename,
-                           hibernate_at_end=False,
+                           hibernate_at_end=hibernate_at_end,
                            concurrency=concurrency)
 
         # Extract logs
@@ -73,7 +77,7 @@ try:
                                        csv_path="{}/{}".format(results_dir, memaslap_summary_filename))
         # Plot graphs
         with fabric.api.settings(warn_only=True):
-            fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))"""
+            fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
 
     #Deployer.hibernate_wait_static("template11vms")
 

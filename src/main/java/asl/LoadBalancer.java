@@ -100,10 +100,15 @@ public class LoadBalancer implements Runnable {
             SelectionKey selectionKey = serverSocketChannel.register(selector, ops, null);
 
             while(true) {
+                boolean didNothing = true;
                 selector.select(SELECTOR_TIMEOUT);
 
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
+
+                if(!selectedKeys.isEmpty()) {
+                    didNothing = false;
+                }
 
                 while (selectionKeyIterator.hasNext()) {
                     SelectionKey myKey = selectionKeyIterator.next();
@@ -164,6 +169,10 @@ public class LoadBalancer implements Runnable {
 
                     }
                     selectionKeyIterator.remove();
+                }
+
+                if(didNothing) {
+                    Thread.sleep(MiddlewareMain.LOAD_BALANCER_SLEEP_TIME);
                 }
             }
 
