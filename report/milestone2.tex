@@ -74,7 +74,7 @@ Please feel free to structure the three sections of this report as it makes most
 % --------------------------------------------------------------------------------
 In the last milestone submission, my middleware implemented all functionality as necessary. However, the resource usage was extremely wasteful: each read thread took up nearly 100\% of the resources allocated to them and never went to a sleeping state. This caused more than 10-fold drops in performance when going from $T=1$ to $T=4$ (for $S=5$), and would have made the maximum throughput experiment useless. The changes can be seen on \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/commit/928e9bba132d34ecf9c00936babdd7fa2645e50f}{GitLab}.
 
-To verify that the system is still stable, I re-ran the trace experiment. The throughput and response time are shown in Figures~\ref{fig:trace:throughput} and \ref{fig:trace:responsetime}, and are confirmed to be stable (and throughput is roughly 30\% higher). For explanations of the figures, see Milestone 1 report.
+To verify that the system is still stable, I re-ran the trace experiment. The throughput and response time are shown in Figures~\ref{fig:trace:throughput} and \ref{fig:trace:responsetime}, and are confirmed to be stable (and throughput is roughly 30\% higher). The Interactive Response Time Law also still holds (to within 0.46\%). For explanations of the figures, see Milestone 1 report.
 
 \begin{figure}[h]
 \centering
@@ -112,15 +112,14 @@ To this end, I will measure throughput (the number of requests the SUT successfu
 
 I predict the following.
 
-\paragraph{Number of threads} Throughput will be maximised at a very low value of $T=1$, after which the throughput will start to decrease rapidly.
+\paragraph{Number of threads} 
+calculate num clients per server, and use max throughput of read thread?
 
-The reason for that lies in my implementation: since each thread runs through an infinite while-loop even if there are no requests to process, the threads almost never wait or sleep and use 100\% of the resources allocated to them by the scheduler. For this reason, once $T$ is high enough that not all threads can run concurrently, threads need to wait to be allocated time, and this waiting decreases throughput significantly. The total number of threads used by the system is given as $S * (T + 1) + 1$; for $S=5$ and $T=1$, the system uses 11 threads. This is more than what's available in a Basic A4 machine, so increasing $T$ will only decrease throughput.
+\paragraph{Number of clients} Throughput will be maximised at roughly 110 virtual clients per memcached server, so 550 virtual clients in total. This is based on the fact that in the Milestone 1 baseline experiment, the throughput of a single memcached server without middleware saturated at around 110 virtual clients. It is likely to be an overestimate since the SUT here has an additional part (the middleware) and the baseline experiment did not measure sustained , but 550 clients is a reasonable upper bound.
 
-Note that the middleware can be easily changed to change this non-optimal behaviour by making the threads sleep for a short period if there is nothing to do.
+\paragraph{Throughput} Since in the trace experiment, the throughput was roughly 10300 requests per second, we have a lower bound for the expected throughput. Naively assuming that the throughput of GET requests scales linearly with the number of servers $S$ would yield an expected throughput of $\frac{5}{3} \cdot 10300 = 17200$ requests per second. However, this does not take into account that we will also increase the number of threads (from $T=5$ in the trace experiment). Thus I expect the maximum sustained throughput to be definitely more than 10300 requests per second, and likely to be more than 17200 requests per second. The graph of throughput as a function of the number of clients will be similar to that of the baseline: rapidly increasing at first, then reaching the knee after which throughput growth is much slower, and then saturating. At extremely high numbers of clients, the throughput may fall due to unexpected behaviour in the middleware.
 
-\paragraph{Number of clients} Throughput will be maximised at roughly 110 virtual clients per memcached server, so 550 virtual clients in total. This is based on the fact that in the Milestone 1 baseline experiment, the throughput of a single memcached server without middleware saturated at around 110 virtual clients. It is likely to be an overestimate since the SUT here has an additional part (the middleware), but 550 clients is a reasonable upper bound.
 
-\paragraph{Throughput} Since in the trace experiment, the throughput was roughly 7500 requests per second, we have a lower bound for the expected throughput. Naively assuming that the throughput of GET requests scales linearly with the number of servers $S$ would yield an expected throughput of $\frac{5}{3} \cdot 7500 = 12500$ requests per second. However, this does not take into account our different experimental setup compared to the trace experiment (the number of writes). Thus I expect the maximum throughput to be definitely more than 7500 and near 12500 requests per second.
 
 \begin{itemize}
 \item Draw graphs with expected results
