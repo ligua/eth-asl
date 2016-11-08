@@ -111,6 +111,8 @@ In all experiments, the following holds about the experimental setup:
 \item The first 2 and last 2 minutes of each experiment were discarded from analyses as warm-up and cool-down time.
 \end{itemize}
 
+
+\newpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section{Maximum Throughput}
@@ -160,17 +162,17 @@ I predict that the graph of throughput as a function of the number of clients wi
 \hline Workload & Key 16B, Value 128B, Writes 0\% \\
 \hline Middleware: replication factor & 1 \\ 
 \hline Middleware: read threads & $\in\{1, 16, 32, 64\}$ \\ 
-\hline Runtime x repetitions & 6min x 1 \todo{Various: at least 6min x 1, until 95\% confidence blabla} \\ 
+\hline Runtime x repetitions & at least 6min x 1; more in some cases \\ 
 \hline Log files & \todo{} \\
 \hline 
 \end{tabular} }
 \end{center}
 
-\todo{measured in 10-sec intervals}
-
-\todo{if didnt reach 95\% in 6min x 1 experiment (2min effective), then re-ran (up to x times)}
-
 Three client machines were used for all experiments, except for the 1-client experiment, where only one machine was used.
+
+The values of $T$ to test were $T=1$ as the lowest possible value, and then from $T=16$ in multiplicative steps of 2. The reason for the small number of tested values of $T$ is pragmatic: it doesn't require hundreds of experiments and at the same time gives a reasonable approximation of the optimal $T$.
+
+Some parameter combinations did not yield the required confidence interval in the first 6-minute repetition of the experiment. When that was the case, I re-ran the experiment (in some cases for a longer time), thus producing more datapoints and decreasing the confidence interval.
 
 \subsection{Results}
 Reporting experiment results. Comparison of hypothesis and experiment results.
@@ -183,6 +185,8 @@ Reporting experiment results. Comparison of hypothesis and experiment results.
 \end{figure}
 
 \todo{table of top 3 parameter sets} with mean throughputs and confidence intervals?
+
+\todo{confirm that throughput was sustained} -- response time was still reasonable and throughput did not decrease over time
 
 
 % --------------------------------------------------------------------------------
