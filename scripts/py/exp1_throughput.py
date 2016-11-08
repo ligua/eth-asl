@@ -17,13 +17,14 @@ experiment_runtime = 10
 runtime_buffer = 90 # will be cut off when memaslaps are done
 num_repetitions = 1
 workload_filename = "smallvalue_nowrites.cfg"
+memaslap_window_size = "1k"
 
 combinations = []
 for virtual_clients in virtual_clients_values:
     for num_threads in num_threads_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
-#combinations = [(3, 1, 1)] # override combinations
+combinations = [(336, 1, 1)] # override combinations
 
 UPDATE_AND_INSTALL = False
 
@@ -71,6 +72,7 @@ try:
                            num_memaslaps=num_memaslaps,
                            num_memcacheds=S,
                            memaslap_workload=workload_filename,
+                           memaslap_window_size=memaslap_window_size,
                            hibernate_at_end=hibernate_at_end,
                            concurrency=concurrency,
                            is_first_run=is_first)
