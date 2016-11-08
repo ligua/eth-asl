@@ -10,7 +10,7 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [1] + list(range(48, 300, 48))
+virtual_clients_values = [336, 384] #[1] + list(range(48, 300, 48))
 num_threads_values = [1, 16, 32, 64]
 
 experiment_runtime = 10
