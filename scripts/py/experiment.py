@@ -188,8 +188,8 @@ class Experiment():
             s.clear_logs()
             s.start(runtime=experiment_runtime_string, log_filename="memaslap{}.out".format(s.id_number),
                     stats_freq=stats_frequency, workload_filename=memaslap_workload, concurrency=concurrency,
-                    memaslap_window_size=memaslap_window_size)
-    
+                    window_size=memaslap_window_size)
+
         # endregion
     
         sleep_time = experiment_runtime + runtime_buffer
