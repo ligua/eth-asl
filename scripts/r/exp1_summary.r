@@ -115,7 +115,7 @@ all_results <- cbind(client_thread_combinations, results) %>%
 # ---- Throughput vs clients ----
 data1 <- all_results %>%
   filter(!is.na(tps_mean))
-ggplot(data1, aes(x=clients, y=tps_mean)) +
+g1 <- ggplot(data1, aes(x=clients, y=tps_mean)) +
   geom_errorbar(aes(ymin=tps_mean-tps_std,
                     ymax=tps_mean+tps_std),
                 color=color_triad2, width=10, size=1) +
@@ -123,6 +123,9 @@ ggplot(data1, aes(x=clients, y=tps_mean)) +
   geom_point(color=color_dark) +
   facet_wrap(~threads) +
   asl_theme
+g1
+ggsave(paste0(result_dir_base, "/graphs/tp_vs_clients.pdf"), g1,
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 # ---- Throughput not within 95% confidence interval ----
 not_confident <- data1 %>%
@@ -138,7 +141,7 @@ print(not_confident)
 data2 <- all_results %>%
   mutate(delta=ifelse(response_time_beginning > response_time_end, "faster", "slower"))
 colour_scale <- scale_colour_manual(name = "grp", values = c("green", "red"))
-ggplot(data2, aes(x=clients)) +
+g2 <- ggplot(data2, aes(x=clients)) +
   geom_segment(aes(xend=clients, y=response_time_beginning, yend=response_time_end, color=delta),
                arrow=arrow(length=unit(0.02, "npc"), type="closed")) +
   ylim(0, NA) +
@@ -146,6 +149,9 @@ ggplot(data2, aes(x=clients)) +
   ylab("Response time beginning -> end [ms]") + xlab("Number of clients") +
   facet_wrap(~threads) +
   asl_theme
+g2
+ggsave(paste0(result_dir_base, "/graphs/response_time_diff.pdf"), g2,
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 
 
