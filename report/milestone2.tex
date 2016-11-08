@@ -125,7 +125,7 @@ Provide a detailed breakdown of the time spent in the middleware for each operat
 
 In this section, I will run experiments to find out a) the maximum throughput of the SUT, b) the number of read threads ($T$) in the middleware that achieves this c) the number of virtual clients ($C$) that achieves this.
 
-To this end, I will measure throughput as a function of $T$ and $C$. I will find the maximum sustained throughput of the SUT, i.e. the throughput at which the response time does not increase rapidly with \todo{additional clients}.
+To this end, I will measure throughput as a function of $T$ and $C$, in 10-second time windows. I will find the maximum sustained throughput of the SUT, i.e. the throughput at which the response time does not increase rapidly with \todo{additional clients}. For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean throughput.
 
 \subsection{Hypothesis}
 
@@ -156,7 +156,7 @@ I predict that the graph of throughput as a function of the number of clients wi
 \begin{tabular}{|c|c|}
 \hline Number of servers & 5 \\ 
 \hline Number of client machines & $\in \{1, 3\}$ \\ 
-\hline Virtual clients & $\in \{1, 36, 72, 144, 216, 288, 360, 432, 504, 576\}$ \\ 
+\hline Virtual clients & $\in \{1, 36, 72, 144, 216, 288, 360, 432, 504, 576, 648\}$ \\ 
 \hline Workload & Key 16B, Value 128B, Writes 0\% \\
 \hline Middleware: replication factor & 1 \\ 
 \hline Middleware: read threads & $\in\{1, 16, 32, 64\}$ \\ 
@@ -192,12 +192,24 @@ Answer at least the following questions: Are \texttt{get} and \texttt{set} reque
 
 
 \subsection{Experimental question}
-\begin{itemize}
-\item Define the „system(s) under test“
-\item Define what to measure and understand why
-\end{itemize}
+
+In this section, I will run experiments to find out the how a) mean response time and b) throughput of the SUT depend on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether gets and sets are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
+
+To this end, I will measure mean response time as a function of $S$ and $R$, and measure the amount of time requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean response time.
+
 
 \subsection{Hypothesis}
+
+\todo{Finding how ideal implementation would behave is a good starting point.}
+
+Scale-up? scale out? \todo{check slides}
+
+Are get and set requests impacted the same way by different setups? If yes/no, why?
+
+Which operations become more expensive inside the middleware as the configuration changes?
+
+How does the scalability of your system compare to that of an ideal implementation? 
+
 \begin{itemize}
 \item Draw graphs with expected results
 \item Even try to predict variance and statistical properties
@@ -225,6 +237,9 @@ Answer at least the following questions: Are \texttt{get} and \texttt{set} reque
 
 \subsection{Results}
 Reporting experiment results. Comparison of hypothesis and experiment results.
+How does the scalability of your system compare to that of an ideal implementation?
+
+\todo{table: y axis is S, x axis is R}; in each cell is corresponding response time -- separately for gets and sets?
  
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
