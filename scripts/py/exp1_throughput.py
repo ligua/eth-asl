@@ -10,8 +10,8 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [648] #[1] + list(range(72, 600, 72))
-num_threads_values = [1, 16, 32, 64]
+virtual_clients_values = [720, 792] #[1] + list(range(72, 600, 72))
+num_threads_values = [32, 64] #[1, 16, 32, 64]
 
 experiment_runtime = 12
 runtime_buffer = 15 # will be cut off when memaslaps are done
@@ -26,7 +26,10 @@ for virtual_clients in virtual_clients_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
 #combinations = [(336, 1, 1)] # override combinations
-additional_combinations = []
+additional_combinations = [
+    (864, 64, 0),
+    (936, 64, 0)
+]
 
 combinations += additional_combinations
 
@@ -39,7 +42,7 @@ print("Running {} experiments with a maximum of {} minutes per experiment."
 estimated_mins = len(combinations) * experiment_runtime
 print("Total runtime: {} hours {} minutes".format(estimated_mins // 60, estimated_mins % 60))
 
-DRY_RUN = False
+DRY_RUN = True
 
 # endregion
 
