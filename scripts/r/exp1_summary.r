@@ -10,7 +10,7 @@ if(length(args) == 0) {
   stop("Arguments: [<results_directory>]")
 }
 
-# ---- Helper function ----
+# ---- Helper functions ----
 rep_summary <- function(df) {
   DROP_TIMES_BEFORE = 2 * 60 # How many seconds in the beginning we want to drop
   DROP_TIMES_AFTER = max((df %>% filter(type=="t"))$time) - 2 * 60
@@ -46,6 +46,16 @@ rep_summary <- function(df) {
   return(res)
 }
 
+file_to_df <- function(file_path) {
+  if(file.exists(file_path)) {
+    df <- read.csv(file_path, header=TRUE, sep=";")
+    result <- as.data.frame(rep_summary(df))
+  } else {
+    result <- data.frame()
+  }
+  return(result)
+}
+
 
 
 # ---- Loop over result dirs ----
@@ -58,19 +68,16 @@ result_params <- as.data.frame(str_match(filtered_files, file_name_regex))
 colnames(result_params) <- c("path", "clients", "threads", "repetition")
 result_params <- result_params  %>%
   mutate(path=as.character(path))
+  # group_by(clients, threads) %>%
+  #summarise(paths=paste0(path, collapse=";"))
 
 results <- NA
 
 for(i in 1:nrow(result_params)) {
   params <- result_params[i,]
   file_path <- params$path
-  print(file_path)
-  if(file.exists(file_path)) {
-    df <- read.csv(file_path, header=TRUE, sep=";")
-    result <- as.data.frame(rep_summary(df))
-  } else {
-    result <- data.frame()
-  }
+  
+  result <- file_to_df(file_path)
   
   if(is.na(results)) {
     results <- result
@@ -81,8 +88,7 @@ for(i in 1:nrow(result_params)) {
 
 all_results <- cbind(result_params, results) %>%
   mutate(clients=as.numeric(as.character(clients)),
-         threads=as.numeric(as.character(threads)),
-         repetition=as.numeric(as.character(repetition)))
+         threads=as.numeric(as.character(threads)))
 
 # ---- Throughput vs clients ----
 data1 <- all_results %>%
