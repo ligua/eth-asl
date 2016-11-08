@@ -25,6 +25,8 @@ for virtual_clients in virtual_clients_values:
             combinations.append((virtual_clients, num_threads, repetition))
 #combinations = [(3, 1, 1)] # override combinations
 
+UPDATE_AND_INSTALL = False
+
 SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
 print("Running {} experiments with a maximum of {} minutes per experiment."
@@ -32,13 +34,11 @@ print("Running {} experiments with a maximum of {} minutes per experiment."
 
 # endregion
 
-def extra_buffer(num_clients, num_threads):
-    buf = (num_threads) * (1 + num_clients / 100)
-    return 0 if buf < 1 else math.ceil(buf)
-
 try:
     e = Experiment()
     extractor = Extractor()
+
+    is_first = True
 
     for virtual_clients, num_threads, repetition in combinations:
         print("Starting experiment with {} virtual clients, {} threads, repetition {}"
@@ -55,7 +55,7 @@ try:
             print("\tComplete memaslap results exist, skipping.")
             continue
 
-        additional_buffer = extra_buffer(virtual_clients, num_threads)
+        additional_buffer = 0
         print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
 
         hibernate_at_end = False
@@ -63,7 +63,7 @@ try:
             hibernate_at_end = True
 
         e.start_experiment(results_dir,
-                           update_and_install=False,
+                           update_and_install=UPDATE_AND_INSTALL and is_first,
                            experiment_runtime=experiment_runtime,
                            runtime_buffer=runtime_buffer,
                            replication_factor=R,
@@ -72,7 +72,8 @@ try:
                            num_memcacheds=S,
                            memaslap_workload=workload_filename,
                            hibernate_at_end=hibernate_at_end,
-                           concurrency=concurrency)
+                           concurrency=concurrency,
+                           is_first_run=is_first)
 
         # Extract logs
         extractor.summarise_trace_logs(logs_pattern="{}/memaslap*.out".format(results_dir),
@@ -80,6 +81,8 @@ try:
         # Plot graphs
         with fabric.api.settings(warn_only=True):
             fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
+
+        is_first = False
 
     #Deployer.hibernate_wait_static("template11vms")
 
