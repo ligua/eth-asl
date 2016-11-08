@@ -29,12 +29,23 @@ rep_summary <- function(df) {
     filter(type=="t" & time > DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
     filter(request_type=="GET")
   
+  response_times <- df2 %>%
+    group_by(time) %>%
+    summarise(mean_response_time=sum(ops*avg)/sum(ops)) %>%
+    select(time, mean_response_time)
+  response_time_beginning <- (response_times %>%
+    top_n(1, desc(time)))$mean_response_time
+  response_time_end <- (response_times %>%
+    top_n(1, time))$mean_response_time
+  
   res <- list()
   tps_values <- (df2 %>% group_by(time) %>% summarise(tps=sum(tps)))$tps
   res$mean_tps <- mean(tps_values)
   res$std_tps <- sd(tps_values) # TODO calculate tps std over reps too
   res$mean_response_time <- mean(df2$avg)
   res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std) / sum(df2$ops))
+  res$response_time_beginning <- response_time_beginning
+  res$response_time_end <- response_time_end
   
   return(res)
 }
@@ -78,6 +89,7 @@ all_results <- cbind(result_params, results) %>%
          threads=as.numeric(as.character(threads)),
          repetition=as.numeric(as.character(repetition)))
 
+# ---- Throughput vs clients ----
 data1 <- all_results %>%
   filter(!is.na(mean_tps))
 ggplot(data1, aes(x=clients, y=mean_tps)) +
@@ -88,6 +100,18 @@ ggplot(data1, aes(x=clients, y=mean_tps)) +
   asl_theme
 
 
+# ---- Response time diff vs clients ----
+data2 <- all_results %>%
+  mutate(delta=ifelse(response_time_beginning > response_time_end, "faster", "slower"))
+colour_scale <- scale_colour_manual(name = "grp", values = c("green", "red"))
+ggplot(data2, aes(x=clients)) +
+  geom_segment(aes(xend=clients, y=response_time_beginning, yend=response_time_end, color=delta),
+               arrow=arrow(length=unit(0.02, "npc"), type="closed")) +
+  ylim(0, NA) +
+  colour_scale +
+  ylab("Response time beginning -> end [ms]") + xlab("Number of clients") +
+  facet_wrap(~threads) +
+  asl_theme
 
 
 
