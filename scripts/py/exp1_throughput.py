@@ -10,12 +10,13 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [336, 384] #[1] + list(range(48, 300, 48))
+virtual_clients_values = [1] + list(range(72, 600, 72))
 num_threads_values = [1, 16, 32, 64]
 
-experiment_runtime = 10
-runtime_buffer = 90 # will be cut off when memaslaps are done
+experiment_runtime = 6
+runtime_buffer = 15 # will be cut off when memaslaps are done
 num_repetitions = 1
+stats_frequency = "10s"
 workload_filename = "smallvalue_nowrites.cfg"
 memaslap_window_size = "1k"
 
@@ -24,7 +25,7 @@ for virtual_clients in virtual_clients_values:
     for num_threads in num_threads_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
-combinations = [(336, 1, 1)] # override combinations
+#combinations = [(336, 1, 1)] # override combinations
 
 UPDATE_AND_INSTALL = False
 
@@ -67,6 +68,7 @@ try:
                            update_and_install=UPDATE_AND_INSTALL and is_first,
                            experiment_runtime=experiment_runtime,
                            runtime_buffer=runtime_buffer,
+                           stats_frequency=stats_frequency,
                            replication_factor=R,
                            num_threads_in_pool=num_threads,
                            num_memaslaps=num_memaslaps,
