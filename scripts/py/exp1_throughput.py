@@ -14,7 +14,7 @@ virtual_clients_values = [336, 384] #[1] + list(range(48, 300, 48))
 num_threads_values = [1, 16, 32, 64]
 
 experiment_runtime = 10
-runtime_buffer = 30 # will be cut off when memaslaps are done
+runtime_buffer = 90 # will be cut off when memaslaps are done
 num_repetitions = 1
 workload_filename = "smallvalue_nowrites.cfg"
 
