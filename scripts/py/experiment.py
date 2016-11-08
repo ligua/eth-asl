@@ -96,7 +96,7 @@ class Experiment():
             public_ip = self.deployer.network_client.public_ip_addresses.get(resource_group_name, vm.name)
             public_host_address = public_ip.dns_settings.fqdn
             public_hostnames.append(public_host_address)
-            self.log.info("Public host name: {}".format(Colors.ok_green(public_host_address)))
+            #self.log.info("Public host name: {}".format(Colors.ok_green(public_host_address)))
     
             # Get machine's private IP address
             network_interface_id = vm.network_profile.network_interfaces[0].id
@@ -104,7 +104,7 @@ class Experiment():
             network_interface = self.deployer.network_client.network_interfaces.get(resource_group_name, network_interface_name)
             private_host_address = network_interface.ip_configurations[0].private_ip_address
             private_hostnames.append(private_host_address)
-            self.log.info("Private host name: {}".format(Colors.ok_green(private_host_address)))
+            #self.log.info("Private host name: {}".format(Colors.ok_green(private_host_address)))
     
         # endregion
 
