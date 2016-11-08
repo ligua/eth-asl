@@ -44,7 +44,8 @@ try:
 
     is_first = True
 
-    for virtual_clients, num_threads, repetition in combinations:
+    for combination in combinations:
+        virtual_clients, num_threads, repetition = combination
         print("Starting experiment with {} virtual clients, {} threads, repetition {}"
                  .format(virtual_clients, num_threads, repetition))
 
@@ -63,7 +64,7 @@ try:
         print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
 
         hibernate_at_end = False
-        if (virtual_clients, num_threads, repetition) == combinations[-1]: # last one
+        if combination == combinations[-1]: # last one
             hibernate_at_end = True
 
         if not DRY_RUN:

@@ -45,7 +45,8 @@ try:
 
     is_first = True
 
-    for S, R, repetition in combinations:
+    for combination in combinations:
+        S, R, repetition = combination
         print("Starting experiment with S={} servers, replication R={}, repetition {}"
                  .format(S, R, repetition))
 
@@ -64,7 +65,7 @@ try:
         print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
 
         hibernate_at_end = False
-        if (S, R, repetition) == combinations[-1]: # last one
+        if combination == combinations[-1]: # last one
             hibernate_at_end = True
 
         if not DRY_RUN:
