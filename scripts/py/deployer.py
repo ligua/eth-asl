@@ -57,8 +57,8 @@ class Deployer(object):
         if already_exists:
             self.log.info("Resource group already exists:")
             resources = self.resource_client.resource_groups.list_resources(self.resource_group_name)
-            for res in resources:
-                self.log.info(Deployer.stringify_resource(res))
+            #for res in resources:
+            #    self.log.info(Deployer.stringify_resource(res))
         else:
             self.log.info("Resource group does not exist yet.")
         # endregion
