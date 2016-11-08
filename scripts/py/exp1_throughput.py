@@ -42,7 +42,7 @@ print("Running {} experiments with a maximum of {} minutes per experiment."
 estimated_mins = len(combinations) * experiment_runtime
 print("Total runtime: {} hours {} minutes".format(estimated_mins // 60, estimated_mins % 60))
 
-DRY_RUN = True
+DRY_RUN = False
 
 # endregion
 
