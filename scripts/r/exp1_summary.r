@@ -30,7 +30,7 @@ rep_summary <- function(df) {
     filter(request_type=="GET")
   
   res <- list()
-  res$mean_tps <- mean(df2$tps)
+  res$mean_tps <- mean((df2 %>% group_by(time) %>% summarise(tps=sum(tps)))$tps)
   res$std_tps <- NA # TODO calculate tps std over reps too
   res$mean_response_time <- mean(df2$avg)
   res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std) / sum(df2$ops))
@@ -77,8 +77,8 @@ all_results <- cbind(result_params, results) %>%
          repetition=as.numeric(as.character(repetition)))
 
 data1 <- all_results %>%
-  filter(!is.na(mean_tps))
-ggplot(data1, aes(x=clients, y=mean_tps)) +
+  filter(!is.na(total_tps))
+ggplot(data1, aes(x=clients, y=total_tps)) +
   geom_line() +
   geom_point() +
   facet_wrap(~threads)
