@@ -69,6 +69,29 @@ Please feel free to structure the three sections of this report as it makes most
 
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
+\section*{Modifications to the middleware}
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
+In the last milestone submission, my middleware implemented all functionality as necessary. However, the resource usage was extremely wasteful: each read thread took up nearly 100\% of the resources allocated to them and never went to a sleeping state. This caused more than 10-fold drops in performance when going from $T=1$ to $T=4$ (for $S=5$), and would have made the maximum throughput experiment useless. The changes can be seen on \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/commit/928e9bba132d34ecf9c00936babdd7fa2645e50f}{GitLab}.
+
+To verify that the system is still stable, I re-ran the trace experiment. The throughput and response time are shown in Figures~\ref{fig:trace:throughput} and \ref{fig:trace:responsetime}, and are confirmed to be stable (and throughput is roughly 30\% higher). For explanations of the figures, see Milestone 1 report.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/trace_rep3/graphs/throughput.pdf}
+\caption{Throughput trace of the middleware.}
+\label{fig:trace:throughput}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/trace_rep3/graphs/responsetime.pdf}
+\caption{Response time trace of the middleware as measured by memaslap.}
+\label{fig:trace:responsetime}
+\end{figure}
+
+% --------------------------------------------------------------------------------
+% --------------------------------------------------------------------------------
 \section{Maximum Throughput}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
