@@ -1,5 +1,6 @@
 package main.java.asl;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -115,8 +116,8 @@ public class Request {
 
         SocketChannel client = (SocketChannel) selectionKey.channel();
 
-        if(Request.isGetMiss(getResponseBuffer())) {
-            log.warn("GET miss! " + this);
+        if(Request.isGetMiss(getResponseBuffer()) && log.getLevel() == Level.DEBUG) {
+            log.debug("GET miss! " + this);
         }
 
         // Write buffer
