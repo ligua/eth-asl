@@ -64,7 +64,7 @@ try:
         print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
 
         hibernate_at_end = False
-        if (virtual_clients, num_threads, repetition) == combinations[-1]: # last one
+        if (S, R, repetition) == combinations[-1]: # last one
             hibernate_at_end = True
 
         if not DRY_RUN:
