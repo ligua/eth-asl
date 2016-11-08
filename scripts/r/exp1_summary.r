@@ -116,10 +116,11 @@ all_results <- cbind(client_thread_combinations, results) %>%
 
 # ---- Throughput vs clients ----
 data1 <- all_results %>%
-  filter(!is.na(tps_mean))
+  filter(!is.na(tps_mean)) %>%
+  mutate(threads=paste0(threads, ifelse(threads==1, " thread", " threads")))
 g1 <- ggplot(data1, aes(x=clients, y=tps_mean)) +
-  geom_errorbar(aes(ymin=tps_mean-tps_std,
-                    ymax=tps_mean+tps_std),
+  geom_errorbar(aes(ymin=tps_mean-tps_confidence_delta,
+                    ymax=tps_mean+tps_confidence_delta),
                 color=color_triad2, width=10, size=1) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
