@@ -204,7 +204,11 @@ class Experiment():
                              already_slept / 60, experiment_runtime,
                              100 * already_slept / 60.0 / experiment_runtime,
                              num_running_memaslaps))
-            if already_slept >= sleep_time * 60 or num_running_memaslaps == 0:
+            if already_slept >= sleep_time * 60:
+                self.log.info("Stopping because of time limit.")
+                break
+            if num_running_memaslaps == 0:
+                self.log.info("Stopping because no memaslaps are left.")
                 break
     
         # region ---- Kill everyone ----
