@@ -72,9 +72,9 @@ for(i in 1:nrow(result_params)) {
 }
 
 all_results <- cbind(result_params, results) %>%
-  mutate(clients=as.numeric(clients),
-         threads=as.numeric(threads),
-         repetition=as.numeric(repetition))
+  mutate(clients=as.numeric(as.character(clients)),
+         threads=as.numeric(as.character(threads)),
+         repetition=as.numeric(as.character(repetition)))
 
 data1 <- all_results %>%
   filter(!is.na(mean_tps))
