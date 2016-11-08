@@ -34,6 +34,8 @@ memaslap_summary_filename = "memaslap_stats.csv"
 print("Running {} experiments with a maximum of {} minutes per experiment."
       .format(len(combinations), experiment_runtime+runtime_buffer))
 
+DRY_RUN = False
+
 # endregion
 
 try:
@@ -64,27 +66,28 @@ try:
         if (virtual_clients, num_threads, repetition) == combinations[-1]: # last one
             hibernate_at_end = True
 
-        e.start_experiment(results_dir,
-                           update_and_install=UPDATE_AND_INSTALL and is_first,
-                           experiment_runtime=experiment_runtime,
-                           runtime_buffer=runtime_buffer,
-                           stats_frequency=stats_frequency,
-                           replication_factor=R,
-                           num_threads_in_pool=num_threads,
-                           num_memaslaps=num_memaslaps,
-                           num_memcacheds=S,
-                           memaslap_workload=workload_filename,
-                           memaslap_window_size=memaslap_window_size,
-                           hibernate_at_end=hibernate_at_end,
-                           concurrency=concurrency,
-                           is_first_run=is_first)
+        if not DRY_RUN:
+            e.start_experiment(results_dir,
+                               update_and_install=UPDATE_AND_INSTALL and is_first,
+                               experiment_runtime=experiment_runtime,
+                               runtime_buffer=runtime_buffer,
+                               stats_frequency=stats_frequency,
+                               replication_factor=R,
+                               num_threads_in_pool=num_threads,
+                               num_memaslaps=num_memaslaps,
+                               num_memcacheds=S,
+                               memaslap_workload=workload_filename,
+                               memaslap_window_size=memaslap_window_size,
+                               hibernate_at_end=hibernate_at_end,
+                               concurrency=concurrency,
+                               is_first_run=is_first)
 
-        # Extract logs
-        extractor.summarise_trace_logs(logs_pattern="{}/memaslap*.out".format(results_dir),
-                                       csv_path="{}/{}".format(results_dir, memaslap_summary_filename))
-        # Plot graphs
-        with fabric.api.settings(warn_only=True):
-            fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
+            # Extract logs
+            extractor.summarise_trace_logs(logs_pattern="{}/memaslap*.out".format(results_dir),
+                                           csv_path="{}/{}".format(results_dir, memaslap_summary_filename))
+            # Plot graphs
+            with fabric.api.settings(warn_only=True):
+                fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
 
         is_first = False
 
