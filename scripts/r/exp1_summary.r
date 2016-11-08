@@ -30,7 +30,9 @@ rep_summary <- function(df) {
     top_n(1, time))$mean_response_time
   
   res <- list()
-  tps_values <- (df2 %>% group_by(time) %>% summarise(tps=sum(tps)))$tps
+  tps_summed <- df2 %>% group_by(time, repetition) %>%
+                   summarise(tps=sum(tps))
+  tps_values <- tps_summed$tps
   res$tps_mean <- mean(tps_values)
   res$tps_std <- sd(tps_values) # TODO calculate tps std over reps too
   res$tps_q2.5 <- quantile(tps_values, 0.025)
@@ -43,13 +45,13 @@ rep_summary <- function(df) {
   res$response_time_beginning <- response_time_beginning
   res$response_time_end <- response_time_end
   
-  return(res)
+  return(as.data.frame(res))
 }
 
 file_to_df <- function(file_path) {
   if(file.exists(file_path)) {
     df <- read.csv(file_path, header=TRUE, sep=";")
-    result <- as.data.frame(rep_summary(df))
+    result <- df
   } else {
     result <- data.frame()
   }
@@ -72,21 +74,41 @@ result_params <- result_params  %>%
   #summarise(paths=paste0(path, collapse=";"))
 
 results <- NA
+client_thread_combinations <- result_params %>%
+  select(clients, threads) %>%
+  unique()
 
-for(i in 1:nrow(result_params)) {
-  params <- result_params[i,]
-  file_path <- params$path
+for(i in 1:nrow(client_thread_combinations)) {
+  n_clients <- client_thread_combinations[i,]$clients
+  n_threads <- client_thread_combinations[i,]$threads
+  repetitions <- result_params %>%
+    filter(clients==n_clients & threads==n_threads)
   
-  result <- file_to_df(file_path)
+  combined_result <- NA
+  for(j in 1:nrow(repetitions)) {
+    params <- repetitions[j,]
+    rep_id <- params$repetition
+    file_path <- params$path
+    repetition_result <- file_to_df(file_path) %>%
+      mutate(repetition=rep_id)
+    
+    if(is.na(combined_result)) {
+      combined_result <- repetition_result
+    } else {
+      combined_result <- rbind(combined_result, repetition_result)
+    }
+  }
+  
+  combined_result_row <- rep_summary(combined_result)
   
   if(is.na(results)) {
-    results <- result
+    results <- combined_result_row
   } else {
-    results <- rbind(results, result)
+    results <- rbind(results, combined_result_row)
   }
 }
 
-all_results <- cbind(result_params, results) %>%
+all_results <- cbind(client_thread_combinations, results) %>%
   mutate(clients=as.numeric(as.character(clients)),
          threads=as.numeric(as.character(threads)))
 
