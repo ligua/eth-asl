@@ -37,7 +37,7 @@ rep_summary <- function(df) {
   res$tps_q97.5 <- quantile(tps_values, 0.975)
   two_sided_t_val <- qt(c(.025, .975), df=length(tps_values)-1)[2]
   res$tps_confidence_delta <- two_sided_t_val * res$tps_std/sqrt(length(tps_values))
-  res$tps_confidence_delta_perc <- res$tps_confidence_delta / res$tps_mean
+  res$tps_confidence_delta_rel <- res$tps_confidence_delta / res$tps_mean
   res$mean_response_time <- mean(df2$avg)
   res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std) / sum(df2$ops))
   res$response_time_beginning <- response_time_beginning
@@ -88,15 +88,22 @@ all_results <- cbind(result_params, results) %>%
 data1 <- all_results %>%
   filter(!is.na(tps_mean))
 ggplot(data1, aes(x=clients, y=tps_mean)) +
-  #geom_ribbon(aes(ymin=tps_mean-tps_std, ymax=tps_mean+tps_std), fill=color_light, alpha=0.5) +
-  geom_errorbar(aes(ymin=tps_q2.5, ymax=tps_q97.5),
-                color=color_triad2, width=10, size=1) +
-  geom_errorbar(aes(ymin=m, ymax=tps_q97.5),
+  geom_errorbar(aes(ymin=tps_mean-tps_std,
+                    ymax=tps_mean+tps_std),
                 color=color_triad2, width=10, size=1) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~threads) +
   asl_theme
+
+# ---- Throughput not within 95% confidence interval ----
+not_confident <- data1 %>%
+  filter(tps_confidence_delta_rel > 0.05) %>%
+  select(clients, threads, tps_confidence_delta_rel)
+
+cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident),
+           " experiments' 95% confidence interval is not within 5% of mean:"))
+print(not_confident)
 
 
 # ---- Response time diff vs clients ----
