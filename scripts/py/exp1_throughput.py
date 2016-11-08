@@ -10,7 +10,7 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [1] + list(range(72, 600, 72))
+virtual_clients_values = [36, 576] #[1] + list(range(72, 600, 72))
 num_threads_values = [1, 16, 32, 64]
 
 experiment_runtime = 6
@@ -26,6 +26,21 @@ for virtual_clients in virtual_clients_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
 #combinations = [(336, 1, 1)] # override combinations
+additional_combinations = [
+    (1, 16, 1),
+    (216, 16, 1),
+    (216, 64, 1),
+    (288, 32, 1),
+    (360, 32, 1),
+    (360, 64, 1),
+    (432, 32, 1),
+    (432, 64, 1),
+    (504, 16, 1),
+    (504, 32, 1),
+    (504, 64, 1),
+    ]
+
+combinations += additional_combinations
 
 UPDATE_AND_INSTALL = False
 
@@ -33,6 +48,8 @@ SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
 print("Running {} experiments with a maximum of {} minutes per experiment."
       .format(len(combinations), experiment_runtime+runtime_buffer))
+estimated_mins = len(combinations) * experiment_runtime
+print("Total runtime: {} hours {} minutes".format(estimated_mins // 60, estimated_mins % 60))
 
 DRY_RUN = False
 
