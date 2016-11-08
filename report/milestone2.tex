@@ -175,6 +175,16 @@ Three client machines were used for all experiments, except for the 1-client exp
 \subsection{Results}
 Reporting experiment results. Comparison of hypothesis and experiment results.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/throughput/graphs/tp_vs_clients.pdf}
+\caption{Throughput as a function of number of clients for different values of $T$. Errorbars show the 95\% confidence interval around the mean value which is shown with points connected by lines.}
+\label{fig:exp1:res:throughput}
+\end{figure}
+
+\todo{table of top 3 parameter sets} with mean throughputs and confidence intervals?
+
+
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section{Effect of Replication}
@@ -195,20 +205,27 @@ Answer at least the following questions: Are \texttt{get} and \texttt{set} reque
 
 In this section, I will run experiments to find out the how a) mean response time and b) throughput of the SUT depend on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether gets and sets are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
 
-To this end, I will measure mean response time as a function of $S$ and $R$, and measure the amount of time requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean response time.
+To this end, I will measure mean response time as a function of $S$ and $R$, and measure the amount of time requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 10\% of the mean response time.
 
 
 \subsection{Hypothesis}
+
+\paragraph{Get and set requests}
+Are get and set requests impacted the same way by different setups? If yes/no, why?
+
+\todo{will be impacted differently}:  gets will improve with increasing S and will be independent of R; sets will get better with increasing S and worse with increasing R
+
+\paragraph{Relative cost of operations}
+Which operations become more expensive inside the middleware as the configuration changes?
+
+
+\paragraph{Scalability}
+How does the scalability of your system compare to that of an ideal implementation? 
 
 \todo{Finding how ideal implementation would behave is a good starting point.}
 
 Scale-up? scale out? \todo{check slides}
 
-Are get and set requests impacted the same way by different setups? If yes/no, why?
-
-Which operations become more expensive inside the middleware as the configuration changes?
-
-How does the scalability of your system compare to that of an ideal implementation? 
 
 \begin{itemize}
 \item Draw graphs with expected results
@@ -225,10 +242,10 @@ How does the scalability of your system compare to that of an ideal implementati
 \begin{tabular}{|c|c|}
 \hline Number of servers & $\in \{3, 5, 7\}$ \\ 
 \hline Number of client machines & 3 \\ 
-\hline Virtual clients / machine & \todo{} \\ 
-\hline Workload & Key 16B, Value 128B, Writes 5\% \todo{} \\
+\hline Virtual clients & \todo{from exp1} \\ 
+\hline Workload & Key 16B, Value 128B, Writes 5\% \\
 \hline Middleware: replication factor & $\in \{1, ceil(S/2), S\}$ \\ 
-\hline Middleware: read threads & \todo{} \\ 
+\hline Middleware: read threads & \todo{from exp1} \\ 
 \hline Runtime x repetitions & 60s x 5 \todo{} \\ 
 \hline Log files & \todo{} \\
 \hline 
