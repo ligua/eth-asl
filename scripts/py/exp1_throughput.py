@@ -10,10 +10,10 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [720, 792] #[1] + list(range(72, 600, 72))
-num_threads_values = [32, 64] #[1, 16, 32, 64]
+virtual_clients_values = [54, 90, 108] #[1] + list(range(72, 600, 72))
+num_threads_values = [32, 16, 64] #[1, 16, 32, 64]
 
-experiment_runtime = 12
+experiment_runtime = 8
 runtime_buffer = 15 # will be cut off when memaslaps are done
 num_repetitions = 1
 stats_frequency = "10s"
@@ -26,10 +26,7 @@ for virtual_clients in virtual_clients_values:
         for repetition in range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
 #combinations = [(336, 1, 1)] # override combinations
-additional_combinations = [
-    (864, 64, 0),
-    (936, 64, 0)
-]
+additional_combinations = []
 
 combinations += additional_combinations
 
