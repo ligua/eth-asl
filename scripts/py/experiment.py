@@ -12,6 +12,9 @@ from colors import Colors
 from deployer import Deployer
 
 class Experiment():
+
+    deployer = None
+
     def __init__(self):
         # region ---- Logging ----
         LOG_FORMAT = '%(asctime)-15s [%(name)s] - %(message)s'
@@ -40,7 +43,8 @@ class Experiment():
             ssh_username = "pungast",
             num_memaslaps = 1,
             num_memcacheds = 1,
-            concurrency = 64
+            concurrency = 64,
+            is_first_run=True
     ):
         experiment_runtime_string = "{}m".format(experiment_runtime)
     
@@ -70,11 +74,12 @@ class Experiment():
         # endregion
     
         # Initialize the deployer class
-        deployer = Deployer(resource_group_name, template_path, parameters)
-        deployer.deploy_wait()
+        if is_first_run:
+            self.deployer = Deployer(resource_group_name, template_path, parameters)
+            self.deployer.deploy_wait()
     
         # region ---- Extract VMs' IPs and other information ----
-        vms = deployer.compute_client.virtual_machines.list(resource_group_name)
+        vms = self.deployer.compute_client.virtual_machines.list(resource_group_name)
         vm_names = []
         vm_types = []
         public_hostnames = []
@@ -87,7 +92,7 @@ class Experiment():
             self.log.info("VM {} [{}]".format(Colors.ok_blue(vm.name), vm_type))
     
             # Get machine's public address that we can use for SSH-ing
-            public_ip = deployer.network_client.public_ip_addresses.get(resource_group_name, vm.name)
+            public_ip = self.deployer.network_client.public_ip_addresses.get(resource_group_name, vm.name)
             public_host_address = public_ip.dns_settings.fqdn
             public_hostnames.append(public_host_address)
             self.log.info("Public host name: {}".format(Colors.ok_green(public_host_address)))
@@ -95,7 +100,7 @@ class Experiment():
             # Get machine's private IP address
             network_interface_id = vm.network_profile.network_interfaces[0].id
             network_interface_name = network_interface_id.split("/")[-1]
-            network_interface = deployer.network_client.network_interfaces.get(resource_group_name, network_interface_name)
+            network_interface = self.deployer.network_client.network_interfaces.get(resource_group_name, network_interface_name)
             private_host_address = network_interface.ip_configurations[0].private_ip_address
             private_hostnames.append(private_host_address)
             self.log.info("Private host name: {}".format(Colors.ok_green(private_host_address)))
@@ -117,7 +122,8 @@ class Experiment():
         self.log.info("Memaslap machines: " + str(memaslap_machines))
 
         # Wait for all servers to be responsive
-        aslutil.wait_for_servers(ssh_username, public_hostnames, "~/.ssh/id_rsa_asl", self.log, check_every_n_sec=10)
+        if is_first_run:
+            aslutil.wait_for_servers(ssh_username, public_hostnames, "~/.ssh/id_rsa_asl", self.log, check_every_n_sec=10)
 
         # Set up memcached servers
         memcached_port = 11211
@@ -143,9 +149,11 @@ class Experiment():
         self.log.info("Setting up middleware on machine {} ({}).".format(index_a4, vm_names[index_a4]))
         mw_server = Middleware(public_hostnames[index_a4], private_hostnames[index_a4], middleware_port,
                                num_threads_in_pool, replication_factor, mc_server_string_list, ssh_username=ssh_username)
+
         if update_and_install:
             mw_server.update_and_install()
-        mw_server.upload_jar()
+        if is_first_run:
+            mw_server.upload_jar()
 
         mw_server.clear_logs()
         mw_server.start()
@@ -165,7 +173,6 @@ class Experiment():
             ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port, ssh_username=ssh_username,
                                  id_number=int(aslutil.server_name_to_number(vm_names[i]))) # i is zero-indexed
             ms_servers.append(ms_server)
-            ms_server.clear_logs()
             if update_and_install:
                 if not first_memaslap:
                     ms_server.upload_built_files()
@@ -222,7 +229,7 @@ class Experiment():
         # endregion
     
         if hibernate_at_end:
-            deployer.hibernate_wait()
+            self.deployer.hibernate_wait()
     
         self.log.info("Done.")
 
