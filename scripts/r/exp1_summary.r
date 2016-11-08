@@ -159,5 +159,18 @@ ggsave(paste0(result_dir_base, "/graphs/response_time_diff.pdf"), g2,
        width=fig_width, height=fig_height, device=cairo_pdf)
 
 
+# ---- Maximum throughput ----
+max_tp <- all_results %>%
+  arrange(desc(tps_mean)) %>%
+  head(5) %>%
+  select(threads, clients, tps_mean, tps_std, tps_confidence_delta_rel)
+max_tp
+
+# ---- Maximum 95% confidence lower bound in throughput ----
+max_tp_conf <- all_results %>%
+  mutate(tp_lower_bound=tps_mean-tps_confidence_delta) %>%
+  arrange(desc(tp_lower_bound)) %>%
+  head(5) %>%
+  select(threads, clients, tps_mean, tps_std, tps_confidence_delta_rel)
 
 
