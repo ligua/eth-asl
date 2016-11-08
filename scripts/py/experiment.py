@@ -196,8 +196,9 @@ class Experiment():
         self.log.info("Waiting for the experiment to finish, sleeping for up to {} minutes.".format(sleep_time))
         already_slept = 0
         while True:
-            time.sleep(60)
-            already_slept += 60
+            sleep_interval = 30
+            time.sleep(sleep_interval)
+            already_slept += sleep_interval
 
             num_running_memaslaps = sum([s.is_running() for s in ms_servers])
 
