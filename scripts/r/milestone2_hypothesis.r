@@ -18,6 +18,7 @@ best_num_clients <- (data1 %>%
   top_n(1))$clients[1]
 
 g1 <- ggplot(data1, aes(x=clients, y=throughput)) +
+  geom_vline(xintercept=best_num_clients, color=color_light, size=1) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   xlab("Number of clients") + ylab("Throughput [requests/s]") +
