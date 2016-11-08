@@ -21,17 +21,18 @@ rep_summary <- function(df) {
     return(res)
   } 
 
-  DROP_TIMES_BEFORE = 3 * 60 # How many seconds in the beginning we want to drop
+  DROP_TIMES_BEFORE = 2 * 60 # How many seconds in the beginning we want to drop
   DROP_TIMES_AFTER = max((df %>% filter(type=="t"))$time) - 2 * 60
   
   df2 <- df %>%
     mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000) %>%
-    filter(type=="t" & time >= DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
+    filter(type=="t" & time > DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
     filter(request_type=="GET")
   
   res <- list()
-  res$mean_tps <- mean((df2 %>% group_by(time) %>% summarise(tps=sum(tps)))$tps)
-  res$std_tps <- NA # TODO calculate tps std over reps too
+  tps_values <- (df2 %>% group_by(time) %>% summarise(tps=sum(tps)))$tps
+  res$mean_tps <- mean(tps_values)
+  res$std_tps <- sd(tps_values) # TODO calculate tps std over reps too
   res$mean_response_time <- mean(df2$avg)
   res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std) / sum(df2$ops))
   
@@ -41,7 +42,8 @@ rep_summary <- function(df) {
 
 
 # ---- Loop over result dirs ----
-file_name_regex <- "results/throughput/clients(\\d{1,3})_threads(\\d{1,2})_rep(\\d{1,2})/memaslap_stats\\.csv$"
+file_name_regex <- paste0(result_dir_base,
+                          "/clients(\\d{1,3})_threads(\\d{1,2})_rep(\\d{1,2})/memaslap_stats\\.csv$")
 unfiltered_files <- list.files(path=".", "memaslap_stats.csv", recursive=TRUE)
 filtered_files <- grep(file_name_regex, unfiltered_files, value=TRUE, perl=TRUE)
 
@@ -77,11 +79,13 @@ all_results <- cbind(result_params, results) %>%
          repetition=as.numeric(as.character(repetition)))
 
 data1 <- all_results %>%
-  filter(!is.na(total_tps))
-ggplot(data1, aes(x=clients, y=total_tps)) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~threads)
+  filter(!is.na(mean_tps))
+ggplot(data1, aes(x=clients, y=mean_tps)) +
+  geom_ribbon(aes(ymin=mean_tps-std_tps, ymax=mean_tps+std_tps), fill=color_light, alpha=0.5) +
+  geom_line(color=color_dark) +
+  geom_point(color=color_dark) +
+  facet_wrap(~threads) +
+  asl_theme
 
 
 
