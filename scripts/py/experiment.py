@@ -39,6 +39,7 @@ class Experiment():
             num_threads_in_pool = 5,
             replication_factor = 1,
             memaslap_workload = "smallvalue.cfg",
+            memaslap_window_size = "10k",
             hibernate_at_end = True,
             ssh_username = "pungast",
             num_memaslaps = 1,
@@ -186,7 +187,8 @@ class Experiment():
         for s in ms_servers:
             s.clear_logs()
             s.start(runtime=experiment_runtime_string, log_filename="memaslap{}.out".format(s.id_number),
-                    stats_freq=stats_frequency, workload_filename=memaslap_workload, concurrency=concurrency)
+                    stats_freq=stats_frequency, workload_filename=memaslap_workload, concurrency=concurrency,
+                    memaslap_window_size=memaslap_window_size)
     
         # endregion
     
