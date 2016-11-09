@@ -77,8 +77,7 @@ file_to_df <- function(file_path, sep=";") {
 normalise_request_log_df <- function(df) {
   df2 <- df %>%
     filter(type=="GET") %>%
-    mutate(tAll=timeReturned-timeCreated) %>%
-    select(type, timeCreated, tAll)
+    mutate(tAll=timeReturned-timeCreated)
   
   first_get_request_time <- min(df2$timeCreated)
   last_get_request_time <- max(df2$timeCreated)
@@ -86,8 +85,7 @@ normalise_request_log_df <- function(df) {
   DROP_TIMES_AFTER = last_get_request_time - 2 * 60 * 1000
   
   df2 <- df2 %>% filter(timeCreated > first_get_request_time &
-                          timeCreated >= DROP_TIMES_AFTER) %>%
-    select(-timeCreated)
+                          timeCreated >= DROP_TIMES_AFTER)
   return(df2)
 }
 
@@ -143,6 +141,11 @@ for(i in 1:nrow(client_thread_combinations)) {
     }
   }
   
+  if(n_clients == OPTIMAL_CLIENTS & n_threads == OPTIMAL_THREADS) {
+    print("OPTIMAL")
+    optimal_mw_df <- combined_mw_result
+  }
+  
   combined_ms_result_row <- memaslap_summary(combined_result)
   combined_mw_result_row <- middleware_summary(combined_mw_result)
   combined_result_row <- cbind(combined_ms_result_row, combined_mw_result_row)
@@ -196,7 +199,8 @@ g3 <- ggplot(data3_melt, aes(x=clients, y=value, color=Percentile)) +
   ylim(NA, 100) +
   xlab("Number of clients") +
   ylab("Response time [ms]") +
-  asl_theme
+  asl_theme +
+  theme(legend.position="top")
 g3
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_clients.pdf"), g3,
        width=fig_width, height=fig_height, device=cairo_pdf)
@@ -245,3 +249,44 @@ max_tp_conf <- all_results %>%
   select(threads, clients, tps_lower_bound, tps_mean, tps_std, tps_confidence_delta_rel)
 max_tp_conf
 
+# ---- Response time breakdown of optimal run ----
+OPTIMAL_CLIENTS <- 432
+OPTIMAL_THREADS <- 32
+run0_filename <- "results/throughput/clients432_threads32_rep1/request.log"
+run1_filename <- "results/throughput/clients432_threads32_rep1/request.log"
+run0_df <- file_to_df(run0_filename, sep=",") %>%
+  normalise_request_log_df()
+run1_df <- file_to_df(run1_filename, sep=",") %>%
+  normalise_request_log_df()
+
+data4 <- rbind(run0_df, run1_df) %>%
+  mutate(tLoadBalancer=timeEnqueued-timeCreated,
+         tQueue=timeDequeued-timeEnqueued,
+         tWorker=timeForwarded-timeDequeued,
+         tMemcached=timeReceived-timeForwarded,
+         tReturn=timeReturned-timeReceived,
+         tAll=timeReturned-timeCreated)
+  
+
+g4 <- ggplot(data4 %>% select(type, tLoadBalancer:tReturn) %>% melt(id.vars=c("type"))) +
+  geom_histogram(aes(x=value, xmin=0, fill=type), fill=color_medium) +
+  facet_wrap(~variable, ncol=5, scales="free_y") +
+  xlim(-1, 50) +
+  xlab("Time spent [ms]") +
+  ylab("Number of requests") +
+  ggtitle("Distribution of time that requests spend in different parts of SUT") +
+  asl_theme +
+  theme(legend.position="none")
+g4
+ggsave(paste0(result_dir_base, "/graphs/response_time_breakdown.pdf"), g4,
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
+
+# Means
+means <- data4 %>%
+  summarise(tLoadBalancer=mean(tLoadBalancer),
+            tQueue=mean(tQueue),
+            tWorker=mean(tWorker),
+            tMemcached=mean(tMemcached),
+            tReturn=mean(tReturn),
+            tAll=mean(tAll))
+means

@@ -191,6 +191,23 @@ Reporting experiment results.
 \label{fig:exp1:res:responsetime}
 \end{figure}
 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_breakdown.pdf}
+\caption{caption \todo{}. Note x axis cut off at 50ms; only GET requests; measured with millisecond accuracy.}
+\label{fig:exp1:res:breakdown}
+\end{figure}
+
+\begin{tabular}{|c|c|c|r|}
+\hline \textbf{Name} & \textbf{Begin timestamp} & \textbf{End timestamp} & \textbf{Mean [ms]} \\
+\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0054 \\
+\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 8.49 \\
+\hline tWorker & $t_{dequeued}$ & $t_{forwarded}$ & 0.0231 \\
+\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 5.85 \\
+\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0333 \\
+\end{tabular}
+
+
 \todo{Comparison of hypothesis and experiment results.}
 
 Figure \ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). However, since we are trying to maximise sustained throughput, we also need to look at the response times.
