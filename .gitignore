@@ -31,6 +31,10 @@ scripts/__pycache__
 results/*
 !results/trace_rep3/
 !results/baseline/
+!results/throughput/
+results/throughput/removed/
+results/throughput/archive/
+results/throughput/deployment.log
 
 # Random crap
 tmp/

@@ -1,0 +1,99 @@
+[INFO ] 2016-11-08 11:27:14.404 [main] UniformHasher - Hasher initialised.
+[INFO ] 2016-11-08 11:27:14.406 [main] MiddlewareMain - Starting middleware...
+[INFO ] 2016-11-08 11:27:14.406 [main] MiddlewareMain - [load balancer IP]: 10.0.0.6
+[INFO ] 2016-11-08 11:27:14.406 [main] MiddlewareMain - [load balancer port]: 11212
+[INFO ] 2016-11-08 11:27:14.406 [main] MiddlewareMain - [number of read threads per component]: 1
+[INFO ] 2016-11-08 11:27:14.407 [main] MiddlewareMain - [replication factor]: 1
+[INFO ] 2016-11-08 11:27:14.407 [main] MiddlewareMain - [memcached addresses]: [10.0.0.12:11211, 10.0.0.4:11211, 10.0.0.11:11211, 10.0.0.8:11211, 10.0.0.5:11211]
+[INFO ] 2016-11-08 11:27:14.438 [main] WriteWorker - c0w0 connected to server /10.0.0.12:11211.
+[INFO ] 2016-11-08 11:27:14.440 [pool-2-thread-1] WriteWorker - c0w0 started; writing to machines: [0].
+[INFO ] 2016-11-08 11:27:14.459 [main] MiddlewareComponent - MiddlewareComponent #0 initialised.
+[INFO ] 2016-11-08 11:27:14.459 [pool-2-thread-2] ReadWorker - c0r0 started.
+[INFO ] 2016-11-08 11:27:14.461 [main] WriteWorker - c1w0 connected to server /10.0.0.4:11211.
+[INFO ] 2016-11-08 11:27:14.462 [main] MiddlewareComponent - MiddlewareComponent #1 initialised.
+[INFO ] 2016-11-08 11:27:14.462 [pool-2-thread-3] WriteWorker - c1w0 started; writing to machines: [1].
+[INFO ] 2016-11-08 11:27:14.463 [pool-2-thread-4] ReadWorker - c1r0 started.
+[INFO ] 2016-11-08 11:27:14.464 [main] WriteWorker - c2w0 connected to server /10.0.0.11:11211.
+[INFO ] 2016-11-08 11:27:14.472 [main] MiddlewareComponent - MiddlewareComponent #2 initialised.
+[INFO ] 2016-11-08 11:27:14.472 [pool-2-thread-5] WriteWorker - c2w0 started; writing to machines: [2].
+[INFO ] 2016-11-08 11:27:14.472 [pool-2-thread-6] ReadWorker - c2r0 started.
+[INFO ] 2016-11-08 11:27:14.474 [main] WriteWorker - c3w0 connected to server /10.0.0.8:11211.
+[INFO ] 2016-11-08 11:27:14.475 [pool-2-thread-7] WriteWorker - c3w0 started; writing to machines: [3].
+[INFO ] 2016-11-08 11:27:14.476 [main] MiddlewareComponent - MiddlewareComponent #3 initialised.
+[INFO ] 2016-11-08 11:27:14.477 [pool-2-thread-8] ReadWorker - c3r0 started.
+[INFO ] 2016-11-08 11:27:14.479 [main] WriteWorker - c4w0 connected to server /10.0.0.5:11211.
+[INFO ] 2016-11-08 11:27:14.480 [pool-2-thread-9] WriteWorker - c4w0 started; writing to machines: [4].
+[INFO ] 2016-11-08 11:27:14.481 [pool-2-thread-10] ReadWorker - c4r0 started.
+[INFO ] 2016-11-08 11:27:14.480 [main] MiddlewareComponent - MiddlewareComponent #4 initialised.
+[INFO ] 2016-11-08 11:27:14.488 [main] MiddlewareMain - Middleware initialised.
+[INFO ] 2016-11-08 11:27:14.488 [pool-2-thread-11] LoadBalancer - Load balancer started.
+[INFO ] 2016-11-08 11:27:45.128 [pool-2-thread-11] LoadBalancer - Processed      0 reads and   1000 writes so far.
+[INFO ] 2016-11-08 11:27:52.870 [pool-2-thread-11] LoadBalancer - Processed    976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:27:59.522 [pool-2-thread-11] LoadBalancer - Processed   1976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:28:07.191 [pool-2-thread-11] LoadBalancer - Processed   2976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:28:14.874 [pool-2-thread-11] LoadBalancer - Processed   3976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:28:22.366 [pool-2-thread-11] LoadBalancer - Processed   4976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:28:29.935 [pool-2-thread-11] LoadBalancer - Processed   5976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:28:37.379 [pool-2-thread-11] LoadBalancer - Processed   6976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:28:44.967 [pool-2-thread-11] LoadBalancer - Processed   7976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:28:52.555 [pool-2-thread-11] LoadBalancer - Processed   8976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:00.187 [pool-2-thread-11] LoadBalancer - Processed   9976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:07.855 [pool-2-thread-11] LoadBalancer - Processed  10976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:15.599 [pool-2-thread-11] LoadBalancer - Processed  11976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:23.119 [pool-2-thread-11] LoadBalancer - Processed  12976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:27.515 [pool-2-thread-11] LoadBalancer - Processed  13976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:31.375 [pool-2-thread-11] LoadBalancer - Processed  14976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:35.287 [pool-2-thread-11] LoadBalancer - Processed  15976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:39.283 [pool-2-thread-11] LoadBalancer - Processed  16976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:43.200 [pool-2-thread-11] LoadBalancer - Processed  17976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:47.191 [pool-2-thread-11] LoadBalancer - Processed  18976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:51.063 [pool-2-thread-11] LoadBalancer - Processed  19976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:54.999 [pool-2-thread-11] LoadBalancer - Processed  20976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:29:58.928 [pool-2-thread-11] LoadBalancer - Processed  21976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:02.804 [pool-2-thread-11] LoadBalancer - Processed  22976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:06.791 [pool-2-thread-11] LoadBalancer - Processed  23976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:10.763 [pool-2-thread-11] LoadBalancer - Processed  24976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:14.696 [pool-2-thread-11] LoadBalancer - Processed  25976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:18.643 [pool-2-thread-11] LoadBalancer - Processed  26976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:22.947 [pool-2-thread-11] LoadBalancer - Processed  27976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:26.923 [pool-2-thread-11] LoadBalancer - Processed  28976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:30.968 [pool-2-thread-11] LoadBalancer - Processed  29976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:35.016 [pool-2-thread-11] LoadBalancer - Processed  30976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:39.004 [pool-2-thread-11] LoadBalancer - Processed  31976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:43.032 [pool-2-thread-11] LoadBalancer - Processed  32976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:47.040 [pool-2-thread-11] LoadBalancer - Processed  33976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:51.392 [pool-2-thread-11] LoadBalancer - Processed  34976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:55.497 [pool-2-thread-11] LoadBalancer - Processed  35976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:30:59.628 [pool-2-thread-11] LoadBalancer - Processed  36976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:03.608 [pool-2-thread-11] LoadBalancer - Processed  37976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:07.744 [pool-2-thread-11] LoadBalancer - Processed  38976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:12.152 [pool-2-thread-11] LoadBalancer - Processed  39976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:16.264 [pool-2-thread-11] LoadBalancer - Processed  40976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:20.332 [pool-2-thread-11] LoadBalancer - Processed  41976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:24.476 [pool-2-thread-11] LoadBalancer - Processed  42976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:28.560 [pool-2-thread-11] LoadBalancer - Processed  43976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:32.780 [pool-2-thread-11] LoadBalancer - Processed  44976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:37.012 [pool-2-thread-11] LoadBalancer - Processed  45976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:41.156 [pool-2-thread-11] LoadBalancer - Processed  46976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:45.420 [pool-2-thread-11] LoadBalancer - Processed  47976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:49.816 [pool-2-thread-11] LoadBalancer - Processed  48976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:54.100 [pool-2-thread-11] LoadBalancer - Processed  49976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:31:58.356 [pool-2-thread-11] LoadBalancer - Processed  50976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:02.680 [pool-2-thread-11] LoadBalancer - Processed  51976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:06.944 [pool-2-thread-11] LoadBalancer - Processed  52976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:11.384 [pool-2-thread-11] LoadBalancer - Processed  53976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:16.036 [pool-2-thread-11] LoadBalancer - Processed  54976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:20.444 [pool-2-thread-11] LoadBalancer - Processed  55976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:25.076 [pool-2-thread-11] LoadBalancer - Processed  56976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:29.764 [pool-2-thread-11] LoadBalancer - Processed  57976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:34.336 [pool-2-thread-11] LoadBalancer - Processed  58976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:39.528 [pool-2-thread-11] LoadBalancer - Processed  59976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:44.896 [pool-2-thread-11] LoadBalancer - Processed  60976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:50.609 [pool-2-thread-11] LoadBalancer - Processed  61976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:32:57.501 [pool-2-thread-11] LoadBalancer - Processed  62976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:33:04.241 [pool-2-thread-11] LoadBalancer - Processed  63976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:33:11.269 [pool-2-thread-11] LoadBalancer - Processed  64976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:33:18.981 [pool-2-thread-11] LoadBalancer - Processed  65976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:33:26.721 [pool-2-thread-11] LoadBalancer - Processed  66976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:33:34.337 [pool-2-thread-11] LoadBalancer - Processed  67976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:33:42.069 [pool-2-thread-11] LoadBalancer - Processed  68976 reads and   1024 writes so far.

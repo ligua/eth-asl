@@ -1,0 +1,394 @@
+[INFO ] 2016-11-08 11:49:46.925 [main] UniformHasher - Hasher initialised.
+[INFO ] 2016-11-08 11:49:46.926 [main] MiddlewareMain - Starting middleware...
+[INFO ] 2016-11-08 11:49:46.933 [main] MiddlewareMain - [load balancer IP]: 10.0.0.6
+[INFO ] 2016-11-08 11:49:46.933 [main] MiddlewareMain - [load balancer port]: 11212
+[INFO ] 2016-11-08 11:49:46.933 [main] MiddlewareMain - [number of read threads per component]: 64
+[INFO ] 2016-11-08 11:49:46.934 [main] MiddlewareMain - [replication factor]: 1
+[INFO ] 2016-11-08 11:49:46.934 [main] MiddlewareMain - [memcached addresses]: [10.0.0.12:11211, 10.0.0.4:11211, 10.0.0.11:11211, 10.0.0.8:11211, 10.0.0.5:11211]
+[INFO ] 2016-11-08 11:49:46.963 [main] WriteWorker - c0w0 connected to server /10.0.0.12:11211.
+[INFO ] 2016-11-08 11:49:46.968 [pool-2-thread-1] WriteWorker - c0w0 started; writing to machines: [0].
+[INFO ] 2016-11-08 11:49:46.979 [pool-2-thread-2] ReadWorker - c0r0 started.
+[INFO ] 2016-11-08 11:49:46.980 [pool-2-thread-3] ReadWorker - c0r1 started.
+[INFO ] 2016-11-08 11:49:46.980 [pool-2-thread-4] ReadWorker - c0r2 started.
+[INFO ] 2016-11-08 11:49:46.981 [pool-2-thread-5] ReadWorker - c0r3 started.
+[INFO ] 2016-11-08 11:49:46.982 [pool-2-thread-6] ReadWorker - c0r4 started.
+[INFO ] 2016-11-08 11:49:46.983 [pool-2-thread-8] ReadWorker - c0r6 started.
+[INFO ] 2016-11-08 11:49:46.985 [pool-2-thread-9] ReadWorker - c0r7 started.
+[INFO ] 2016-11-08 11:49:46.989 [pool-2-thread-7] ReadWorker - c0r5 started.
+[INFO ] 2016-11-08 11:49:46.992 [pool-2-thread-10] ReadWorker - c0r8 started.
+[INFO ] 2016-11-08 11:49:46.993 [pool-2-thread-11] ReadWorker - c0r9 started.
+[INFO ] 2016-11-08 11:49:46.994 [pool-2-thread-12] ReadWorker - c0r10 started.
+[INFO ] 2016-11-08 11:49:46.994 [pool-2-thread-13] ReadWorker - c0r11 started.
+[INFO ] 2016-11-08 11:49:47.002 [pool-2-thread-14] ReadWorker - c0r12 started.
+[INFO ] 2016-11-08 11:49:47.003 [pool-2-thread-15] ReadWorker - c0r13 started.
+[INFO ] 2016-11-08 11:49:47.004 [pool-2-thread-16] ReadWorker - c0r14 started.
+[INFO ] 2016-11-08 11:49:47.005 [pool-2-thread-17] ReadWorker - c0r15 started.
+[INFO ] 2016-11-08 11:49:47.006 [pool-2-thread-18] ReadWorker - c0r16 started.
+[INFO ] 2016-11-08 11:49:47.007 [pool-2-thread-20] ReadWorker - c0r18 started.
+[INFO ] 2016-11-08 11:49:47.009 [pool-2-thread-21] ReadWorker - c0r19 started.
+[INFO ] 2016-11-08 11:49:47.009 [pool-2-thread-22] ReadWorker - c0r20 started.
+[INFO ] 2016-11-08 11:49:47.010 [pool-2-thread-23] ReadWorker - c0r21 started.
+[INFO ] 2016-11-08 11:49:47.010 [pool-2-thread-24] ReadWorker - c0r22 started.
+[INFO ] 2016-11-08 11:49:47.011 [pool-2-thread-25] ReadWorker - c0r23 started.
+[INFO ] 2016-11-08 11:49:47.007 [pool-2-thread-19] ReadWorker - c0r17 started.
+[INFO ] 2016-11-08 11:49:47.019 [pool-2-thread-26] ReadWorker - c0r24 started.
+[INFO ] 2016-11-08 11:49:47.020 [pool-2-thread-27] ReadWorker - c0r25 started.
+[INFO ] 2016-11-08 11:49:47.020 [pool-2-thread-28] ReadWorker - c0r26 started.
+[INFO ] 2016-11-08 11:49:47.021 [pool-2-thread-29] ReadWorker - c0r27 started.
+[INFO ] 2016-11-08 11:49:47.022 [pool-2-thread-30] ReadWorker - c0r28 started.
+[INFO ] 2016-11-08 11:49:47.022 [pool-2-thread-31] ReadWorker - c0r29 started.
+[INFO ] 2016-11-08 11:49:47.024 [pool-2-thread-34] ReadWorker - c0r32 started.
+[INFO ] 2016-11-08 11:49:47.023 [pool-2-thread-32] ReadWorker - c0r30 started.
+[INFO ] 2016-11-08 11:49:47.023 [pool-2-thread-33] ReadWorker - c0r31 started.
+[INFO ] 2016-11-08 11:49:47.049 [pool-2-thread-36] ReadWorker - c0r34 started.
+[INFO ] 2016-11-08 11:49:47.049 [pool-2-thread-35] ReadWorker - c0r33 started.
+[INFO ] 2016-11-08 11:49:47.051 [pool-2-thread-37] ReadWorker - c0r35 started.
+[INFO ] 2016-11-08 11:49:47.051 [pool-2-thread-38] ReadWorker - c0r36 started.
+[INFO ] 2016-11-08 11:49:47.052 [pool-2-thread-39] ReadWorker - c0r37 started.
+[INFO ] 2016-11-08 11:49:47.053 [pool-2-thread-40] ReadWorker - c0r38 started.
+[INFO ] 2016-11-08 11:49:47.054 [pool-2-thread-41] ReadWorker - c0r39 started.
+[INFO ] 2016-11-08 11:49:47.055 [pool-2-thread-43] ReadWorker - c0r41 started.
+[INFO ] 2016-11-08 11:49:47.056 [pool-2-thread-44] ReadWorker - c0r42 started.
+[INFO ] 2016-11-08 11:49:47.057 [pool-2-thread-45] ReadWorker - c0r43 started.
+[INFO ] 2016-11-08 11:49:47.058 [pool-2-thread-48] ReadWorker - c0r46 started.
+[INFO ] 2016-11-08 11:49:47.064 [pool-2-thread-46] ReadWorker - c0r44 started.
+[INFO ] 2016-11-08 11:49:47.058 [pool-2-thread-47] ReadWorker - c0r45 started.
+[INFO ] 2016-11-08 11:49:47.066 [pool-2-thread-49] ReadWorker - c0r47 started.
+[INFO ] 2016-11-08 11:49:47.067 [pool-2-thread-50] ReadWorker - c0r48 started.
+[INFO ] 2016-11-08 11:49:47.067 [pool-2-thread-51] ReadWorker - c0r49 started.
+[INFO ] 2016-11-08 11:49:47.069 [pool-2-thread-53] ReadWorker - c0r51 started.
+[INFO ] 2016-11-08 11:49:47.055 [pool-2-thread-42] ReadWorker - c0r40 started.
+[INFO ] 2016-11-08 11:49:47.072 [pool-2-thread-56] ReadWorker - c0r54 started.
+[INFO ] 2016-11-08 11:49:47.071 [pool-2-thread-54] ReadWorker - c0r52 started.
+[INFO ] 2016-11-08 11:49:47.073 [pool-2-thread-57] ReadWorker - c0r55 started.
+[INFO ] 2016-11-08 11:49:47.068 [pool-2-thread-52] ReadWorker - c0r50 started.
+[INFO ] 2016-11-08 11:49:47.071 [pool-2-thread-55] ReadWorker - c0r53 started.
+[INFO ] 2016-11-08 11:49:47.073 [pool-2-thread-58] ReadWorker - c0r56 started.
+[INFO ] 2016-11-08 11:49:47.082 [pool-2-thread-59] ReadWorker - c0r57 started.
+[INFO ] 2016-11-08 11:49:47.082 [pool-2-thread-60] ReadWorker - c0r58 started.
+[INFO ] 2016-11-08 11:49:47.083 [pool-2-thread-61] ReadWorker - c0r59 started.
+[INFO ] 2016-11-08 11:49:47.084 [pool-2-thread-62] ReadWorker - c0r60 started.
+[INFO ] 2016-11-08 11:49:47.085 [pool-2-thread-64] ReadWorker - c0r62 started.
+[INFO ] 2016-11-08 11:49:47.086 [main] MiddlewareComponent - MiddlewareComponent #0 initialised.
+[INFO ] 2016-11-08 11:49:47.086 [pool-2-thread-65] ReadWorker - c0r63 started.
+[INFO ] 2016-11-08 11:49:47.087 [main] WriteWorker - c1w0 connected to server /10.0.0.4:11211.
+[INFO ] 2016-11-08 11:49:47.084 [pool-2-thread-63] ReadWorker - c0r61 started.
+[INFO ] 2016-11-08 11:49:47.094 [pool-2-thread-66] WriteWorker - c1w0 started; writing to machines: [1].
+[INFO ] 2016-11-08 11:49:47.095 [pool-2-thread-67] ReadWorker - c1r0 started.
+[INFO ] 2016-11-08 11:49:47.096 [pool-2-thread-68] ReadWorker - c1r1 started.
+[INFO ] 2016-11-08 11:49:47.096 [pool-2-thread-69] ReadWorker - c1r2 started.
+[INFO ] 2016-11-08 11:49:47.097 [pool-2-thread-70] ReadWorker - c1r3 started.
+[INFO ] 2016-11-08 11:49:47.098 [pool-2-thread-71] ReadWorker - c1r4 started.
+[INFO ] 2016-11-08 11:49:47.098 [pool-2-thread-72] ReadWorker - c1r5 started.
+[INFO ] 2016-11-08 11:49:47.099 [pool-2-thread-74] ReadWorker - c1r7 started.
+[INFO ] 2016-11-08 11:49:47.100 [pool-2-thread-75] ReadWorker - c1r8 started.
+[INFO ] 2016-11-08 11:49:47.099 [pool-2-thread-73] ReadWorker - c1r6 started.
+[INFO ] 2016-11-08 11:49:47.108 [pool-2-thread-76] ReadWorker - c1r9 started.
+[INFO ] 2016-11-08 11:49:47.109 [pool-2-thread-77] ReadWorker - c1r10 started.
+[INFO ] 2016-11-08 11:49:47.109 [pool-2-thread-78] ReadWorker - c1r11 started.
+[INFO ] 2016-11-08 11:49:47.110 [pool-2-thread-79] ReadWorker - c1r12 started.
+[INFO ] 2016-11-08 11:49:47.111 [pool-2-thread-80] ReadWorker - c1r13 started.
+[INFO ] 2016-11-08 11:49:47.112 [pool-2-thread-81] ReadWorker - c1r14 started.
+[INFO ] 2016-11-08 11:49:47.113 [pool-2-thread-82] ReadWorker - c1r15 started.
+[INFO ] 2016-11-08 11:49:47.114 [pool-2-thread-84] ReadWorker - c1r17 started.
+[INFO ] 2016-11-08 11:49:47.120 [pool-2-thread-83] ReadWorker - c1r16 started.
+[INFO ] 2016-11-08 11:49:47.122 [pool-2-thread-85] ReadWorker - c1r18 started.
+[INFO ] 2016-11-08 11:49:47.123 [pool-2-thread-86] ReadWorker - c1r19 started.
+[INFO ] 2016-11-08 11:49:47.123 [pool-2-thread-87] ReadWorker - c1r20 started.
+[INFO ] 2016-11-08 11:49:47.124 [pool-2-thread-88] ReadWorker - c1r21 started.
+[INFO ] 2016-11-08 11:49:47.125 [pool-2-thread-90] ReadWorker - c1r23 started.
+[INFO ] 2016-11-08 11:49:47.126 [pool-2-thread-91] ReadWorker - c1r24 started.
+[INFO ] 2016-11-08 11:49:47.127 [pool-2-thread-92] ReadWorker - c1r25 started.
+[INFO ] 2016-11-08 11:49:47.127 [pool-2-thread-93] ReadWorker - c1r26 started.
+[INFO ] 2016-11-08 11:49:47.128 [pool-2-thread-94] ReadWorker - c1r27 started.
+[INFO ] 2016-11-08 11:49:47.131 [pool-2-thread-89] ReadWorker - c1r22 started.
+[INFO ] 2016-11-08 11:49:47.135 [pool-2-thread-95] ReadWorker - c1r28 started.
+[INFO ] 2016-11-08 11:49:47.136 [pool-2-thread-96] ReadWorker - c1r29 started.
+[INFO ] 2016-11-08 11:49:47.137 [pool-2-thread-97] ReadWorker - c1r30 started.
+[INFO ] 2016-11-08 11:49:47.138 [pool-2-thread-98] ReadWorker - c1r31 started.
+[INFO ] 2016-11-08 11:49:47.138 [pool-2-thread-99] ReadWorker - c1r32 started.
+[INFO ] 2016-11-08 11:49:47.140 [pool-2-thread-101] ReadWorker - c1r34 started.
+[INFO ] 2016-11-08 11:49:47.140 [pool-2-thread-102] ReadWorker - c1r35 started.
+[INFO ] 2016-11-08 11:49:47.141 [pool-2-thread-103] ReadWorker - c1r36 started.
+[INFO ] 2016-11-08 11:49:47.141 [pool-2-thread-104] ReadWorker - c1r37 started.
+[INFO ] 2016-11-08 11:49:47.142 [pool-2-thread-105] ReadWorker - c1r38 started.
+[INFO ] 2016-11-08 11:49:47.139 [pool-2-thread-100] ReadWorker - c1r33 started.
+[INFO ] 2016-11-08 11:49:47.150 [pool-2-thread-106] ReadWorker - c1r39 started.
+[INFO ] 2016-11-08 11:49:47.151 [pool-2-thread-107] ReadWorker - c1r40 started.
+[INFO ] 2016-11-08 11:49:47.152 [pool-2-thread-108] ReadWorker - c1r41 started.
+[INFO ] 2016-11-08 11:49:47.153 [pool-2-thread-109] ReadWorker - c1r42 started.
+[INFO ] 2016-11-08 11:49:47.154 [pool-2-thread-111] ReadWorker - c1r44 started.
+[INFO ] 2016-11-08 11:49:47.154 [pool-2-thread-112] ReadWorker - c1r45 started.
+[INFO ] 2016-11-08 11:49:47.155 [pool-2-thread-113] ReadWorker - c1r46 started.
+[INFO ] 2016-11-08 11:49:47.155 [pool-2-thread-114] ReadWorker - c1r47 started.
+[INFO ] 2016-11-08 11:49:47.160 [pool-2-thread-110] ReadWorker - c1r43 started.
+[INFO ] 2016-11-08 11:49:47.163 [pool-2-thread-115] ReadWorker - c1r48 started.
+[INFO ] 2016-11-08 11:49:47.164 [pool-2-thread-116] ReadWorker - c1r49 started.
+[INFO ] 2016-11-08 11:49:47.164 [pool-2-thread-117] ReadWorker - c1r50 started.
+[INFO ] 2016-11-08 11:49:47.165 [pool-2-thread-118] ReadWorker - c1r51 started.
+[INFO ] 2016-11-08 11:49:47.167 [pool-2-thread-120] ReadWorker - c1r53 started.
+[INFO ] 2016-11-08 11:49:47.167 [pool-2-thread-121] ReadWorker - c1r54 started.
+[INFO ] 2016-11-08 11:49:47.168 [pool-2-thread-122] ReadWorker - c1r55 started.
+[INFO ] 2016-11-08 11:49:47.169 [pool-2-thread-123] ReadWorker - c1r56 started.
+[INFO ] 2016-11-08 11:49:47.170 [pool-2-thread-124] ReadWorker - c1r57 started.
+[INFO ] 2016-11-08 11:49:47.166 [pool-2-thread-119] ReadWorker - c1r52 started.
+[INFO ] 2016-11-08 11:49:47.178 [pool-2-thread-125] ReadWorker - c1r58 started.
+[INFO ] 2016-11-08 11:49:47.179 [pool-2-thread-126] ReadWorker - c1r59 started.
+[INFO ] 2016-11-08 11:49:47.179 [pool-2-thread-127] ReadWorker - c1r60 started.
+[INFO ] 2016-11-08 11:49:47.180 [pool-2-thread-128] ReadWorker - c1r61 started.
+[INFO ] 2016-11-08 11:49:47.182 [main] MiddlewareComponent - MiddlewareComponent #1 initialised.
+[INFO ] 2016-11-08 11:49:47.182 [pool-2-thread-130] ReadWorker - c1r63 started.
+[INFO ] 2016-11-08 11:49:47.183 [main] WriteWorker - c2w0 connected to server /10.0.0.11:11211.
+[INFO ] 2016-11-08 11:49:47.181 [pool-2-thread-129] ReadWorker - c1r62 started.
+[INFO ] 2016-11-08 11:49:47.190 [pool-2-thread-131] WriteWorker - c2w0 started; writing to machines: [2].
+[INFO ] 2016-11-08 11:49:47.191 [pool-2-thread-132] ReadWorker - c2r0 started.
+[INFO ] 2016-11-08 11:49:47.192 [pool-2-thread-133] ReadWorker - c2r1 started.
+[INFO ] 2016-11-08 11:49:47.193 [pool-2-thread-134] ReadWorker - c2r2 started.
+[INFO ] 2016-11-08 11:49:47.193 [pool-2-thread-135] ReadWorker - c2r3 started.
+[INFO ] 2016-11-08 11:49:47.194 [pool-2-thread-136] ReadWorker - c2r4 started.
+[INFO ] 2016-11-08 11:49:47.195 [pool-2-thread-138] ReadWorker - c2r6 started.
+[INFO ] 2016-11-08 11:49:47.197 [pool-2-thread-140] ReadWorker - c2r8 started.
+[INFO ] 2016-11-08 11:49:47.201 [pool-2-thread-137] ReadWorker - c2r5 started.
+[INFO ] 2016-11-08 11:49:47.196 [pool-2-thread-139] ReadWorker - c2r7 started.
+[INFO ] 2016-11-08 11:49:47.204 [pool-2-thread-141] ReadWorker - c2r9 started.
+[INFO ] 2016-11-08 11:49:47.206 [pool-2-thread-142] ReadWorker - c2r10 started.
+[INFO ] 2016-11-08 11:49:47.207 [pool-2-thread-143] ReadWorker - c2r11 started.
+[INFO ] 2016-11-08 11:49:47.208 [pool-2-thread-144] ReadWorker - c2r12 started.
+[INFO ] 2016-11-08 11:49:47.209 [pool-2-thread-146] ReadWorker - c2r14 started.
+[INFO ] 2016-11-08 11:49:47.210 [pool-2-thread-147] ReadWorker - c2r15 started.
+[INFO ] 2016-11-08 11:49:47.210 [pool-2-thread-148] ReadWorker - c2r16 started.
+[INFO ] 2016-11-08 11:49:47.211 [pool-2-thread-150] ReadWorker - c2r18 started.
+[INFO ] 2016-11-08 11:49:47.215 [pool-2-thread-145] ReadWorker - c2r13 started.
+[INFO ] 2016-11-08 11:49:47.211 [pool-2-thread-149] ReadWorker - c2r17 started.
+[INFO ] 2016-11-08 11:49:47.219 [pool-2-thread-151] ReadWorker - c2r19 started.
+[INFO ] 2016-11-08 11:49:47.220 [pool-2-thread-152] ReadWorker - c2r20 started.
+[INFO ] 2016-11-08 11:49:47.221 [pool-2-thread-153] ReadWorker - c2r21 started.
+[INFO ] 2016-11-08 11:49:47.222 [pool-2-thread-154] ReadWorker - c2r22 started.
+[INFO ] 2016-11-08 11:49:47.223 [pool-2-thread-155] ReadWorker - c2r23 started.
+[INFO ] 2016-11-08 11:49:47.224 [pool-2-thread-157] ReadWorker - c2r25 started.
+[INFO ] 2016-11-08 11:49:47.225 [pool-2-thread-158] ReadWorker - c2r26 started.
+[INFO ] 2016-11-08 11:49:47.226 [pool-2-thread-159] ReadWorker - c2r27 started.
+[INFO ] 2016-11-08 11:49:47.224 [pool-2-thread-156] ReadWorker - c2r24 started.
+[INFO ] 2016-11-08 11:49:47.226 [pool-2-thread-160] ReadWorker - c2r28 started.
+[INFO ] 2016-11-08 11:49:47.234 [pool-2-thread-161] ReadWorker - c2r29 started.
+[INFO ] 2016-11-08 11:49:47.235 [pool-2-thread-162] ReadWorker - c2r30 started.
+[INFO ] 2016-11-08 11:49:47.235 [pool-2-thread-163] ReadWorker - c2r31 started.
+[INFO ] 2016-11-08 11:49:47.236 [pool-2-thread-164] ReadWorker - c2r32 started.
+[INFO ] 2016-11-08 11:49:47.237 [pool-2-thread-165] ReadWorker - c2r33 started.
+[INFO ] 2016-11-08 11:49:47.238 [pool-2-thread-166] ReadWorker - c2r34 started.
+[INFO ] 2016-11-08 11:49:47.239 [pool-2-thread-168] ReadWorker - c2r36 started.
+[INFO ] 2016-11-08 11:49:47.240 [pool-2-thread-169] ReadWorker - c2r37 started.
+[INFO ] 2016-11-08 11:49:47.245 [pool-2-thread-167] ReadWorker - c2r35 started.
+[INFO ] 2016-11-08 11:49:47.240 [pool-2-thread-170] ReadWorker - c2r38 started.
+[INFO ] 2016-11-08 11:49:47.248 [pool-2-thread-171] ReadWorker - c2r39 started.
+[INFO ] 2016-11-08 11:49:47.249 [pool-2-thread-172] ReadWorker - c2r40 started.
+[INFO ] 2016-11-08 11:49:47.250 [pool-2-thread-173] ReadWorker - c2r41 started.
+[INFO ] 2016-11-08 11:49:47.250 [pool-2-thread-174] ReadWorker - c2r42 started.
+[INFO ] 2016-11-08 11:49:47.252 [pool-2-thread-176] ReadWorker - c2r44 started.
+[INFO ] 2016-11-08 11:49:47.253 [pool-2-thread-177] ReadWorker - c2r45 started.
+[INFO ] 2016-11-08 11:49:47.254 [pool-2-thread-178] ReadWorker - c2r46 started.
+[INFO ] 2016-11-08 11:49:47.255 [pool-2-thread-180] ReadWorker - c2r48 started.
+[INFO ] 2016-11-08 11:49:47.251 [pool-2-thread-175] ReadWorker - c2r43 started.
+[INFO ] 2016-11-08 11:49:47.255 [pool-2-thread-179] ReadWorker - c2r47 started.
+[INFO ] 2016-11-08 11:49:47.263 [pool-2-thread-181] ReadWorker - c2r49 started.
+[INFO ] 2016-11-08 11:49:47.264 [pool-2-thread-182] ReadWorker - c2r50 started.
+[INFO ] 2016-11-08 11:49:47.265 [pool-2-thread-183] ReadWorker - c2r51 started.
+[INFO ] 2016-11-08 11:49:47.266 [pool-2-thread-184] ReadWorker - c2r52 started.
+[INFO ] 2016-11-08 11:49:47.266 [pool-2-thread-185] ReadWorker - c2r53 started.
+[INFO ] 2016-11-08 11:49:47.268 [pool-2-thread-187] ReadWorker - c2r55 started.
+[INFO ] 2016-11-08 11:49:47.268 [pool-2-thread-188] ReadWorker - c2r56 started.
+[INFO ] 2016-11-08 11:49:47.269 [pool-2-thread-189] ReadWorker - c2r57 started.
+[INFO ] 2016-11-08 11:49:47.267 [pool-2-thread-186] ReadWorker - c2r54 started.
+[INFO ] 2016-11-08 11:49:47.278 [pool-2-thread-190] ReadWorker - c2r58 started.
+[INFO ] 2016-11-08 11:49:47.278 [pool-2-thread-191] ReadWorker - c2r59 started.
+[INFO ] 2016-11-08 11:49:47.279 [pool-2-thread-192] ReadWorker - c2r60 started.
+[INFO ] 2016-11-08 11:49:47.280 [pool-2-thread-193] ReadWorker - c2r61 started.
+[INFO ] 2016-11-08 11:49:47.280 [pool-2-thread-194] ReadWorker - c2r62 started.
+[INFO ] 2016-11-08 11:49:47.281 [main] MiddlewareComponent - MiddlewareComponent #2 initialised.
+[INFO ] 2016-11-08 11:49:47.281 [pool-2-thread-195] ReadWorker - c2r63 started.
+[INFO ] 2016-11-08 11:49:47.283 [main] WriteWorker - c3w0 connected to server /10.0.0.8:11211.
+[INFO ] 2016-11-08 11:49:47.283 [pool-2-thread-196] WriteWorker - c3w0 started; writing to machines: [3].
+[INFO ] 2016-11-08 11:49:47.284 [pool-2-thread-197] ReadWorker - c3r0 started.
+[INFO ] 2016-11-08 11:49:47.292 [pool-2-thread-198] ReadWorker - c3r1 started.
+[INFO ] 2016-11-08 11:49:47.293 [pool-2-thread-199] ReadWorker - c3r2 started.
+[INFO ] 2016-11-08 11:49:47.295 [pool-2-thread-200] ReadWorker - c3r3 started.
+[INFO ] 2016-11-08 11:49:47.296 [pool-2-thread-201] ReadWorker - c3r4 started.
+[INFO ] 2016-11-08 11:49:47.296 [pool-2-thread-202] ReadWorker - c3r5 started.
+[INFO ] 2016-11-08 11:49:47.297 [pool-2-thread-203] ReadWorker - c3r6 started.
+[INFO ] 2016-11-08 11:49:47.299 [pool-2-thread-205] ReadWorker - c3r8 started.
+[INFO ] 2016-11-08 11:49:47.300 [pool-2-thread-206] ReadWorker - c3r9 started.
+[INFO ] 2016-11-08 11:49:47.305 [pool-2-thread-204] ReadWorker - c3r7 started.
+[INFO ] 2016-11-08 11:49:47.301 [pool-2-thread-207] ReadWorker - c3r10 started.
+[INFO ] 2016-11-08 11:49:47.314 [pool-2-thread-208] ReadWorker - c3r11 started.
+[INFO ] 2016-11-08 11:49:47.314 [pool-2-thread-209] ReadWorker - c3r12 started.
+[INFO ] 2016-11-08 11:49:47.315 [pool-2-thread-210] ReadWorker - c3r13 started.
+[INFO ] 2016-11-08 11:49:47.316 [pool-2-thread-211] ReadWorker - c3r14 started.
+[INFO ] 2016-11-08 11:49:47.317 [pool-2-thread-212] ReadWorker - c3r15 started.
+[INFO ] 2016-11-08 11:49:47.318 [pool-2-thread-213] ReadWorker - c3r16 started.
+[INFO ] 2016-11-08 11:49:47.319 [pool-2-thread-214] ReadWorker - c3r17 started.
+[INFO ] 2016-11-08 11:49:47.320 [pool-2-thread-215] ReadWorker - c3r18 started.
+[INFO ] 2016-11-08 11:49:47.321 [pool-2-thread-216] ReadWorker - c3r19 started.
+[INFO ] 2016-11-08 11:49:47.322 [pool-2-thread-217] ReadWorker - c3r20 started.
+[INFO ] 2016-11-08 11:49:47.322 [pool-2-thread-218] ReadWorker - c3r21 started.
+[INFO ] 2016-11-08 11:49:47.324 [pool-2-thread-220] ReadWorker - c3r23 started.
+[INFO ] 2016-11-08 11:49:47.325 [pool-2-thread-221] ReadWorker - c3r24 started.
+[INFO ] 2016-11-08 11:49:47.326 [pool-2-thread-222] ReadWorker - c3r25 started.
+[INFO ] 2016-11-08 11:49:47.327 [pool-2-thread-223] ReadWorker - c3r26 started.
+[INFO ] 2016-11-08 11:49:47.328 [pool-2-thread-224] ReadWorker - c3r27 started.
+[INFO ] 2016-11-08 11:49:47.328 [pool-2-thread-225] ReadWorker - c3r28 started.
+[INFO ] 2016-11-08 11:49:47.329 [pool-2-thread-226] ReadWorker - c3r29 started.
+[INFO ] 2016-11-08 11:49:47.323 [pool-2-thread-219] ReadWorker - c3r22 started.
+[INFO ] 2016-11-08 11:49:47.337 [pool-2-thread-227] ReadWorker - c3r30 started.
+[INFO ] 2016-11-08 11:49:47.339 [pool-2-thread-228] ReadWorker - c3r31 started.
+[INFO ] 2016-11-08 11:49:47.341 [pool-2-thread-229] ReadWorker - c3r32 started.
+[INFO ] 2016-11-08 11:49:47.342 [pool-2-thread-230] ReadWorker - c3r33 started.
+[INFO ] 2016-11-08 11:49:47.344 [pool-2-thread-231] ReadWorker - c3r34 started.
+[INFO ] 2016-11-08 11:49:47.344 [pool-2-thread-232] ReadWorker - c3r35 started.
+[INFO ] 2016-11-08 11:49:47.345 [pool-2-thread-233] ReadWorker - c3r36 started.
+[INFO ] 2016-11-08 11:49:47.347 [pool-2-thread-234] ReadWorker - c3r37 started.
+[INFO ] 2016-11-08 11:49:47.347 [pool-2-thread-235] ReadWorker - c3r38 started.
+[INFO ] 2016-11-08 11:49:47.349 [pool-2-thread-237] ReadWorker - c3r40 started.
+[INFO ] 2016-11-08 11:49:47.350 [pool-2-thread-238] ReadWorker - c3r41 started.
+[INFO ] 2016-11-08 11:49:47.351 [pool-2-thread-239] ReadWorker - c3r42 started.
+[INFO ] 2016-11-08 11:49:47.352 [pool-2-thread-240] ReadWorker - c3r43 started.
+[INFO ] 2016-11-08 11:49:47.354 [pool-2-thread-241] ReadWorker - c3r44 started.
+[INFO ] 2016-11-08 11:49:47.355 [pool-2-thread-242] ReadWorker - c3r45 started.
+[INFO ] 2016-11-08 11:49:47.356 [pool-2-thread-236] ReadWorker - c3r39 started.
+[INFO ] 2016-11-08 11:49:47.356 [pool-2-thread-243] ReadWorker - c3r46 started.
+[INFO ] 2016-11-08 11:49:47.357 [pool-2-thread-244] ReadWorker - c3r47 started.
+[INFO ] 2016-11-08 11:49:47.358 [pool-2-thread-245] ReadWorker - c3r48 started.
+[INFO ] 2016-11-08 11:49:47.359 [pool-2-thread-246] ReadWorker - c3r49 started.
+[INFO ] 2016-11-08 11:49:47.359 [pool-2-thread-247] ReadWorker - c3r50 started.
+[INFO ] 2016-11-08 11:49:47.360 [pool-2-thread-248] ReadWorker - c3r51 started.
+[INFO ] 2016-11-08 11:49:47.362 [pool-2-thread-250] ReadWorker - c3r53 started.
+[INFO ] 2016-11-08 11:49:47.363 [pool-2-thread-251] ReadWorker - c3r54 started.
+[INFO ] 2016-11-08 11:49:47.364 [pool-2-thread-252] ReadWorker - c3r55 started.
+[INFO ] 2016-11-08 11:49:47.365 [pool-2-thread-253] ReadWorker - c3r56 started.
+[INFO ] 2016-11-08 11:49:47.366 [pool-2-thread-254] ReadWorker - c3r57 started.
+[INFO ] 2016-11-08 11:49:47.368 [pool-2-thread-249] ReadWorker - c3r52 started.
+[INFO ] 2016-11-08 11:49:47.368 [pool-2-thread-256] ReadWorker - c3r59 started.
+[INFO ] 2016-11-08 11:49:47.369 [pool-2-thread-257] ReadWorker - c3r60 started.
+[INFO ] 2016-11-08 11:49:47.374 [pool-2-thread-255] ReadWorker - c3r58 started.
+[INFO ] 2016-11-08 11:49:47.377 [pool-2-thread-258] ReadWorker - c3r61 started.
+[INFO ] 2016-11-08 11:49:47.378 [pool-2-thread-259] ReadWorker - c3r62 started.
+[INFO ] 2016-11-08 11:49:47.379 [main] MiddlewareComponent - MiddlewareComponent #3 initialised.
+[INFO ] 2016-11-08 11:49:47.379 [pool-2-thread-260] ReadWorker - c3r63 started.
+[INFO ] 2016-11-08 11:49:47.380 [main] WriteWorker - c4w0 connected to server /10.0.0.5:11211.
+[INFO ] 2016-11-08 11:49:47.380 [pool-2-thread-261] WriteWorker - c4w0 started; writing to machines: [4].
+[INFO ] 2016-11-08 11:49:47.381 [pool-2-thread-262] ReadWorker - c4r0 started.
+[INFO ] 2016-11-08 11:49:47.381 [pool-2-thread-263] ReadWorker - c4r1 started.
+[INFO ] 2016-11-08 11:49:47.382 [pool-2-thread-264] ReadWorker - c4r2 started.
+[INFO ] 2016-11-08 11:49:47.383 [pool-2-thread-266] ReadWorker - c4r4 started.
+[INFO ] 2016-11-08 11:49:47.382 [pool-2-thread-265] ReadWorker - c4r3 started.
+[INFO ] 2016-11-08 11:49:47.390 [pool-2-thread-267] ReadWorker - c4r5 started.
+[INFO ] 2016-11-08 11:49:47.391 [pool-2-thread-268] ReadWorker - c4r6 started.
+[INFO ] 2016-11-08 11:49:47.391 [pool-2-thread-269] ReadWorker - c4r7 started.
+[INFO ] 2016-11-08 11:49:47.392 [pool-2-thread-270] ReadWorker - c4r8 started.
+[INFO ] 2016-11-08 11:49:47.393 [pool-2-thread-271] ReadWorker - c4r9 started.
+[INFO ] 2016-11-08 11:49:47.393 [pool-2-thread-272] ReadWorker - c4r10 started.
+[INFO ] 2016-11-08 11:49:47.401 [pool-2-thread-273] ReadWorker - c4r11 started.
+[INFO ] 2016-11-08 11:49:47.401 [pool-2-thread-274] ReadWorker - c4r12 started.
+[INFO ] 2016-11-08 11:49:47.402 [pool-2-thread-275] ReadWorker - c4r13 started.
+[INFO ] 2016-11-08 11:49:47.403 [pool-2-thread-276] ReadWorker - c4r14 started.
+[INFO ] 2016-11-08 11:49:47.404 [pool-2-thread-277] ReadWorker - c4r15 started.
+[INFO ] 2016-11-08 11:49:47.404 [pool-2-thread-278] ReadWorker - c4r16 started.
+[INFO ] 2016-11-08 11:49:47.405 [pool-2-thread-279] ReadWorker - c4r17 started.
+[INFO ] 2016-11-08 11:49:47.405 [pool-2-thread-280] ReadWorker - c4r18 started.
+[INFO ] 2016-11-08 11:49:47.406 [pool-2-thread-281] ReadWorker - c4r19 started.
+[INFO ] 2016-11-08 11:49:47.406 [pool-2-thread-282] ReadWorker - c4r20 started.
+[INFO ] 2016-11-08 11:49:47.407 [pool-2-thread-283] ReadWorker - c4r21 started.
+[INFO ] 2016-11-08 11:49:47.407 [pool-2-thread-284] ReadWorker - c4r22 started.
+[INFO ] 2016-11-08 11:49:47.415 [pool-2-thread-285] ReadWorker - c4r23 started.
+[INFO ] 2016-11-08 11:49:47.416 [pool-2-thread-286] ReadWorker - c4r24 started.
+[INFO ] 2016-11-08 11:49:47.416 [pool-2-thread-287] ReadWorker - c4r25 started.
+[INFO ] 2016-11-08 11:49:47.417 [pool-2-thread-288] ReadWorker - c4r26 started.
+[INFO ] 2016-11-08 11:49:47.417 [pool-2-thread-289] ReadWorker - c4r27 started.
+[INFO ] 2016-11-08 11:49:47.418 [pool-2-thread-290] ReadWorker - c4r28 started.
+[INFO ] 2016-11-08 11:49:47.418 [pool-2-thread-291] ReadWorker - c4r29 started.
+[INFO ] 2016-11-08 11:49:47.420 [pool-2-thread-293] ReadWorker - c4r31 started.
+[INFO ] 2016-11-08 11:49:47.420 [pool-2-thread-294] ReadWorker - c4r32 started.
+[INFO ] 2016-11-08 11:49:47.421 [pool-2-thread-295] ReadWorker - c4r33 started.
+[INFO ] 2016-11-08 11:49:47.419 [pool-2-thread-292] ReadWorker - c4r30 started.
+[INFO ] 2016-11-08 11:49:47.428 [pool-2-thread-296] ReadWorker - c4r34 started.
+[INFO ] 2016-11-08 11:49:47.428 [pool-2-thread-297] ReadWorker - c4r35 started.
+[INFO ] 2016-11-08 11:49:47.429 [pool-2-thread-298] ReadWorker - c4r36 started.
+[INFO ] 2016-11-08 11:49:47.430 [pool-2-thread-299] ReadWorker - c4r37 started.
+[INFO ] 2016-11-08 11:49:47.436 [pool-2-thread-300] ReadWorker - c4r38 started.
+[INFO ] 2016-11-08 11:49:47.437 [pool-2-thread-301] ReadWorker - c4r39 started.
+[INFO ] 2016-11-08 11:49:47.437 [pool-2-thread-302] ReadWorker - c4r40 started.
+[INFO ] 2016-11-08 11:49:47.438 [pool-2-thread-303] ReadWorker - c4r41 started.
+[INFO ] 2016-11-08 11:49:47.438 [pool-2-thread-304] ReadWorker - c4r42 started.
+[INFO ] 2016-11-08 11:49:47.439 [pool-2-thread-305] ReadWorker - c4r43 started.
+[INFO ] 2016-11-08 11:49:47.440 [pool-2-thread-306] ReadWorker - c4r44 started.
+[INFO ] 2016-11-08 11:49:47.440 [pool-2-thread-307] ReadWorker - c4r45 started.
+[INFO ] 2016-11-08 11:49:47.441 [pool-2-thread-308] ReadWorker - c4r46 started.
+[INFO ] 2016-11-08 11:49:47.442 [pool-2-thread-309] ReadWorker - c4r47 started.
+[INFO ] 2016-11-08 11:49:47.443 [pool-2-thread-311] ReadWorker - c4r49 started.
+[INFO ] 2016-11-08 11:49:47.443 [pool-2-thread-312] ReadWorker - c4r50 started.
+[INFO ] 2016-11-08 11:49:47.444 [pool-2-thread-313] ReadWorker - c4r51 started.
+[INFO ] 2016-11-08 11:49:47.445 [pool-2-thread-314] ReadWorker - c4r52 started.
+[INFO ] 2016-11-08 11:49:47.446 [pool-2-thread-315] ReadWorker - c4r53 started.
+[INFO ] 2016-11-08 11:49:47.442 [pool-2-thread-310] ReadWorker - c4r48 started.
+[INFO ] 2016-11-08 11:49:47.459 [pool-2-thread-316] ReadWorker - c4r54 started.
+[INFO ] 2016-11-08 11:49:47.460 [pool-2-thread-317] ReadWorker - c4r55 started.
+[INFO ] 2016-11-08 11:49:47.461 [pool-2-thread-318] ReadWorker - c4r56 started.
+[INFO ] 2016-11-08 11:49:47.462 [pool-2-thread-319] ReadWorker - c4r57 started.
+[INFO ] 2016-11-08 11:49:47.462 [pool-2-thread-320] ReadWorker - c4r58 started.
+[INFO ] 2016-11-08 11:49:47.463 [pool-2-thread-321] ReadWorker - c4r59 started.
+[INFO ] 2016-11-08 11:49:47.470 [pool-2-thread-322] ReadWorker - c4r60 started.
+[INFO ] 2016-11-08 11:49:47.471 [pool-2-thread-323] ReadWorker - c4r61 started.
+[INFO ] 2016-11-08 11:49:47.471 [pool-2-thread-324] ReadWorker - c4r62 started.
+[INFO ] 2016-11-08 11:49:47.472 [main] MiddlewareComponent - MiddlewareComponent #4 initialised.
+[INFO ] 2016-11-08 11:49:47.472 [pool-2-thread-325] ReadWorker - c4r63 started.
+[INFO ] 2016-11-08 11:49:47.473 [main] MiddlewareMain - Middleware initialised.
+[INFO ] 2016-11-08 11:49:47.473 [pool-2-thread-326] LoadBalancer - Load balancer started.
+[INFO ] 2016-11-08 11:50:14.676 [pool-2-thread-326] LoadBalancer - Processed      0 reads and   1000 writes so far.
+[INFO ] 2016-11-08 11:50:19.812 [pool-2-thread-326] LoadBalancer - Processed    976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:50:24.736 [pool-2-thread-326] LoadBalancer - Processed   1976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:50:30.581 [pool-2-thread-326] LoadBalancer - Processed   2976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:50:36.613 [pool-2-thread-326] LoadBalancer - Processed   3976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:50:43.537 [pool-2-thread-326] LoadBalancer - Processed   4976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:50:50.437 [pool-2-thread-326] LoadBalancer - Processed   5976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:50:57.901 [pool-2-thread-326] LoadBalancer - Processed   6976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:05.429 [pool-2-thread-326] LoadBalancer - Processed   7976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:12.988 [pool-2-thread-326] LoadBalancer - Processed   8976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:20.705 [pool-2-thread-326] LoadBalancer - Processed   9976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:28.417 [pool-2-thread-326] LoadBalancer - Processed  10976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:36.069 [pool-2-thread-326] LoadBalancer - Processed  11976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:43.701 [pool-2-thread-326] LoadBalancer - Processed  12976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:51.365 [pool-2-thread-326] LoadBalancer - Processed  13976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:51:59.121 [pool-2-thread-326] LoadBalancer - Processed  14976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:52:06.705 [pool-2-thread-326] LoadBalancer - Processed  15976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:52:14.377 [pool-2-thread-326] LoadBalancer - Processed  16976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:52:21.949 [pool-2-thread-326] LoadBalancer - Processed  17976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:52:29.669 [pool-2-thread-326] LoadBalancer - Processed  18976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:52:37.293 [pool-2-thread-326] LoadBalancer - Processed  19976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:52:45.065 [pool-2-thread-326] LoadBalancer - Processed  20976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:52:52.673 [pool-2-thread-326] LoadBalancer - Processed  21976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:00.334 [pool-2-thread-326] LoadBalancer - Processed  22976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:07.981 [pool-2-thread-326] LoadBalancer - Processed  23976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:15.622 [pool-2-thread-326] LoadBalancer - Processed  24976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:23.318 [pool-2-thread-326] LoadBalancer - Processed  25976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:30.850 [pool-2-thread-326] LoadBalancer - Processed  26976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:38.554 [pool-2-thread-326] LoadBalancer - Processed  27976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:46.110 [pool-2-thread-326] LoadBalancer - Processed  28976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:53:53.774 [pool-2-thread-326] LoadBalancer - Processed  29976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:01.290 [pool-2-thread-326] LoadBalancer - Processed  30976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:09.050 [pool-2-thread-326] LoadBalancer - Processed  31976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:16.578 [pool-2-thread-326] LoadBalancer - Processed  32976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:24.138 [pool-2-thread-326] LoadBalancer - Processed  33976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:31.450 [pool-2-thread-326] LoadBalancer - Processed  34976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:39.154 [pool-2-thread-326] LoadBalancer - Processed  35976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:46.786 [pool-2-thread-326] LoadBalancer - Processed  36976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:54:54.550 [pool-2-thread-326] LoadBalancer - Processed  37976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:02.230 [pool-2-thread-326] LoadBalancer - Processed  38976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:09.922 [pool-2-thread-326] LoadBalancer - Processed  39976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:17.327 [pool-2-thread-326] LoadBalancer - Processed  40976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:24.851 [pool-2-thread-326] LoadBalancer - Processed  41976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:32.491 [pool-2-thread-326] LoadBalancer - Processed  42976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:40.163 [pool-2-thread-326] LoadBalancer - Processed  43976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:47.839 [pool-2-thread-326] LoadBalancer - Processed  44976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:55:55.639 [pool-2-thread-326] LoadBalancer - Processed  45976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:56:03.235 [pool-2-thread-326] LoadBalancer - Processed  46976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:56:10.915 [pool-2-thread-326] LoadBalancer - Processed  47976 reads and   1024 writes so far.
+[INFO ] 2016-11-08 11:56:15.703 [pool-2-thread-326] LoadBalancer - Processed  48976 reads and   1024 writes so far.
