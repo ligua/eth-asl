@@ -11,8 +11,8 @@ from extractor import Extractor
 S_values = [3, 5, 7]                        # number of servers
 R_lambdas = [lambda S: 1, lambda S: S]      # replication factor
 write_proportion_values = [1, 5, 10]              # % of writes in workload
-virtual_clients = 300 # TODO
-num_threads = 32 # TODO
+virtual_clients = 432
+num_threads = 32
 
 experiment_runtime = 6
 runtime_buffer = 15 # will be cut off when memaslaps are done
