@@ -175,20 +175,32 @@ The values of $T$ to test were $T=1$ as the lowest possible value, and then from
 Some parameter combinations did not yield the required confidence interval in the first 6-minute repetition of the experiment. When that was the case, I re-ran the experiment (in some cases for a longer time), thus producing more datapoints and decreasing the confidence interval.
 
 \subsection{Results}
-Reporting experiment results. Comparison of hypothesis and experiment results.
+Reporting experiment results.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=\textwidth]{../results/throughput/graphs/tp_vs_clients.pdf}
-\caption{Throughput as a function of number of clients for different values of $T$. Errorbars show the 95\% confidence interval around the mean value which is shown with points connected by lines.}
+\caption{Throughput as a function of $C$ for different values of $T$. Errorbars show the 95\% confidence interval around the mean value which is shown with points connected by lines.}
 \label{fig:exp1:res:throughput}
 \end{figure}
 
-\todo{table of top 3 parameter sets} with mean throughputs and confidence intervals?
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_vs_clients.pdf}
+\caption{The 1\%, 5\%, 50\%, 95\% and 99\% percentiles of the response time distribution, as a function of $C$ for different values of $T$. Values above 100ms are not shown.}
+\label{fig:exp1:res:responsetime}
+\end{figure}
 
-\todo{confirm that throughput was sustained} -- response time was still reasonable and throughput did not decrease over time
+\todo{Comparison of hypothesis and experiment results.}
+
+Figure \ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). However, since we are trying to maximise sustained throughput, we also need to look at the response times.
+
+Figure \ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. For $(T=64,C=648)$ and $(T=64,C=720)$, both the median response time (green line) and 95\% quantile are significantly higher than for $(T=32, C=432)$. Therefore, we can consider the top two throughputs unsustainable, and declare $(T=32, C=432)$ the optimal parameters that maximise throughput at 19600 requests per second.
 
 
+
+
+\newpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section{Effect of Replication}
@@ -262,6 +274,8 @@ How does the scalability of your system compare to that of an ideal implementati
 
 \todo{table: y axis is S, x axis is R}; in each cell is corresponding response time -- separately for gets and sets?
  
+
+ \newpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section{Effect of Writes}
