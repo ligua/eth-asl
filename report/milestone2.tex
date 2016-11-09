@@ -195,7 +195,7 @@ Reporting experiment results.
 
 Figure \ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). However, since we are trying to maximise sustained throughput, we also need to look at the response times.
 
-Figure \ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. For $(T=64,C=648)$ and $(T=64,C=720)$, both the median response time (green line) and 95\% quantile are significantly higher than for $(T=32, C=432)$. Therefore, we can consider the top two throughputs unsustainable, and declare $(T=32, C=432)$ the optimal parameters that maximise throughput at 19600 requests per second.
+Figure \ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. For $(T=64,C=648)$ and $(T=64,C=720)$, both the median response time (green line) and 95\% quantile are significantly higher than for $(T=32, C=432)$. Therefore, we can consider the top two throughputs unsustainable, and declare that the maximal throughput of 19600 requests per second is achieved at 430 clients using 32 threads.
 
 
 
