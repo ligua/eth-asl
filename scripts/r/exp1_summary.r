@@ -10,8 +10,11 @@ if(length(args) == 0) {
   stop("Arguments: [<results_directory>]")
 }
 
-# ---- Helper functions ----
-rep_summary <- function(df) {
+# ---------------------------
+# ---- HELPER FUNCTIONS -----
+# ---------------------------
+
+memaslap_summary <- function(df) {
   DROP_TIMES_BEFORE = 2 * 60 # How many seconds in the beginning we want to drop
   DROP_TIMES_AFTER = max((df %>% filter(type=="t"))$time) - 2 * 60
   
@@ -50,9 +53,20 @@ rep_summary <- function(df) {
   return(as.data.frame(res))
 }
 
-file_to_df <- function(file_path) {
+middleware_summary <- function(df2) {
+  res <- list()
+  res$response_time_q01 <- quantile(df2$tAll, 0.01)
+  res$response_time_q05 <- quantile(df2$tAll, 0.05)
+  res$response_time_q50 <- quantile(df2$tAll, 0.50)
+  res$response_time_q95 <- quantile(df2$tAll, 0.95)
+  res$response_time_q99 <- quantile(df2$tAll, 0.99)
+  
+  return(as.data.frame(res))
+}
+
+file_to_df <- function(file_path, sep=";") {
   if(file.exists(file_path)) {
-    df <- read.csv(file_path, header=TRUE, sep=";")
+    df <- read.csv(file_path, header=TRUE, sep=sep)
     result <- df
   } else {
     result <- data.frame()
@@ -60,7 +74,26 @@ file_to_df <- function(file_path) {
   return(result)
 }
 
+normalise_request_log_df <- function(df) {
+  df2 <- df %>%
+    filter(type=="GET") %>%
+    mutate(tAll=timeReturned-timeCreated) %>%
+    select(type, timeCreated, tAll)
+  
+  first_get_request_time <- min(df2$timeCreated)
+  last_get_request_time <- max(df2$timeCreated)
+  DROP_TIMES_BEFORE = first_get_request_time + 2 * 60 * 1000
+  DROP_TIMES_AFTER = last_get_request_time - 2 * 60 * 1000
+  
+  df2 <- df2 %>% filter(timeCreated > first_get_request_time &
+                          timeCreated >= DROP_TIMES_AFTER) %>%
+    select(-timeCreated)
+  return(df2)
+}
 
+# ------------------
+# ---- FILE IO -----
+# ------------------
 
 # ---- Loop over result dirs ----
 file_name_regex <- paste0(result_dir_base,
@@ -76,6 +109,7 @@ result_params <- result_params  %>%
   #summarise(paths=paste0(path, collapse=";"))
 
 results <- NA
+mw_results <- NA
 client_thread_combinations <- result_params %>%
   select(clients, threads) %>%
   unique()
@@ -87,21 +121,31 @@ for(i in 1:nrow(client_thread_combinations)) {
     filter(clients==n_clients & threads==n_threads)
   
   combined_result <- NA
+  combined_mw_result <- NA
   for(j in 1:nrow(repetitions)) {
     params <- repetitions[j,]
+    print(dirname(params$path))
     rep_id <- params$repetition
     file_path <- params$path
+    mw_file_path <- paste0(dirname(file_path), "/request.log")
     repetition_result <- file_to_df(file_path) %>%
       mutate(repetition=rep_id)
+    mw_result <- file_to_df(mw_file_path, sep=",") %>%
+      mutate(repetition=rep_id) %>%
+      normalise_request_log_df()
     
     if(is.na(combined_result)) {
       combined_result <- repetition_result
+      combined_mw_result <- mw_result
     } else {
       combined_result <- rbind(combined_result, repetition_result)
+      combined_mw_result <- rbind(combined_mw_result, mw_result)
     }
   }
   
-  combined_result_row <- rep_summary(combined_result)
+  combined_ms_result_row <- memaslap_summary(combined_result)
+  combined_mw_result_row <- middleware_summary(combined_mw_result)
+  combined_result_row <- cbind(combined_ms_result_row, combined_mw_result_row)
   
   if(is.na(results)) {
     results <- combined_result_row
@@ -114,6 +158,10 @@ all_results <- cbind(client_thread_combinations, results) %>%
   mutate(clients=as.numeric(as.character(clients)),
          threads=as.numeric(as.character(threads)))
 
+# ------------------
+# ---- PLOTTING ----
+# ------------------
+
 # ---- Throughput vs clients ----
 data1 <- all_results %>%
   filter(!is.na(tps_mean)) %>%
@@ -121,13 +169,36 @@ data1 <- all_results %>%
 g1 <- ggplot(data1, aes(x=clients, y=tps_mean)) +
   geom_errorbar(aes(ymin=tps_mean-tps_confidence_delta,
                     ymax=tps_mean+tps_confidence_delta),
-                color=color_triad2, width=10, size=1) +
+                color=color_triad2, width=20, size=0.5) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~threads) +
+  xlab("Number of clients") +
+  ylab("Total throughput [requests/s]") +
   asl_theme
 g1
 ggsave(paste0(result_dir_base, "/graphs/tp_vs_clients.pdf"), g1,
+       width=fig_width, height=fig_height, device=cairo_pdf)
+
+# ---- Response time vs clients ----
+data3 <- all_results %>%
+  filter(!is.na(tps_mean)) %>%
+  mutate(threads=paste0(threads, ifelse(threads==1, " thread", " threads")))
+data3_melt <- all_results %>%
+  select(clients, threads, response_time_q01:response_time_q99) %>%
+  melt(id.vars=c("clients", "threads")) %>%
+  mutate(variable=paste0(as.numeric(substr(variable, 16, 17))), "%") %>%
+  rename(Percentile=variable)
+g3 <- ggplot(data3_melt, aes(x=clients, y=value, color=Percentile)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~threads) +
+  ylim(NA, 100) +
+  xlab("Number of clients") +
+  ylab("Response time [ms]") +
+  asl_theme
+g3
+ggsave(paste0(result_dir_base, "/graphs/response_time_vs_clients.pdf"), g3,
        width=fig_width, height=fig_height, device=cairo_pdf)
 
 # ---- Throughput not within 95% confidence interval ----
@@ -149,7 +220,7 @@ g2 <- ggplot(data2) +
                    y=response_time_beginning,yend=response_time_end,
                    color=delta),
                arrow=arrow(length=unit(0.02, "npc"), type="closed")) +
-  ylim(0, NA) +
+  ylim(0, 100) +
   colour_scale +
   ylab("Response time beginning -> end [ms]") + xlab("Number of clients") +
   facet_wrap(~threads) +
@@ -168,9 +239,9 @@ max_tp
 
 # ---- Maximum 95% confidence lower bound in throughput ----
 max_tp_conf <- all_results %>%
-  mutate(tp_lower_bound=tps_mean-tps_confidence_delta) %>%
-  arrange(desc(tp_lower_bound)) %>%
+  mutate(tps_lower_bound=tps_mean-tps_confidence_delta) %>%
+  arrange(desc(tps_lower_bound)) %>%
   head(5) %>%
-  select(threads, clients, tps_mean, tps_std, tps_confidence_delta_rel)
-
+  select(threads, clients, tps_lower_bound, tps_mean, tps_std, tps_confidence_delta_rel)
+max_tp_conf
 
