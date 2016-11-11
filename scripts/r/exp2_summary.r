@@ -149,37 +149,46 @@ for(i in 1:nrow(sr_combinations)) {
   combined_mw_result_row_set <-
     middleware_summary(combined_mw_result %>% filter(type=="SET")) %>%
     mutate(type="SET", servers=n_servers, replication=n_replication)
+  combined_mw_result_row_all <-
+    middleware_summary(combined_mw_result) %>%
+    mutate(type="all", servers=n_servers, replication=n_replication)
   
   if(is.na(results)) {
     results <- combined_ms_result_row
-    mw_results <- rbind(combined_mw_result_row_get, combined_mw_result_row_set)
+    mw_results <- rbind(combined_mw_result_row_get, combined_mw_result_row_set,
+                        combined_mw_result_row_all)
   } else {
     results <- rbind(results, combined_ms_result_row)
     mw_results <- rbind(mw_results, 
-                        combined_mw_result_row_get, combined_mw_result_row_set)
+                        combined_mw_result_row_get, combined_mw_result_row_set,
+                        combined_mw_result_row_all)
   }
 }
 
 all_results <- cbind(sr_combinations, results) %>%
   right_join(mw_results, by=c("servers", "replication")) %>%
   mutate(servers=as.numeric(as.character(servers)),
-         replication=as.numeric(as.character(replication)))
+         replication=as.numeric(as.character(replication))) %>%
+  mutate(replication_str=get_replication_factor(servers, replication),
+         servers_str=paste0(servers, " servers"))
 
 # ------------------
 # ---- PLOTTING ----
 # ------------------
 
 # Response time vs R and S
-data1 <- all_results %>%
-  mutate(replication_str=get_replication_factor(servers, replication))
+data1 <- all_results
 g1 <- ggplot(data1 %>% filter(type=="GET"),
              aes(x=replication_str, y=response_time_mean, group=1)) +
+  geom_ribbon(aes(ymin=response_time_q05,
+                  ymax=response_time_q95),
+              fill=color_triad1, alpha=0.5) +
+  geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
+                    ymax=response_time_mean+response_time_confidence_delta),
+                color=color_triad2, width=0.2, size=1) +
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
-  geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
-                    ymax=response_time_mean+response_time_confidence_delta)) +
-  facet_wrap(~servers, ncol=3) +
-  ylim(0, NA) +
+  facet_wrap(~servers_str, ncol=3) +
   ylab("Response time [ms]") +
   xlab("Replication") +
   asl_theme
@@ -187,20 +196,74 @@ g1
 
 g2 <- ggplot(data1 %>% filter(type=="SET"),
              aes(x=replication_str, y=response_time_mean, group=1)) +
+  geom_ribbon(aes(ymin=response_time_q05,
+                  ymax=response_time_q95),
+              fill=color_triad1, alpha=0.5) +
+  geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
+                    ymax=response_time_mean+response_time_confidence_delta),
+                color=color_triad2, width=0.2, size=1) +
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
-  facet_wrap(~servers, ncol=3) +
-  ylim(0, NA) +
+  facet_wrap(~servers_str, ncol=3) +
   ylab("Response time [ms]") +
   xlab("Replication") +
   asl_theme
 g2
 
-# Not within 10% interval
+# Scaling
+ggplot(data1 %>% filter(type=="GET"),
+             aes(x=servers_str, y=response_time_mean, group=1)) +
+  geom_ribbon(aes(ymin=response_time_q05,
+                  ymax=response_time_q95),
+              fill=color_triad2, alpha=0.2) +
+  geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
+                    ymax=response_time_mean+response_time_confidence_delta),
+                color=color_triad2, width=0.2, size=1) +
+  geom_point(color=color_dark) +
+  geom_line(color=color_dark) +
+  facet_wrap(~replication_str, ncol=3) +
+  ylab("Response time [ms]") +
+  xlab("Number of servers") +
+  asl_theme
+
+ggplot(data1 %>% filter(type=="SET"),
+       aes(x=servers_str, y=response_time_mean, group=1)) +
+  geom_ribbon(aes(ymin=response_time_q05,
+                  ymax=response_time_q95),
+              fill=color_triad2, alpha=0.2) +
+  geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
+                    ymax=response_time_mean+response_time_confidence_delta),
+                color=color_triad2, width=0.2, size=1) +
+  geom_point(color=color_dark) +
+  geom_line(color=color_dark) +
+  facet_wrap(~replication_str, ncol=3) +
+  ylab("Response time [ms]") +
+  xlab("Number of servers") +
+  asl_theme
+
+# Throughput
+data2 <- all_results %>%
+  filter(type=="all")
+ggplot(data2, aes(x=replication_str, y=tps_mean, group=1)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~servers_str, ncol=3) +
+  ylim(0, NA) +
+  asl_theme
+
+# Not within confidence interval
 not_confident <- data1 %>%
-  filter(tps_confidence_delta_rel > 0.10) %>%
-  select(servers, replication, tps_confidence_delta_rel)
+  filter(response_time_confidence_delta_rel > 0.05) %>%
+  select(servers, replication, response_time_confidence_delta_rel)
 
 cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident),
            " experiments' 95% confidence interval is not within 5% of mean:"))
 print(not_confident)
+
+# Compare middleware and memaslap
+ggplot(all_results %>% filter(type=="all"), aes(x=replication_str, group=1)) +
+  geom_line(aes(y=mean_response_time), color="red") +
+  geom_line(aes(y=response_time_mean)) +
+  facet_wrap(~servers, ncol=3) +
+  asl_theme
+
