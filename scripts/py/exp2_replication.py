@@ -13,7 +13,7 @@ R_lambdas = [lambda S: 1, lambda S: math.ceil(S / 2), lambda S: S]      # replic
 virtual_clients = 432
 num_threads = 32
 
-experiment_runtime = 6
+experiment_runtime = 8
 runtime_buffer = 15 # will be cut off when memaslaps are done
 num_repetitions = 1
 stats_frequency = "10s"
@@ -35,7 +35,7 @@ memaslap_summary_filename = "memaslap_stats.csv"
 print("Running {} experiments with a maximum of {} minutes per experiment."
       .format(len(combinations), experiment_runtime+runtime_buffer))
 
-DRY_RUN = True
+DRY_RUN = False
 
 # endregion
 
@@ -53,6 +53,7 @@ try:
         num_memaslaps = 1 if virtual_clients == 1 else 3
         concurrency = 1 if virtual_clients == 1 else virtual_clients / 3
         results_dir = "results/replication/S{}_R{}_rep{}".format(S, R, repetition)
+        print("\tWriting to {}".format(results_dir))
 
         experiment_already_done = os.path.isdir(results_dir)\
                                   and os.path.exists("{}/memaslap7.out".format(results_dir))\
@@ -89,7 +90,8 @@ try:
                                            csv_path="{}/{}".format(results_dir, memaslap_summary_filename))
             # Plot graphs
             with fabric.api.settings(warn_only=True):
-                pass # TODO
+                fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
+                # TODO any other plotting?
 
         is_first = False
 
