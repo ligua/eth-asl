@@ -22,3 +22,11 @@ color_triad2 = "#cf6e63"
 
 fig_width = 10
 fig_height = 5
+
+# ---- Helper functions ----
+get_replication_factor <- function(S, R) {
+  vec <- ifelse(R==1, "none", 
+                ifelse(R==S, "full", "half"))
+  fac <- factor(vec, levels=c("none", "half", "full"))
+  return(fac)
+}
