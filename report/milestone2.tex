@@ -112,7 +112,7 @@ In all experiments, the following holds about the experimental setup:
 \end{itemize}
 
 
-\newpage
+\clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section{Maximum Throughput}
@@ -177,21 +177,21 @@ Some parameter combinations did not yield the required confidence interval in th
 \subsection{Results}
 Reporting experiment results.
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/throughput/graphs/tp_vs_clients.pdf}
 \caption{Throughput as a function of $C$ for different values of $T$. Errorbars show the 95\% confidence interval around the mean value which is shown with points connected by lines.}
 \label{fig:exp1:res:throughput}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_vs_clients.pdf}
 \caption{The 1\%, 5\%, 50\%, 95\% and 99\% percentiles of the response time distribution, as a function of $C$ for different values of $T$. Values above 100ms are not shown.}
 \label{fig:exp1:res:responsetime}
 \end{figure}
 
-\begin{figure}[h!]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_breakdown.pdf}
 \caption{caption \todo{}. Note x axis cut off at 50ms; only GET requests; measured with millisecond accuracy.}
@@ -217,7 +217,7 @@ Figure \ref{fig:exp1:res:responsetime} shows the percentiles of the response tim
 
 
 
-\newpage
+\clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section{Effect of Replication}
@@ -236,14 +236,30 @@ Answer at least the following questions: Are \texttt{get} and \texttt{set} reque
 
 \subsection{Experimental question}
 
-In this section, I will run experiments to find out the how a) mean response time and b) throughput of the SUT depend on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether gets and sets are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
+In this section, I will run experiments to find out how the response time of the SUT depends on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether gets and sets are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
 
-To this end, I will measure mean response time as a function of $S$ and $R$, and measure the amount of time requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 10\% of the mean response time.
+To this end, I will measure mean response time as a function of $S$ and $R$, and measure how long requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 10\% of the mean response time.
 
 
 \subsection{Hypothesis}
 
 \paragraph{Get and set requests}
+Get and set requests will not be impacted the same way by different setups.
+
+Get requests will be processed faster as we increase $S$ because the same load will be distributed across more threads. Increasing $R$ will have no effect on get requests because replication is only done for set requests (there may be secondary effects due to e.g. write threads requiring more CPU time, but this should be negligible).
+
+Set requests will be strongly affected by $R$. If $R=1$, set requests will be processed faster for higher $S$ because each request is only written to one server, and for a higher $S$ the same load is distirbuted across more write threads. However, if $R>1$, response time of sets increases due to two factors: a) the request is written serially to $R$ servers, and b) not all $R$ responses are received at the same time. Assuming a) is negligible compared to b), we will observe an increase in the mean response time.
+
+To summarise: for get requests, response time will be independent of $R$ for any fixed $S$. For set requests, response time increases linearly with increasing $R$, and the slope increases with $S$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{figures/hypothesis_replication.pdf}
+\caption{Expected graph of \todo{}. Mention that y axis is same for all GET subplots and different but constant for all SET subplots.}
+\label{fig:exp1:hyp:replication}
+\end{figure}
+
+
 Are get and set requests impacted the same way by different setups? If yes/no, why?
 
 \todo{will be impacted differently}:  gets will improve with increasing S and will be independent of R; sets will get better with increasing S and worse with increasing R
@@ -292,7 +308,7 @@ How does the scalability of your system compare to that of an ideal implementati
 \todo{table: y axis is S, x axis is R}; in each cell is corresponding response time -- separately for gets and sets?
  
 
- \newpage
+ \clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section{Effect of Writes}
