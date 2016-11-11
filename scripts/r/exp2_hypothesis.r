@@ -10,12 +10,12 @@ data1 <- read.csv("report/exp2_hypothesis.csv") %>%
   mutate(servers=paste0(servers, " servers"))
 
 g1 <- ggplot(data1, aes(x=replication_factor, y=responsetime, group=1)) +
-  geom_point() +
-  geom_line() +
+  geom_point(color=color_dark) +
+  geom_line(color=color_dark) +
   facet_wrap(~type+servers, scales="free_x", ncol=3) +
   ylim(0, NA) +
   ylab("Response time") +
-  xlab("Replication factor") +
+  xlab("Replication") +
   asl_theme +
   theme(axis.text.y=element_blank(),
         axis.ticks.y=element_blank())
