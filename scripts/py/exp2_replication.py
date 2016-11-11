@@ -13,7 +13,7 @@ R_lambdas = [lambda S: 1, lambda S: math.ceil(S / 2), lambda S: S]      # replic
 virtual_clients = 432
 num_threads = 32
 
-experiment_runtime = 8
+experiment_runtime = 6
 runtime_buffer = 15 # will be cut off when memaslaps are done
 num_repetitions = 1
 stats_frequency = "10s"
