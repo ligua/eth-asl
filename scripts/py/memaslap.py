@@ -40,6 +40,13 @@ class Memaslap(object):
         self.log.addHandler(ch)
         # endregion
 
+    def upload_resources(self):
+        """Upload resource files."""
+        self.log.info("Uploading resource files to memaslap server.")
+        with fa.settings(**self.fab_settings):
+            fa.local("scp -i {} resources/*.cfg {}:~/resources"
+                     .format(self.ssh_key_filename, self.host_string))
+
     def update_and_install(self):
         """Update packages and build memaslap."""
         self.log.info("Updating and installing memaslap on machine {}.".format(self.ssh_hostname))
@@ -48,8 +55,7 @@ class Memaslap(object):
             fa.run("sudo apt-get --assume-yes update")
             fa.run("sudo apt-get --assume-yes install build-essential libevent-dev")
 
-            fa.local("scp -i {} resources/*.cfg {}:~/resources"
-                     .format(self.ssh_key_filename, self.host_string))
+            self.upload_resources()
 
             result = fa.run("ls libmemcached-1.0.18/clients/memaslap")
             if result.return_code:
