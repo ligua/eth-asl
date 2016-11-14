@@ -141,7 +141,7 @@ class Experiment():
         for s in mc_servers:
             s.start()
 
-        sleep_for = 5
+        sleep_for = 15
         self.log.info("Sleeping for {} seconds so memcached servers can start...".format(sleep_for))
         time.sleep(sleep_for)
     

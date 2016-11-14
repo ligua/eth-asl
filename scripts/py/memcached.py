@@ -1,6 +1,7 @@
 import fabric.api as fa
 import os
 import logging
+import time
 
 
 class Memcached(object):
@@ -51,6 +52,7 @@ class Memcached(object):
         """Start memcached."""
         self.log.info("Before starting, killing previous instances...")
         self.stop()
+        time.sleep(5)
         self.log.info("Starting memcached on machine {}.".format(self.ssh_hostname))
         with fa.settings(**self.fab_settings):
             command = "memcached -p {} -t 1".format(self.serve_port)
