@@ -200,21 +200,23 @@ Reporting experiment results.
 
 \begin{tabular}{|c|c|c|r|}
 \hline \textbf{Name} & \textbf{Begin timestamp} & \textbf{End timestamp} & \textbf{Mean [ms]} \\
-\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0054 \\
-\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 8.49 \\
-\hline tWorker & $t_{dequeued}$ & $t_{forwarded}$ & 0.0231 \\
-\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 5.85 \\
-\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0333 \\
+\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0034 \\
+\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 1.58 \\
+\hline tWorker & $t_{dequeued}$ & $t_{forwarded}$ & 0.0253 \\
+\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 3.64 \\
+\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0172 \\
 \end{tabular}
 
 
 \todo{Comparison of hypothesis and experiment results.}
 
-Figure \ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). However, since we are trying to maximise sustained throughput, we also need to look at the response times.
+\todo{Mention the table of mean times and Figure~\ref{fig:exp1:res:breakdown}.}
 
-Figure \ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. For $(T=64,C=648)$ and $(T=64,C=720)$, both the median response time (green line) and 95\% quantile are significantly higher than for $(T=32, C=432)$. Therefore, we can consider the top two throughputs unsustainable, and declare that the maximal throughput of 19600 requests per second is achieved at 430 clients using 32 threads.
+Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). However, since we are trying to maximise sustained throughput, we also need to look at the response times.
 
-\todo{mention that below 432 clients (with T=32) throughput is significantly less than with 432} (explains why I don’t pick a lower value of C that has throughput in a similar range)
+Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T$, both the median response time (green line) and 95\% quantile (pink line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable. Of the remaining setups, the highest throughput is achieved by 216 clients at $T=32$, which is the configuration we will declare optimal at a throughput of 18500 requests per second.
+
+\todo{mention that below 216 clients (with T=32) throughput is significantly less than with 216} (explains why I don’t pick a lower value of C that has throughput in a similar range)
 
 
 

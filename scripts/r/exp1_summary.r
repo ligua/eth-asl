@@ -10,6 +10,9 @@ if(length(args) == 0) {
   stop("Arguments: [<results_directory>]")
 }
 
+OPTIMAL_CLIENTS = 216
+OPTIMAL_THREADS = 32
+
 # ---------------------------
 # ---- HELPER FUNCTIONS -----
 # ---------------------------
@@ -250,16 +253,14 @@ max_tp_conf <- all_results %>%
 max_tp_conf
 
 # ---- Response time breakdown of optimal run ----
-OPTIMAL_CLIENTS <- 432
-OPTIMAL_THREADS <- 32
-run0_filename <- "results/throughput/clients432_threads32_rep1/request.log"
-run1_filename <- "results/throughput/clients432_threads32_rep1/request.log"
+run0_filename <- "results/throughput/clients216_threads32_rep0/request.log"
+#run1_filename <- "results/throughput/clients216_threads32_rep1/request.log"
 run0_df <- file_to_df(run0_filename, sep=",") %>%
   normalise_request_log_df()
-run1_df <- file_to_df(run1_filename, sep=",") %>%
-  normalise_request_log_df()
+#run1_df <- file_to_df(run1_filename, sep=",") %>%
+#  normalise_request_log_df()
 
-data4 <- rbind(run0_df, run1_df) %>%
+data4 <- run0_df %>% #rbind(run0_df, run1_df) %>%
   mutate(tLoadBalancer=timeEnqueued-timeCreated,
          tQueue=timeDequeued-timeEnqueued,
          tWorker=timeForwarded-timeDequeued,
@@ -271,7 +272,7 @@ data4 <- rbind(run0_df, run1_df) %>%
 g4 <- ggplot(data4 %>% select(type, tLoadBalancer:tReturn) %>% melt(id.vars=c("type"))) +
   geom_histogram(aes(x=value, xmin=0, fill=type), fill=color_medium) +
   facet_wrap(~variable, ncol=5, scales="free_y") +
-  xlim(-1, 50) +
+  xlim(-1, 30) +
   xlab("Time spent [ms]") +
   ylab("Number of requests") +
   ggtitle("Distribution of time that requests spend in different parts of SUT") +
