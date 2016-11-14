@@ -174,6 +174,10 @@ class Experiment():
             ms_server = Memaslap(public_hostnames[i], private_hostnames[index_a4], middleware_port, ssh_username=ssh_username,
                                  id_number=int(aslutil.server_name_to_number(vm_names[i]))) # i is zero-indexed
             ms_servers.append(ms_server)
+
+            if is_first_run:
+                ms_server.upload_resources()
+
             if update_and_install:
                 if not first_memaslap:
                     ms_server.upload_built_files()
