@@ -96,7 +96,7 @@ normalise_request_log_df <- function(df) {
 
 # ---- Loop over result dirs ----
 file_name_regex <- paste0(result_dir_base,
-                          "/S(\\d)_R(\\d)_rep(\\d{1,2})/memaslap_stats\\.csv$")
+                          "/S(\\d)_R(\\d)_rep(2)/memaslap_stats\\.csv$")
 unfiltered_files <- list.files(path=".", "memaslap_stats.csv", recursive=TRUE)
 filtered_files <- grep(file_name_regex, unfiltered_files, value=TRUE, perl=TRUE)
 
@@ -265,5 +265,6 @@ ggplot(all_results %>% filter(type=="all"), aes(x=replication_str, group=1)) +
   geom_line(aes(y=mean_response_time), color="red") +
   geom_line(aes(y=response_time_mean)) +
   facet_wrap(~servers, ncol=3) +
+  ylim(0, NA) +
   asl_theme
 
