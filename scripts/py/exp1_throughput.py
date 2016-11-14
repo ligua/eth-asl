@@ -10,8 +10,8 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [180] #[1] + list(range(72, 600, 72))
-num_threads_values = [32, 16, 64] #[1, 16, 32, 64]
+virtual_clients_values = [144] #[1] + list(range(72, 600, 72))
+num_threads_values = [32] #[1, 16, 32, 64]
 
 experiment_runtime = 10
 runtime_buffer = 15 # will be cut off when memaslaps are done
@@ -23,7 +23,7 @@ memaslap_window_size = "1k"
 combinations = []
 for virtual_clients in virtual_clients_values:
     for num_threads in num_threads_values:
-        for repetition in range(num_repetitions):
+        for repetition in [1]: #range(num_repetitions):
             combinations.append((virtual_clients, num_threads, repetition))
 #combinations = [(336, 1, 1)] # override combinations
 additional_combinations = []
