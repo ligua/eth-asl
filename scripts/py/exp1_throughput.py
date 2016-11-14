@@ -10,10 +10,10 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S = 5                   # number of servers
 R = 1                   # replication factor
-virtual_clients_values = [54, 90, 108] #[1] + list(range(72, 600, 72))
+virtual_clients_values = [180] #[1] + list(range(72, 600, 72))
 num_threads_values = [32, 16, 64] #[1, 16, 32, 64]
 
-experiment_runtime = 8
+experiment_runtime = 10
 runtime_buffer = 15 # will be cut off when memaslaps are done
 num_repetitions = 1
 stats_frequency = "10s"
