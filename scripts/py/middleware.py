@@ -96,7 +96,7 @@ class Middleware(object):
 
     def download_logs(self, local_path="results/trace"):
         """Download middleware logs to specified local directory."""
-        self.log.info("Downloading memaslap logs from machine {} to {}.".format(self.ssh_hostname, local_path))
+        self.log.info("Downloading middleware logs from machine {} to {}.".format(self.ssh_hostname, local_path))
         with fa.settings(**self.fab_settings):
             fa.local("mkdir -p {}".format(local_path))
             fa.local("scp -i {} {}:~/asl/log/*.log {}"
