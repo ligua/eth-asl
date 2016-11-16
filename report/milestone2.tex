@@ -273,15 +273,6 @@ In an ideal system, a) there would be enough resources to concurrently run all t
 
 For get requests, the ideal system would have linear speed-up (assuming the load balancer does not become a bottleneck). I predict that the SUT will have sublinear speed-up because the response time also includes network latency -- a term that is not dependent on $S$: $response \; time = const. + \frac{const.}{S}$. In addition, since threads compete for resources in the SUT, the speed-up will be even lower than what's predicted by the formula above.
 
-
-\begin{itemize}
-\item Draw graphs with expected results
-\item Even try to predict variance and statistical properties
-\item Make bullet points with explanations
-\item Use „modeling“ to make hypothesis
-\item Formulate a number of questions on what you expect to see, develop a hypothesis around the behavior that is expected, explain the hypothesis, and write it all down
-\end{itemize}
-
 \subsection{Experiments}
 \begin{center}
 \small{
@@ -304,6 +295,35 @@ Reporting experiment results. Comparison of hypothesis and experiment results.
 How does the scalability of your system compare to that of an ideal implementation?
 
 \todo{table: y axis is S, x axis is R}; in each cell is corresponding response time -- separately for gets and sets?
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_get.pdf}
+\caption{caption \todo{}}
+\label{fig:exp2:res:replication:get}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_set.pdf}
+\caption{caption \todo{}}
+\label{fig:exp2:res:replication:set}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_get.pdf}
+\caption{caption \todo{}}
+\label{fig:exp2:res:servers:get}
+\end{figure}
+ 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_set.pdf}
+\caption{caption \todo{}}
+\label{fig:exp2:res:servers:set}
+\end{figure}
  
 
  \clearpage
