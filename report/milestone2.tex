@@ -200,11 +200,11 @@ Reporting experiment results.
 
 \begin{tabular}{|c|c|c|r|}
 \hline \textbf{Name} & \textbf{Begin timestamp} & \textbf{End timestamp} & \textbf{Mean [ms]} \\
-\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0034 \\
-\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 1.58 \\
-\hline tWorker & $t_{dequeued}$ & $t_{forwarded}$ & 0.0253 \\
-\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 3.64 \\
-\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0172 \\
+\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0043 \\
+\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 1.40 \\
+\hline tWorker & $t_{dequeued}$ & $t_{forwarded}$ & 0.0191 \\
+\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 2.85 \\
+\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0221 \\
 \end{tabular}
 
 
@@ -214,9 +214,7 @@ Reporting experiment results.
 
 Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). However, since we are trying to maximise sustained throughput, we also need to look at the response times.
 
-Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable. Of the remaining setups, the highest throughput is achieved by 216 clients at $T=32$, which is the configuration we will declare optimal at a throughput of 18500 requests per second.
-
-\todo{mention that below 216 clients (with T=32) throughput is significantly less than with 216} (explains why I don’t pick a lower value of C that has throughput in a similar range)
+Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T > 1$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable. Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- 180 clients and 32 threads -- as the configuration we will declare optimal at a throughput of 18400 requests per second.
 
 
 
@@ -291,11 +289,11 @@ For get requests, the ideal system would have linear speed-up (assuming the load
 \begin{tabular}{|c|c|}
 \hline Number of servers & $\in \{3, 5, 7\}$ \\ 
 \hline Number of client machines & 3 \\ 
-\hline Virtual clients & \todo{from exp1} \\ 
+\hline Virtual clients & 180 \\ 
 \hline Workload & Key 16B, Value 128B, Writes 5\% \\
 \hline Middleware: replication factor & $\in \{1, ceil(S/2), S\}$ \\ 
-\hline Middleware: read threads & \todo{from exp1} \\ 
-\hline Runtime x repetitions & 60s x 5 \todo{} \\ 
+\hline Middleware: read threads & 32 \\ 
+\hline Runtime x repetitions & 6min x 2 \\ 
 \hline Log files & \todo{} \\
 \hline 
 \end{tabular} }
@@ -355,10 +353,10 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 \begin{tabular}{|c|c|}
 \hline Number of servers & $\in \{3, 4, 5, 6, 7\}$ \\ 
 \hline Number of client machines & 3 \\ 
-\hline Virtual clients / machine & \todo{} \\ 
+\hline Virtual clients & 180 \\ 
 \hline Workload & Key 16B, Value 128B, Writes $\in \{1\%, 5\%, 10\%\}$ \todo{} \\
 \hline Middleware: replication factor & $\in \{1, S\}$ \\ 
-\hline Middleware: read threads & \todo{} \\ 
+\hline Middleware: read threads & 32 \\ 
 \hline Runtime x repetitions & 60s x 5 \todo{} \\ 
 \hline Log files & \todo{} \\
 \hline 
