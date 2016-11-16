@@ -96,7 +96,7 @@ normalise_request_log_df <- function(df) {
 
 # ---- Loop over result dirs ----
 file_name_regex <- paste0(result_dir_base,
-                          "/S(\\d)_R(\\d)_rep(2)/memaslap_stats\\.csv$")
+                          "/S(\\d)_R(\\d)_rep([3-4])/memaslap_stats\\.csv$")
 unfiltered_files <- list.files(path=".", "memaslap_stats.csv", recursive=TRUE)
 filtered_files <- grep(file_name_regex, unfiltered_files, value=TRUE, perl=TRUE)
 
@@ -193,6 +193,8 @@ g1 <- ggplot(data1 %>% filter(type=="GET"),
   xlab("Replication") +
   asl_theme
 g1
+ggsave(paste0(result_dir_base, "/graphs/response_time_vs_replication_get.pdf"), g1,
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 g2 <- ggplot(data1 %>% filter(type=="SET"),
              aes(x=replication_str, y=response_time_mean, group=1)) +
@@ -209,6 +211,8 @@ g2 <- ggplot(data1 %>% filter(type=="SET"),
   xlab("Replication") +
   asl_theme
 g2
+ggsave(paste0(result_dir_base, "/graphs/response_time_vs_replication_set.pdf"), g2,
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 # Scaling
 ggplot(data1 %>% filter(type=="GET"),
@@ -225,6 +229,8 @@ ggplot(data1 %>% filter(type=="GET"),
   ylab("Response time [ms]") +
   xlab("Number of servers") +
   asl_theme
+ggsave(paste0(result_dir_base, "/graphs/response_time_vs_servers_get.pdf"),
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 ggplot(data1 %>% filter(type=="SET"),
        aes(x=servers_str, y=response_time_mean, group=1)) +
@@ -240,6 +246,8 @@ ggplot(data1 %>% filter(type=="SET"),
   ylab("Response time [ms]") +
   xlab("Number of servers") +
   asl_theme
+ggsave(paste0(result_dir_base, "/graphs/response_time_vs_servers_set.pdf"),
+       width=fig_width, height=fig_height, device=cairo_pdf)
 
 # Throughput
 data2 <- all_results %>%
