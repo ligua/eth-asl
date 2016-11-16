@@ -355,7 +355,7 @@ I predict the following.
 \paragraph{Performance impact}
 Increasing $W$ will decrease throughput and increase mean response time for any combination of $S$ and $R$ because write requests take longer to process. Fully replicated setups ($R=S$) will suffer a larger performance decrease than setups with no replication ($R=1$) because in the case of full replication, WriteWorkers do more work for each write request (i.e. the response time of each write request will be higher).
 
-The setups with $S=3$ servers will suffer the largest relative performance decrease (compared to $S > 3$ because there are fewer WriteWorkers dealing with the same load of write requests, which in turn increases the queue wait time $tQueue$.
+The setups with $S=3$ servers will suffer the largest relative performance decrease (compared to $S > 3$) because there are fewer WriteWorkers dealing with the same load of write requests, which in turn increases the queue wait time $tQueue$.
 
 \paragraph{Reasons for reduced performance}
 
