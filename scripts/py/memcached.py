@@ -3,7 +3,6 @@ import os
 import logging
 import time
 
-
 class Memcached(object):
     def __init__(self, serve_port, ssh_hostname,
                  ssh_key_filename=os.path.expanduser("~/.ssh/id_rsa_asl"),

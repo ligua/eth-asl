@@ -10,6 +10,7 @@ if(length(args) == 0) {
   stop("Arguments: [<results_directory>]")
 }
 
+
 OPTIMAL_CLIENTS = 180
 OPTIMAL_THREADS = 32
 
@@ -239,11 +240,13 @@ ggsave(paste0(result_dir_base, "/graphs/response_time_diff.pdf"), g2,
 
 # ---- Maximum throughput ----
 max_tp <- all_results %>%
+
   filter(clients <= 180) %>%
   arrange(desc(tps_mean)) %>%
   head(5) %>%
   select(threads, clients, tps_mean, tps_std, tps_confidence_delta_rel)
 max_tp
+
 
 # ---- Response time breakdown of optimal run ----
 run0_filename <- "results/throughput/clients180_threads32_rep0/request.log"
