@@ -2,7 +2,9 @@ import os
 import fabric.api
 import aslutil
 import math
+import time
 import msrestazure.azure_exceptions
+from colors import Colors
 from experiment import Experiment
 from deployer import Deployer
 from extractor import Extractor
@@ -10,11 +12,11 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S_values = [3, 5, 7]                        # number of servers
 R_lambdas = [lambda S: 1, lambda S: S]      # replication factor
-write_proportion_values = [1, 5, 10]              # % of writes in workload
-virtual_clients = 432
+write_proportion_values = [1, 4]              # % of writes in workload
+virtual_clients = 180
 num_threads = 32
 
-experiment_runtime = 6
+experiment_runtime = 8
 runtime_buffer = 15 # will be cut off when memaslaps are done
 num_repetitions = 1
 stats_frequency = "10s"
@@ -36,8 +38,12 @@ SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
 print("Running {} experiments with a maximum of {} minutes per experiment."
       .format(len(combinations), experiment_runtime+runtime_buffer))
+estimated_mins = len(combinations) * experiment_runtime
+print("Total runtime: {} hours {} minutes".format(estimated_mins // 60, estimated_mins % 60))
+eta_string = time.strftime("%H:%M", time.localtime(time.time() + estimated_mins * 60))
+print("ETA: {}".format(Colors.bold(Colors.ok_green(eta_string))))
 
-DRY_RUN = True
+DRY_RUN = False
 
 # endregion
 
@@ -53,7 +59,6 @@ try:
                  .format(S, R, write_proportion, repetition))
 
         workload_filename = workload_filename_template.format(write_proportion)
-        print("\tWorkload filename: {}".format(workload_filename))
 
 
         num_memaslaps = 1 if virtual_clients == 1 else 3
@@ -68,7 +73,6 @@ try:
             continue
 
         additional_buffer = 0
-        print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
 
         hibernate_at_end = False
         if combination == combinations[-1]: # last one
@@ -95,7 +99,7 @@ try:
                                            csv_path="{}/{}".format(results_dir, memaslap_summary_filename))
             # Plot graphs
             with fabric.api.settings(warn_only=True):
-                pass # TODO
+                fabric.api.local("Rscript scripts/r/trace.r {}".format(results_dir))
 
         is_first = False
 
