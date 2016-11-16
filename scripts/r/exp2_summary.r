@@ -42,6 +42,7 @@ memaslap_summary <- function(df) {
 
 middleware_summary <- function(dfmw) {
   num_requests <- length(dfmw$tAll)
+  
   res <- list()
   res$response_time_mean <- mean(dfmw$tAll)
   res$response_time_std <- sd(dfmw$tAll)
@@ -55,6 +56,11 @@ middleware_summary <- function(dfmw) {
   res$response_time_q50 <- quantile(dfmw$tAll, 0.50)
   res$response_time_q95 <- quantile(dfmw$tAll, 0.95)
   res$response_time_q99 <- quantile(dfmw$tAll, 0.99)
+  res$tLoadBalancer <- mean(dfmw$tLoadBalancer)
+  res$tQueue <- mean(dfmw$tQueue)
+  res$tWorker <- mean(dfmw$tWorker)
+  res$tMemcached <- mean(dfmw$tMemcached)
+  res$tReturn <- mean(dfmw$tReturn)
   
   return(as.data.frame(res))
 }
@@ -248,6 +254,54 @@ ggplot(data1 %>% filter(type=="SET"),
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_servers_set.pdf"),
        width=fig_width, height=fig_height, device=cairo_pdf)
+
+# Proportion of time spent in different parts of system
+data3 <- all_results %>%
+  select(type, servers_str, replication_str, tLoadBalancer:tReturn) %>%
+  melt(id.vars=c("type", "servers_str", "replication_str")) %>%
+  rename(Component=variable) %>%
+  mutate(Component=factor(Component, ordered=TRUE,
+                             levels=rev(c("tLoadBalancer", "tQueue", "tWorker", "tMemcached", "tReturn"))))
+ggplot(data3 %>% filter(type=="SET"), aes(x=replication_str, y=value, fill=Component, group=1)) +
+  geom_bar(stat="identity") +
+  facet_wrap(~servers_str, ncol=3) +
+  xlab("Replication") +
+  ylab("Time spent [ms]") +
+  asl_theme +
+  scale_fill_brewer(palette="Set1")
+ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_replication_set_abs.pdf"),
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
+
+ggplot(data3 %>% filter(type=="SET"), aes(x=replication_str, y=value, fill=Component, group=1)) +
+  geom_bar(stat="identity", position="fill") +
+  facet_wrap(~servers_str, ncol=3) +
+  xlab("Replication") +
+  ylab("Time spent [ms]") +
+  asl_theme +
+  scale_fill_brewer(palette="Set1")
+ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_replication_set_rel.pdf"),
+       width=fig_width, height=fig_height, device=cairo_pdf)
+
+ggplot(data3 %>% filter(type=="SET"), aes(x=servers_str, y=value, fill=Component, group=1)) +
+  geom_bar(stat="identity") +
+  facet_wrap(~replication_str, ncol=3) +
+  xlab("Replication") +
+  ylab("Time spent [ms]") +
+  asl_theme +
+  scale_fill_brewer(palette="Set1")
+ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_servers_set_abs.pdf"),
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
+
+ggplot(data3 %>% filter(type=="SET"), aes(x=servers_str, y=value, fill=Component, group=1)) +
+  geom_bar(stat="identity", position="fill") +
+  facet_wrap(~replication_str, ncol=3) +
+  xlab("Replication") +
+  ylab("Time spent [ms]") +
+  asl_theme +
+  scale_fill_brewer(palette="Set1")
+ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_servers_set_rel.pdf"),
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
+
 
 # Throughput
 data2 <- all_results %>%
