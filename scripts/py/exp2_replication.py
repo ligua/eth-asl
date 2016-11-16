@@ -23,7 +23,7 @@ memaslap_window_size = "1k"
 combinations = []
 for S in S_values:
     for R_lambda in R_lambdas:
-        for repetition in [3]:#range(num_repetitions):
+        for repetition in [4]:#range(num_repetitions):
             R = R_lambda(S)
             combinations.append((S, R, repetition))
 #combinations = [(5, 1, 1)] # override combinations
