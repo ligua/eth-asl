@@ -30,3 +30,10 @@ get_replication_factor <- function(S, R) {
   fac <- factor(vec, levels=c("none", "half", "full"))
   return(fac)
 }
+
+get_replication_factor_vocal <- function(S, R) {
+  vec <- ifelse(R==1, "no replication", 
+                ifelse(R==S, "full replication", "half replication"))
+  fac <- factor(vec, levels=c("no replication", "half replication", "full replication"))
+  return(fac)
+}
