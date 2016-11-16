@@ -24,6 +24,12 @@ fig_width = 10
 fig_height = 5
 
 # ---- Helper functions ----
+get_writes_factor <- function(W) {
+  vec <- paste0(W, "%")
+  fac <- factor(vec, levels=paste0(seq(1, 10, 1), "%"))
+  return(fac)
+}
+
 get_replication_factor <- function(S, R) {
   vec <- ifelse(R==1, "none", 
                 ifelse(R==S, "full", "half"))

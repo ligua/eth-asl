@@ -185,7 +185,7 @@ all_results <- cbind(sr_combinations, results) %>%
          writes=as.numeric(as.character(writes))) %>%
   mutate(replication_str=get_replication_factor_vocal(servers, replication),
          servers_str=paste0(servers, " servers"),
-         writes_str=paste0(writes, "% writes"))
+         writes_str=get_writes_factor(writes))
 
 # ------------------
 # ---- PLOTTING ----
