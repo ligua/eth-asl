@@ -276,7 +276,7 @@ ggplot(data3 %>% filter(type=="SET"), aes(x=replication_str, y=value, fill=Compo
   geom_bar(stat="identity", position="fill") +
   facet_wrap(~servers_str, ncol=3) +
   xlab("Replication") +
-  ylab("Time spent [ms]") +
+  ylab("Proportion of time spent") +
   asl_theme +
   scale_fill_brewer(palette="Set1")
 ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_replication_set_rel.pdf"),
@@ -296,7 +296,7 @@ ggplot(data3 %>% filter(type=="SET"), aes(x=servers_str, y=value, fill=Component
   geom_bar(stat="identity", position="fill") +
   facet_wrap(~replication_str, ncol=3) +
   xlab("Replication") +
-  ylab("Time spent [ms]") +
+  ylab("Proportion of time spent") +
   asl_theme +
   scale_fill_brewer(palette="Set1")
 ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_servers_set_rel.pdf"),
