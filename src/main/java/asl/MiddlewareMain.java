@@ -42,7 +42,7 @@ public class MiddlewareMain implements Runnable {
                 11212,
                 new ArrayList<String>(Arrays.asList("localhost:11211", "localhost:11210")),
                 10,
-                2);
+                1);
     }
 
     MiddlewareMain(String loadBalancerIp, Integer loadBalancerPort, List<String> memcachedAddresses,

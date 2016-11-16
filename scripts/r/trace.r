@@ -8,8 +8,13 @@ SHOULD_FILTER = FALSE
 args <- commandArgs(trailingOnly=TRUE)
 if (length(args) == 0) {
   result_dir_base <- "results/trace"
+  drop_times = 1
 } else if(length(args) == 1) {
   result_dir_base <- args[1]
+  drop_times = 1
+} else if(length(args) == 2) {
+  result_dir_base <- args[1]
+  drop_times <- as.numeric(args[2])
 } else {
   stop("Arguments: [<results_directory>]")
 }
@@ -20,6 +25,11 @@ memaslap <- read.csv(paste0(result_dir_base, "/memaslap_stats.csv"), header=TRUE
 
 DROP_TIMES_BEFORE = 3 * 60 # How many seconds in the beginning we want to drop
 DROP_TIMES_AFTER = max((memaslap %>% filter(type=="t"))$time) - 2 * 60
+
+if(drop_times == 0) {
+  DROP_TIMES_BEFORE = 0
+  DROP_TIMES_AFTER = max((memaslap %>% filter(type=="t"))$time)
+}
 
 # ---- Distribution of response times -----
 data1 <- requests %>%
