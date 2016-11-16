@@ -275,7 +275,7 @@ ggsave(paste0(result_dir_base, "/graphs/throughput_vs_writes.pdf"),
 # Not within confidence interval
 not_confident <- all_results %>%
   filter(response_time_confidence_delta_rel > 0.05) %>%
-  select(servers, replication, response_time_confidence_delta_rel)
+  select(servers, replication, writes, response_time_confidence_delta_rel)
 
 cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident),
            " experiments' response time 95% confidence interval is not within 5% of mean:"))
