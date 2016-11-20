@@ -109,7 +109,7 @@ normalise_request_log_df <- function(df) {
 
 # ---- Loop over result dirs ----
 file_name_regex <- paste0(result_dir_base,
-                          "/S(\\d)_R(\\d)_rep([3-4])/memaslap_stats\\.csv$")
+                          "/S(\\d)_R(\\d)_rep([5])/memaslap_stats\\.csv$")
 unfiltered_files <- list.files(path=".", "memaslap_stats.csv", recursive=TRUE)
 filtered_files <- grep(file_name_regex, unfiltered_files, value=TRUE, perl=TRUE)
 
