@@ -5,7 +5,7 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{color}
 \usepackage{graphicx}
-\usepackage[colorlinks=true,urlcolor=blue,linkcolor=gray]{hyperref}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=black]{hyperref}
 
 
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
@@ -44,34 +44,16 @@ Milestone}
 
 \newpage
 
-\section*{Notes on writing the report \small{(remove this page for submission)}}
+\tableofcontents
 
-Before starting to work on this milestone please remember:
-\begin{itemize}
-\item The prerequisite to a successful completion to this milestone is to have a stable system and also the necessary logging functionalities in place. 
-\item Depending on the workload and goal of the experiment, you might need to change the sampling rate from the default level. Make sure to indicate when doing so.
-\item The choice of experiment length and repetitions is up to you to decide, please make sure that you do not include warm-up and cool-down phases in the measurements. There are many experiments to run in this milestone, try to make a tradeoff.  
-\item We recommend that you have scripts in place to deploy and run experiments.
-\item All experiments have to be executed on the Microsoft Azure cloud.
-\item When plotting graphs include errors or measures of accuracy whenever possible. 
-\item Keep the report compact and concise! The total length should not exceed 20 pages. Log listings are not counted in this length, but all text, figures and tables are. If you have many logs, compress them by experiment and reference the archive instead of the independent files.
-\end{itemize}
-
-In this milestone we expect to see the different experiments you ran to exercise the system, and with each experiment we expect a clear description of the system configuration used, the hypothesis on behavior and the explanation of the behavior observed (in terms of the different design decisions taken beforehand) -- \emph{missing either of these for an experiment might make you lose all points for that given experiment!} 
-
-Keep in mind that for a good explanation of the results of an experiment you might have to use one or more methods of data analysis presented in the lecture and in the book. You might have to combine measurements taken in the middleware with the ones at the clients to be able to provide a full picture.
-
-Please feel free to structure the three sections of this report as it makes most sense for your experiments and explanations, but please respect the goal of each section. Also, similarly to the first milestone, include tables and descriptions about your experimental setup before each set of experiments.
-
-\medskip
-
-\pagebreak
-
+\clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \section*{Modifications to the middleware}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
+\addcontentsline{toc}{section}{Modifications to the middleware}
+
 In the last milestone submission, my middleware implemented all functionality as necessary. However, the resource usage was extremely wasteful: each read thread took up nearly 100\% of the resources allocated to them and never went to a sleeping state. This caused more than 10-fold drops in performance when going from $T=1$ to $T=4$ (for $S=5$), and would have made the maximum throughput experiment useless. The changes can be seen on \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/commit/928e9bba132d34ecf9c00936babdd7fa2645e50f}{GitLab}.
 
 To verify that the system is still stable, I re-ran the trace experiment. The throughput and response time are shown in Figures~\ref{fig:trace:throughput} and \ref{fig:trace:responsetime}, and are confirmed to be stable (and throughput is roughly 30\% higher). The Interactive Response Time Law also still holds (to within 0.46\%). For explanations of the figures, see Milestone 1 report.
@@ -96,6 +78,7 @@ To verify that the system is still stable, I re-ran the trace experiment. The th
 \section*{Definitions and setup}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
+\addcontentsline{toc}{section}{Definitions and setup}
 
 In all experiments, the following definitions hold.
 
@@ -396,7 +379,8 @@ Reporting experiment results. Comparison of hypothesis and experiment results.
 
 \pagebreak
 
-\section*{Logfile listing}
+\section*{Log file listing}
+\addcontentsline{toc}{section}{Log file listing}
 
 \todo{}
 
