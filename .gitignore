@@ -32,7 +32,6 @@ results/*
 !results/trace_rep3/
 !results/baseline/
 !results/throughput/graphs/
-!results/replication/graphs/
 
 # Random crap
 tmp/
