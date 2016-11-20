@@ -20,8 +20,11 @@ memaslap_summary <- function(df) {
   
   df2 <- df %>%
     mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000) %>%
-    filter(type=="t" & time > DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
-    filter(request_type=="GET")
+    filter(type=="t" & time > DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER)
+  
+  means <- df2 %>%
+    group_by(request_type) %>%
+    summarise(mean_response_time=sum(ops*avg)/sum(ops))
   
   response_times <- df2 %>%
     group_by(time) %>%
@@ -34,7 +37,10 @@ memaslap_summary <- function(df) {
   tps_values <- tps_summed$tps
   res$tps_mean <- mean(tps_values)
   res$tps_std <- sd(tps_values) # TODO calculate tps std over reps too
-  res$mean_response_time <- mean(df2$avg)
+  res$mean_response_time_get <- (means %>% filter(request_type=="GET"))$mean_response_time[1]
+  res$mean_response_time_set <- (means %>% filter(request_type=="SET"))$mean_response_time[1]
+  res$mean_response_time <- (res$mean_response_time_get * sum((df2 %>% filter(request_type=="GET"))$ops) +
+                               res$mean_response_time_set * sum((df2 %>% filter(request_type=="SET"))$ops)) / sum(df2$ops)
   res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std) / sum(df2$ops))
   
   return(as.data.frame(res))
@@ -61,6 +67,7 @@ middleware_summary <- function(dfmw) {
   res$tWorker <- mean(dfmw$tWorker)
   res$tMemcached <- mean(dfmw$tMemcached)
   res$tReturn <- mean(dfmw$tReturn)
+  res$tAll <- mean(dfmw$tReturn)
   
   return(as.data.frame(res))
 }
@@ -323,8 +330,8 @@ cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident),
 print(not_confident)
 
 # Compare middleware and memaslap
-ggplot(all_results %>% filter(type=="all"), aes(x=replication_str, group=1)) +
-  geom_line(aes(y=mean_response_time), color="red") +
+ggplot(all_results %>% filter(type=="SET"), aes(x=replication_str, group=1)) +
+  geom_line(aes(y=mean_response_time_set), color="red") +
   geom_line(aes(y=response_time_mean)) +
   facet_wrap(~servers, ncol=3) +
   ylim(0, NA) +
