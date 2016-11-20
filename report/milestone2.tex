@@ -109,6 +109,8 @@ In all experiments, the following holds about the experimental setup:
 \begin{itemize}
 \item The middleware was run on Basic A4 instances, and both memaslap and memcached were run on Basic A2 instances.
 \item The first 2 and last 2 minutes of each experiment were discarded from analyses as warm-up and cool-down time.
+\item The request sampling rate for logging is set to $\frac{1}{100}$ in throughput experiments (Section~\ref{sec:exp1}) and $\frac{1}{10}$ in replication and write proportion experiments (Sections~\ref{sec:exp2} and \ref{sec:exp3}).
+\item We are dealing with a closed system because memaslap clients wait for a response before sending a new request.
 \end{itemize}
 
 
@@ -118,6 +120,7 @@ In all experiments, the following holds about the experimental setup:
 \section{Maximum Throughput}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
+\label{sec:exp1}
 
 Find the highest throughput of your system for 5 servers with no replication and a read-only workload configuration. What is the minimum number of threads and clients (rounded to multiple of 10) that together achieve this throughput? Explain why the system reaches its maximum throughput at these points and show how the performance changes around these configurations.
 
@@ -225,6 +228,7 @@ Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response tim
 \section{Effect of Replication}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
+\label{sec:exp2}
 
 Explore how the behavior of your system changes for a 5\%-write workload with S=3,5 and 7 server backends and the following three replication factors:
 \begin{itemize} 
@@ -334,6 +338,7 @@ How does the scalability of your system compare to that of an ideal implementati
 \section{Effect of Writes}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
+\label{sec:exp3}
 
 In this section, you should study the changes in throughput and response time of your system as the percentage of write operations increases. Use a combination of 3 to 7 servers and vary the number of writes between 1\% and 10\% (e.g. 1\%, 5\% and 10\%). The experiments need to be carried out for the replication factors R=1 and R=all.  
 
@@ -373,10 +378,10 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
-\hline Number of servers & $\in \{3, 4, 5, 6, 7\}$ \\ 
+\hline Number of servers & $\in \{3, 5, 7\}$ \\ 
 \hline Number of client machines & 3 \\ 
 \hline Virtual clients & 180 \\ 
-\hline Workload & Key 16B, Value 128B, Writes $\in \{1\%, 5\%, 10\%\}$ \todo{} \\
+\hline Workload & Key 16B, Value 128B, Writes $\in \{1\%, 4\%, 7\%, 10\%\}$ \\
 \hline Middleware: replication factor & $\in \{1, S\}$ \\ 
 \hline Middleware: read threads & 32 \\ 
 \hline Runtime x repetitions & 60s x 5 \todo{} \\ 
@@ -392,6 +397,8 @@ Reporting experiment results. Comparison of hypothesis and experiment results.
 \pagebreak
 
 \section*{Logfile listing}
+
+\todo{}
 
 \begin{tabular}{|c|l|}
 \hline \textbf{Short name }& \textbf{Location} \\ 
