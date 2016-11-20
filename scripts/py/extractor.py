@@ -123,7 +123,7 @@ class Extractor:
                                 if Extractor.re_total_set_events.match(line):
                                     has_set_summary = True
 
-                                row_get = [memaslap_number, type, request_type, "NA", ops, tps, "NA", min, max,
+                                row_get = [memaslap_number, type, "GET", "NA", ops, tps, "NA", min, max,
                                        avg, std]
                                 csv_writer.writerow(row)
                                 request_type = "SET"
@@ -157,6 +157,7 @@ class Extractor:
 
 if __name__ == "__main__":
     e = Extractor()
-    #e.summarise_trace_logs(logs_pattern="results/trace/memaslap*.out", csv_path="results/trace/memaslap_stats.csv")
-    e.summarise_trace_logs(logs_pattern="results/throughput/clients3_threads1_rep1/memaslap*.out",
-                           csv_path="results/throughput/clients3_threads1_rep1/memaslap_stats.csv")
+
+    for dirname in glob.glob("results/writes/S*_R*_writes*_rep*"):
+        e.summarise_trace_logs(logs_pattern="{}/memaslap*.out".format(dirname),
+                               csv_path="{}/memaslap_stats.csv".format(dirname))
