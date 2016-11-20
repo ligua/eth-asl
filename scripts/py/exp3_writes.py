@@ -12,7 +12,7 @@ from extractor import Extractor
 # region ---- Experimental setup ----
 S_values = [3, 5, 7]                        # number of servers
 R_lambdas = [lambda S: 1, lambda S: S]      # replication factor
-write_proportion_values = [7, 10]              # % of writes in workload
+write_proportion_values = [1, 4, 7, 10]              # % of writes in workload
 virtual_clients = 180
 num_threads = 32
 
@@ -27,11 +27,10 @@ combinations = []
 for S in S_values:
     for R_lambda in R_lambdas:
         for write_proportion in write_proportion_values:
-            for repetition in range(num_repetitions):
+            for repetition in [2]: #range(num_repetitions):
                 R = R_lambda(S)
                 combinations.append((S, R, write_proportion, repetition))
 #combinations += [(7, 7, 1, 1)] # additional combinations
-combinations = [(3, 1, 7, 1), (3, 1, 10, 1)]
 
 UPDATE_AND_INSTALL = False
 
