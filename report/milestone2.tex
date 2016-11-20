@@ -93,7 +93,7 @@ In all experiments, the following holds about the experimental setup:
 \item The middleware was run on Basic A4 instances, and both memaslap and memcached were run on Basic A2 instances.
 \item The first 2 and last 2 minutes of each experiment were discarded from analyses as warm-up and cool-down time.
 \item The request sampling rate for logging is set to $\frac{1}{100}$ in throughput experiments (Section~\ref{sec:exp1}) and $\frac{1}{10}$ in replication and write proportion experiments (Sections~\ref{sec:exp2} and \ref{sec:exp3}).
-\item We are dealing with a closed system because memaslap clients wait for a response before sending a new request.
+\item The system is closed because memaslap clients wait for a response before sending a new request.
 \end{itemize}
 
 
@@ -113,7 +113,7 @@ Provide a detailed breakdown of the time spent in the middleware for each operat
 
 In this section, I will run experiments to find out a) the maximum throughput of the SUT, b) the number of read threads ($T$) in the middleware that achieves this c) the number of virtual clients ($C$) that achieves this.
 
-To this end, I will measure throughput as a function of $T$ and $C$, in 10-second time windows. I will find the maximum sustained throughput of the SUT, i.e. the throughput at which the response time does not increase rapidly with \todo{additional clients}. For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean throughput.
+To this end, I will measure throughput as a function of $T$ and $C$, in 10-second time windows. I will find the maximum sustained throughput of the SUT, i.e. the throughput at which the response time does not increase rapidly with additional clients. For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean throughput.
 
 \subsection{Hypothesis}
 
@@ -375,6 +375,43 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 
 \subsection{Results}
 Reporting experiment results. Comparison of hypothesis and experiment results.
+
+\todo{Analyse results}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_get.pdf}
+\caption{caption \todo{}}
+\label{fig:exp3:res:responsetime:get}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_set.pdf}
+\caption{caption \todo{}}
+\label{fig:exp3:res:responsetime:set}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/writes/graphs/throughput_vs_writes.pdf}
+\caption{caption \todo{}}
+\label{fig:exp3:res:throughput}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/writes/graphs/time_breakdown_vs_writes_set_abs.pdf}
+\caption{caption \todo{}}
+\label{fig:exp3:res:breakdown:set:abs}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/writes/graphs/time_breakdown_vs_writes_set_rel.pdf}
+\caption{caption \todo{}}
+\label{fig:exp3:res:breakdown:set:rel}
+\end{figure}
 
 
 \pagebreak
