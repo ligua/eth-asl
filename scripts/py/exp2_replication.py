@@ -2,10 +2,12 @@ import os
 import fabric.api
 import aslutil
 import math
+import time
 import msrestazure.azure_exceptions
 from experiment import Experiment
 from deployer import Deployer
 from extractor import Extractor
+from colors import Colors
 
 # region ---- Experimental setup ----
 S_values = [3, 5, 7]                        # number of servers
@@ -23,10 +25,11 @@ memaslap_window_size = "1k"
 combinations = []
 for S in S_values:
     for R_lambda in R_lambdas:
-        for repetition in [4]:#range(num_repetitions):
+        for repetition in [5]:#range(num_repetitions):
             R = R_lambda(S)
             combinations.append((S, R, repetition))
 #combinations = [(5, 1, 1)] # override combinations
+combinations = list(reversed(combinations))
 
 UPDATE_AND_INSTALL = False
 
@@ -34,6 +37,10 @@ SKIP_IF_EXISTS = True
 memaslap_summary_filename = "memaslap_stats.csv"
 print("Running {} experiments with a maximum of {} minutes per experiment."
       .format(len(combinations), experiment_runtime+runtime_buffer))
+estimated_mins = len(combinations) * experiment_runtime
+print("Total runtime: {} hours {} minutes".format(estimated_mins // 60, estimated_mins % 60))
+eta_string = time.strftime("%H:%M", time.localtime(time.time() + estimated_mins * 60))
+print("ETA: {}".format(Colors.bold(Colors.ok_green(eta_string))))
 
 DRY_RUN = False
 
@@ -53,7 +60,7 @@ try:
         num_memaslaps = 1 if virtual_clients == 1 else 3
         concurrency = 1 if virtual_clients == 1 else virtual_clients / 3
         results_dir = "results/replication/S{}_R{}_rep{}".format(S, R, repetition)
-        print("\tWriting to {}".format(results_dir))
+        #print("\tWriting to {}".format(results_dir))
 
         experiment_already_done = os.path.isdir(results_dir)\
                                   and os.path.exists("{}/memaslap7.out".format(results_dir))\
@@ -63,7 +70,7 @@ try:
             continue
 
         additional_buffer = 0
-        print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
+        #print("\tTotal buffer: {} minutes".format(additional_buffer + runtime_buffer))
 
         hibernate_at_end = False
         if combination == combinations[-1]: # last one
