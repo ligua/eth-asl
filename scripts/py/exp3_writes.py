@@ -30,7 +30,8 @@ for S in S_values:
             for repetition in range(num_repetitions):
                 R = R_lambda(S)
                 combinations.append((S, R, write_proportion, repetition))
-combinations += [(7, 7, 1, 1)] # additional combinations
+#combinations += [(7, 7, 1, 1)] # additional combinations
+combinations = [(3, 1, 7, 1), (3, 1, 10, 1)]
 
 UPDATE_AND_INSTALL = False
 
