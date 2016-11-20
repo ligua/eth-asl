@@ -296,8 +296,8 @@ cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident2),
 print(not_confident2)
 
 # Compare middleware and memaslap
-ggplot(all_results %>% filter(type=="all"), aes(x=writes_str, group=1)) +
-  geom_line(aes(y=mean_response_time), color="red") +
+ggplot(all_results %>% filter(type=="SET"), aes(x=writes_str, group=1)) +
+  geom_line(aes(y=mean_response_time_set), color="red") +
   geom_line(aes(y=response_time_mean)) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
   ylim(0, NA) +
