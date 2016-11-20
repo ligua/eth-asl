@@ -20,8 +20,11 @@ memaslap_summary <- function(df) {
   
   df2 <- df %>%
     mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000) %>%
-    filter(type=="t" & time > DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER) %>%
-    filter(request_type=="GET")
+    filter(type=="t" & time > DROP_TIMES_BEFORE & time <= DROP_TIMES_AFTER)
+  
+  means <- df2 %>%
+    group_by(request_type) %>%
+    summarise(mean_response_time=sum(ops*avg)/sum(ops))
   
   response_times <- df2 %>%
     group_by(time) %>%
@@ -37,8 +40,11 @@ memaslap_summary <- function(df) {
   two_sided_t_val <- qt(c(.025, .975), df=length(tps_values)-1)[2]
   res$tps_confidence_delta <- two_sided_t_val * res$tps_std/sqrt(length(tps_values))
   res$tps_confidence_delta_rel <- res$tps_confidence_delta / res$tps_mean
-  res$mean_response_time <- mean(df2$avg)
-  res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std) / sum(df2$ops))
+  res$mean_response_time_get <- (means %>% filter(request_type=="GET"))$mean_response_time[1]
+  res$mean_response_time_set <- (means %>% filter(request_type=="SET"))$mean_response_time[1]
+  res$mean_response_time <- (res$mean_response_time_get * sum((df2 %>% filter(request_type=="GET"))$ops) +
+    res$mean_response_time_set * sum((df2 %>% filter(request_type=="SET"))$ops)) / sum(df2$ops)
+  res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std)) / sum(df2$ops)
   
   return(as.data.frame(res))
 }
