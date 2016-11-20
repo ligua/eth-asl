@@ -281,10 +281,15 @@ ggsave(paste0(result_dir_base, "/graphs/throughput_vs_writes.pdf"),
 # Performance decrease compared to 1% writes
 data3 <- all_results %>%
   group_by(type, servers, replication) %>%
-  mutate(relative_performance=response_time_mean/response_time_mean[writes==1]) %>%
-  select(type, servers_str, replication_str, writes_str, relative_performance)
+  mutate(relative_performance=response_time_mean/response_time_mean[writes==1],
+         confidence_interval=response_time_confidence_delta/response_time_mean[writes==1]) %>%
+  select(type, servers_str, replication_str, writes_str, relative_performance,
+         confidence_interval)
 
 ggplot(data3 %>% filter(type=="all"), aes(x=writes_str, y=relative_performance, group=1)) +
+  geom_errorbar(aes(ymin=relative_performance-confidence_interval,
+                    ymax=relative_performance+confidence_interval),
+                color=color_triad2, width=0.3, size=1) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
@@ -295,6 +300,9 @@ ggsave(paste0(result_dir_base, "/graphs/relative_performance_all.pdf"),
        width=fig_width, height=fig_height, device=cairo_pdf)
 
 ggplot(data3 %>% filter(type=="SET"), aes(x=writes_str, y=relative_performance, group=1)) +
+  geom_errorbar(aes(ymin=relative_performance-confidence_interval,
+                    ymax=relative_performance+confidence_interval),
+                color=color_triad2, width=0.3, size=1) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
@@ -305,6 +313,9 @@ ggsave(paste0(result_dir_base, "/graphs/relative_performance_set.pdf"),
        width=fig_width, height=fig_height, device=cairo_pdf)
 
 ggplot(data3 %>% filter(type=="GET"), aes(x=writes_str, y=relative_performance, group=1)) +
+  geom_errorbar(aes(ymin=relative_performance-confidence_interval,
+                    ymax=relative_performance+confidence_interval),
+                color=color_triad2, width=0.3, size=1) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
