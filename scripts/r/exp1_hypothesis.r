@@ -13,9 +13,7 @@ throughput = c(tp_1client, c(0.5, 0.8, 0.88, 0.93, 0.97, 0.98, 0.99, 1, 0.95, 0.
 
 data1 <- data.frame(clients, throughput)
 
-best_num_clients <- (data1 %>%
-  arrange(desc(throughput)) %>%
-  top_n(1))$clients[1]
+best_num_clients <- 110
 
 g1 <- ggplot(data1, aes(x=clients, y=throughput)) +
   geom_vline(xintercept=best_num_clients, color=color_light, size=1) +
