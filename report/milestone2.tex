@@ -168,11 +168,11 @@ Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achie
 
 Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T > 1$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable.
 
-Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- 180 clients and 32 threads -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Both $C$ and throughput are close to the expected values; $T$ is lower but \todo{}.
+Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- \textbf{180 clients and 32 threads} -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Both $C$ and throughput are close to the expected values; $T$ is lower but not by an order of magnitude.
 
 \todo{Explain} why the system reaches its maximum throughput at these points and show how the performance changes around these configurations.
 
-\paragraph{Breakdown of response time} The distribution of time spent in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response for memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms because \todo{why?}.
+\paragraph{Breakdown of response time} The distribution of time spent in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms because \todo{why?}.
 
 \begin{figure}[h]
 \centering
