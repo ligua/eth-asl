@@ -18,7 +18,9 @@ color_dark = "#322270"
 color_medium = "#7963cf"
 color_light = "#cdc4ed"
 color_triad1 = "#b9cf63"
+color_triad1_dark = "#74823e"
 color_triad2 = "#cf6e63"
+color_triad2_dark = "#7b413b"
 
 fig_width = 10
 fig_height = 5

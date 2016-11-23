@@ -206,6 +206,7 @@ ggplot(data1 %>% filter(type=="GET"),
   geom_ribbon(aes(ymin=response_time_q25,
                   ymax=response_time_q75),
               fill=color_triad1, alpha=0.5) +
+  geom_line(aes(y=response_time_q50), color=color_triad1_dark, size=1) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
                 color=color_triad2, width=0.2, size=1) +
@@ -224,6 +225,7 @@ ggplot(data1 %>% filter(type=="SET"),
   geom_ribbon(aes(ymin=response_time_q25,
                   ymax=response_time_q75),
               fill=color_triad1, alpha=0.5) +
+  geom_line(aes(y=response_time_q50), color=color_triad1_dark, size=1) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
                 color=color_triad2, width=0.2, size=1) +
