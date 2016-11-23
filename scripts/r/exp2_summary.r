@@ -36,7 +36,10 @@ memaslap_summary <- function(df) {
                    summarise(tps=sum(tps))
   tps_values <- tps_summed$tps
   res$tps_mean <- mean(tps_values)
-  res$tps_std <- sd(tps_values) # TODO calculate tps std over reps too
+  res$tps_std <- sd(tps_values)
+  two_sided_t_val <- qt(c(.025, .975), df=length(tps_values)-1)[2]
+  res$tps_confidence_delta <- two_sided_t_val * res$tps_std/sqrt(length(tps_values))
+  res$tps_confidence_delta_rel <- res$tps_confidence_delta / res$tps_mean
   res$mean_response_time_get <- (means %>% filter(request_type=="GET"))$mean_response_time[1]
   res$mean_response_time_set <- (means %>% filter(request_type=="SET"))$mean_response_time[1]
   res$mean_response_time <- (res$mean_response_time_get * sum((df2 %>% filter(request_type=="GET"))$ops) +
@@ -314,11 +317,18 @@ ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_servers_set_rel.pdf"),
 data2 <- all_results %>%
   filter(type=="all")
 ggplot(data2, aes(x=replication_str, y=tps_mean, group=1)) +
-  geom_line() +
-  geom_point() +
+  geom_errorbar(aes(ymin=tps_mean-tps_confidence_delta,
+                    ymax=tps_mean+tps_confidence_delta),
+                color=color_triad2, width=0.2, size=1) +
+  geom_line(color=color_dark) +
+  geom_point(color=color_dark) +
   facet_wrap(~servers_str, ncol=3) +
   ylim(0, NA) +
+  xlab("Replication") +
+  ylab("Total throughput [requests/s]") +
   asl_theme
+ggsave(paste0(result_dir_base, "/graphs/tp_vs_replication_all.pdf"),
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
 
 # Not within confidence interval
 not_confident <- data1 %>%
@@ -328,6 +338,14 @@ not_confident <- data1 %>%
 cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident),
            " experiments' 95% confidence interval is not within 5% of mean:"))
 print(not_confident)
+
+not_confident2 <- all_results %>%
+  filter(type=="all" & tps_confidence_delta_rel > 0.05) %>%
+  select(servers, replication, tps_confidence_delta_rel)
+
+cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident2),
+           " experiments' throughput 95% confidence interval is not within 5% of mean:"))
+print(not_confident2)
 
 # Compare middleware and memaslap
 ggplot(all_results %>% filter(type=="SET"), aes(x=replication_str, group=1)) +
