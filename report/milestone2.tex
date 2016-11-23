@@ -291,6 +291,8 @@ Adding servers at $R=1$ decreases response time to set requests -- this is in li
 
 \todo{}
 
+\todo{Also mention throughput}
+
 \subsubsection{Relative cost of operations}
 \todo{}
 
@@ -386,7 +388,18 @@ One parameter combination ($S=3, R=3, W=1\%$) did not yield the required confide
 \subsection{Results}
 Reporting experiment results. Comparison of hypothesis and experiment results.
 
-\todo{Analyse results}
+\subsubsection{Impact on get requests}
+
+Figure~\ref{fig:exp3:res:responsetime:get} shows the effect of $W$ on get requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are constant for all setups but one ($S=7, W=7\%$, full replication) which is still very close. Thus the performance of get requests does not depend much on $W$. \todo{comparison with hypothesis?}
+
+\subsubsection{Impact on set requests}
+
+Figure~\ref{fig:exp3:res:responsetime:set} shows the effect of $W$ on set requests. It is clear that increasing $W$ also increases response time; the effect seems mostly linear. An outlier is $S=3,R=1$ where the effect is much stronger. This can be attributed to the server being overloaded, similarly to Section \todo{ref to exp2 discussion}.
+
+\subsubsection{Relative impact}
+Figure~\ref{fig:exp3:res:relative:set} shows the impact of $W$ on response times, compared to base cases. \todo{}
+
+\todo{}
 
 \begin{figure}[h]
 \centering
