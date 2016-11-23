@@ -27,7 +27,7 @@ combinations = []
 for S in S_values:
     for R_lambda in R_lambdas:
         for write_proportion in write_proportion_values:
-            for repetition in [3]: #range(num_repetitions):
+            for repetition in [4]: #range(num_repetitions):
                 R = R_lambda(S)
                 combinations.append((S, R, write_proportion, repetition))
 #combinations = [(3, 3, 1, 3)] # override combinations
