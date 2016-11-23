@@ -53,6 +53,7 @@ middleware_summary <- function(dfmw) {
   num_requests <- length(dfmw$tAll)
   
   res <- list()
+  res$num_requests <- num_requests
   res$response_time_mean <- mean(dfmw$tAll)
   res$response_time_std <- sd(dfmw$tAll)
   two_sided_t_val <- qt(c(.025, .975), df=num_requests-1)[2]
@@ -114,7 +115,7 @@ normalise_request_log_df <- function(df) {
 
 # ---- Loop over result dirs ----
 file_name_regex <- paste0(result_dir_base,
-                          "/S(\\d)_R(\\d)_rep([5])/memaslap_stats\\.csv$")
+                          "/S(\\d)_R(\\d)_rep([5-7])/memaslap_stats\\.csv$")
 unfiltered_files <- list.files(path=".", "memaslap_stats.csv", recursive=TRUE)
 filtered_files <- grep(file_name_regex, unfiltered_files, value=TRUE, perl=TRUE)
 
