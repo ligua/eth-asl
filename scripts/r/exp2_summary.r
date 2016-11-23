@@ -62,7 +62,9 @@ middleware_summary <- function(dfmw) {
     res$response_time_confidence_delta / res$response_time_mean
   res$response_time_q01 <- quantile(dfmw$tAll, 0.01)
   res$response_time_q05 <- quantile(dfmw$tAll, 0.05)
+  res$response_time_q25 <- quantile(dfmw$tAll, 0.25)
   res$response_time_q50 <- quantile(dfmw$tAll, 0.50)
+  res$response_time_q75 <- quantile(dfmw$tAll, 0.75)
   res$response_time_q95 <- quantile(dfmw$tAll, 0.95)
   res$response_time_q99 <- quantile(dfmw$tAll, 0.99)
   res$tLoadBalancer <- mean(dfmw$tLoadBalancer)
@@ -210,7 +212,7 @@ g1 <- ggplot(data1 %>% filter(type=="GET"),
   asl_theme
 g1
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_replication_get.pdf"), g1,
-       width=fig_width, height=fig_height, device=cairo_pdf)
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
 
 g2 <- ggplot(data1 %>% filter(type=="SET"),
              aes(x=replication_str, y=response_time_mean, group=1)) +
@@ -228,7 +230,7 @@ g2 <- ggplot(data1 %>% filter(type=="SET"),
   asl_theme
 g2
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_replication_set.pdf"), g2,
-       width=fig_width, height=fig_height, device=cairo_pdf)
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
 
 # Scaling
 ggplot(data1 %>% filter(type=="GET"),
@@ -246,7 +248,7 @@ ggplot(data1 %>% filter(type=="GET"),
   xlab("Number of servers") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_servers_get.pdf"),
-       width=fig_width, height=fig_height, device=cairo_pdf)
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
 
 ggplot(data1 %>% filter(type=="SET"),
        aes(x=servers_str, y=response_time_mean, group=1)) +
@@ -263,7 +265,7 @@ ggplot(data1 %>% filter(type=="SET"),
   xlab("Number of servers") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_servers_set.pdf"),
-       width=fig_width, height=fig_height, device=cairo_pdf)
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
 
 # Proportion of time spent in different parts of system
 data3 <- all_results %>%
