@@ -240,7 +240,6 @@ As explained previously, more replication means that the middleware needs to sen
 
 
 \paragraph{Scalability}
-How does the scalability of your system compare to that of an ideal implementation? 
 
 In an ideal system, a) there would be enough resources to concurrently run all threads; b) all memcached servers would take an equal and constant amount of time to respond; c) there would be no network latencies; d) dequeueing would take constant time.
 
@@ -316,8 +315,6 @@ In this section, I will run experiments to find out how the response time and th
 To this end, I will measure throughput (in 10-second time windows) and response time (for every 10th request) as a function of $W$, $S$ and $R$, and measure how long requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean throughput.
 
 \subsection{Hypothesis}
-
-For what number of servers do you see the biggest impact (relative to base case) on per- formance? Investigate the main reason for the reduced performance and provide a detailed explanation of the behavior of the system. Provide the graphs and tables necessary to support your claims.
 
 I predict the following.
 
