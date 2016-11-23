@@ -238,7 +238,7 @@ Get requests will be processed faster as we increase $S$ because the same load w
 
 Set requests will be strongly affected by $R$. If $R=1$, set requests will be processed faster for higher $S$ because each request is only written to one server, and for a higher $S$ the same load is distirbuted across more write threads. However, if $R>1$, response time of sets increases due to two factors: a) the request is written serially to $R$ servers, and b) not all $R$ responses are received at the same time. Assuming a) is negligible compared to b), we will observe an increase in the mean response time.
 
-All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For get requests, response time will be independent of $R$ for any fixed $S$. For set requests, response time increases linearly with increasing $R$, and the slope increases with $S$.
+All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For get requests, response time will be independent of $R$ for any fixed $S$. For set requests, response time increases linearly with increasing $R$, and the slope increases with $S$. I also predict the total throughput will decrease as $R$ increases because the servers will need to do additional work (communicating more with memcached servers).
 
 \begin{figure}[h]
 \centering
