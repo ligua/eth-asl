@@ -85,7 +85,7 @@ In all experiments, the following definitions hold.
 \begin{itemize}
 \item The \emph{system under test} (SUT) is the middleware together with the connected memcached servers, running on Ubuntu virtual machines in the Azure cloud.
 \item \emph{Throughput} is the number of requests the SUT successfully responds to, per unit of time.
-\item \emph{Response time} is the time from sending to receiving the request to the SUT including any network latencies, as measured by the client (memaslap).
+\item \emph{Response time} is the time from sending to receiving the request to the SUT including any network latencies, as measured by the client (memaslap). \todo{memaslap vs middleware data}
 \end{itemize}
 
 In all experiments, the following holds about the experimental setup:
@@ -274,21 +274,21 @@ How does the scalability of your system compare to that of an ideal implementati
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_get.pdf}
-\caption{Response time to \textbf{GET} requests as a function of $R$, for different values of $S$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 5\% (bottom edge) and 95\% (top edge) quantiles of response times.}
+\caption{Response time to \textbf{GET} requests as a function of $R$, for different values of $S$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times.}
 \label{fig:exp2:res:replication:get}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_set.pdf}
-\caption{Response time to \textbf{SET} requests as a function of $R$, for different values of $S$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 5\% (bottom edge) and 95\% (top edge) quantiles of response times.}
+\caption{Response time to \textbf{SET} requests as a function of $R$, for different values of $S$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times.}
 \label{fig:exp2:res:replication:set}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_get.pdf}
-\caption{Response time to \textbf{GET} requests as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 5\% (bottom edge) and 95\% (top edge) quantiles of response times.}
+\caption{Response time to \textbf{GET} requests as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times.}
 \label{fig:exp2:res:servers:get}
 \end{figure}
  
@@ -296,7 +296,7 @@ How does the scalability of your system compare to that of an ideal implementati
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_set.pdf}
-\caption{Response time to \textbf{SET} requests as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 5\% (bottom edge) and 95\% (top edge) quantiles of response times.}
+\caption{Response time to \textbf{SET} requests as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times.}
 \label{fig:exp2:res:servers:set}
 \end{figure}
 
@@ -358,14 +358,14 @@ Reporting experiment results. Comparison of hypothesis and experiment results.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_get.pdf}
-\caption{Response time to \textbf{GET} requests as a function of $W$, for different values of $S$ and $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 5\% (bottom edge) and 95\% (top edge) quantiles of response times.}
+\caption{Response time to \textbf{GET} requests as a function of $W$, for different values of $S$ and $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times.}
 \label{fig:exp3:res:responsetime:get}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_set.pdf}
-\caption{Response time to \textbf{SET} requests as a function of $W$, for different values of $S$ and $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 5\% (bottom edge) and 95\% (top edge) quantiles of response times.}
+\caption{Response time to \textbf{SET} requests as a function of $W$, for different values of $S$ and $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times.}
 \label{fig:exp3:res:responsetime:set}
 \end{figure}
 

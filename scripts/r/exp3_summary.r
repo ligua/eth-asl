@@ -62,7 +62,9 @@ middleware_summary <- function(dfmw) {
     res$response_time_confidence_delta / res$response_time_mean
   res$response_time_q01 <- quantile(dfmw$tAll, 0.01)
   res$response_time_q05 <- quantile(dfmw$tAll, 0.05)
+  res$response_time_q25 <- quantile(dfmw$tAll, 0.25)
   res$response_time_q50 <- quantile(dfmw$tAll, 0.50)
+  res$response_time_q75 <- quantile(dfmw$tAll, 0.75)
   res$response_time_q95 <- quantile(dfmw$tAll, 0.95)
   res$response_time_q99 <- quantile(dfmw$tAll, 0.99)
   res$tLoadBalancer <- mean(dfmw$tLoadBalancer)
@@ -201,8 +203,8 @@ all_results <- cbind(sr_combinations, results) %>%
 data1 <- all_results
 ggplot(data1 %>% filter(type=="GET"),
              aes(x=writes_str, y=response_time_mean, group=1)) +
-  geom_ribbon(aes(ymin=response_time_q05,
-                  ymax=response_time_q95),
+  geom_ribbon(aes(ymin=response_time_q25,
+                  ymax=response_time_q75),
               fill=color_triad1, alpha=0.5) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
@@ -210,6 +212,7 @@ ggplot(data1 %>% filter(type=="GET"),
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
+  ylim(0, NA) +
   ylab("Response time [ms]") +
   xlab("Proportion of write requests") +
   asl_theme
@@ -218,8 +221,8 @@ ggsave(paste0(result_dir_base, "/graphs/response_time_vs_writes_get.pdf"),
 
 ggplot(data1 %>% filter(type=="SET"),
              aes(x=writes_str, y=response_time_mean, group=1)) +
-  geom_ribbon(aes(ymin=response_time_q05,
-                  ymax=response_time_q95),
+  geom_ribbon(aes(ymin=response_time_q25,
+                  ymax=response_time_q75),
               fill=color_triad1, alpha=0.5) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
@@ -227,6 +230,7 @@ ggplot(data1 %>% filter(type=="SET"),
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
+  ylim(0, NA) +
   ylab("Response time [ms]") +
   xlab("Proportion of write requests") +
   asl_theme
@@ -293,6 +297,7 @@ ggplot(data3 %>% filter(type=="all"), aes(x=writes_str, y=relative_performance, 
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
+  ylim(0, NA) +
   xlab("Proportion of write requests") +
   ylab("Response time relative to base case ") +
   asl_theme
@@ -306,6 +311,7 @@ ggplot(data3 %>% filter(type=="SET"), aes(x=writes_str, y=relative_performance, 
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
+  ylim(0, NA) +
   xlab("Proportion of write requests") +
   ylab("Response time relative to base case ") +
   asl_theme
@@ -319,6 +325,7 @@ ggplot(data3 %>% filter(type=="GET"), aes(x=writes_str, y=relative_performance, 
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
+  ylim(0, NA) +
   xlab("Proportion of write requests") +
   ylab("Response time relative to base case ") +
   asl_theme

@@ -198,8 +198,8 @@ all_results <- cbind(sr_combinations, results) %>%
 data1 <- all_results
 g1 <- ggplot(data1 %>% filter(type=="GET"),
              aes(x=replication_str, y=response_time_mean, group=1)) +
-  geom_ribbon(aes(ymin=response_time_q05,
-                  ymax=response_time_q95),
+  geom_ribbon(aes(ymin=response_time_q25,
+                  ymax=response_time_q75),
               fill=color_triad1, alpha=0.5) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
@@ -207,6 +207,7 @@ g1 <- ggplot(data1 %>% filter(type=="GET"),
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
   facet_wrap(~servers_str, ncol=3) +
+  ylim(0, NA) +
   ylab("Response time [ms]") +
   xlab("Replication") +
   asl_theme
@@ -216,8 +217,8 @@ ggsave(paste0(result_dir_base, "/graphs/response_time_vs_replication_get.pdf"), 
 
 g2 <- ggplot(data1 %>% filter(type=="SET"),
              aes(x=replication_str, y=response_time_mean, group=1)) +
-  geom_ribbon(aes(ymin=response_time_q05,
-                  ymax=response_time_q95),
+  geom_ribbon(aes(ymin=response_time_q25,
+                  ymax=response_time_q75),
               fill=color_triad1, alpha=0.5) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
@@ -225,6 +226,7 @@ g2 <- ggplot(data1 %>% filter(type=="SET"),
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
   facet_wrap(~servers_str, ncol=3) +
+  ylim(0, NA) +
   ylab("Response time [ms]") +
   xlab("Replication") +
   asl_theme
@@ -235,8 +237,8 @@ ggsave(paste0(result_dir_base, "/graphs/response_time_vs_replication_set.pdf"), 
 # Scaling
 ggplot(data1 %>% filter(type=="GET"),
              aes(x=servers_str, y=response_time_mean, group=1)) +
-  geom_ribbon(aes(ymin=response_time_q05,
-                  ymax=response_time_q95),
+  geom_ribbon(aes(ymin=response_time_q25,
+                  ymax=response_time_q75),
               fill=color_triad2, alpha=0.2) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
@@ -244,6 +246,7 @@ ggplot(data1 %>% filter(type=="GET"),
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
   facet_wrap(~replication_str, ncol=3) +
+  ylim(0, NA) +
   ylab("Response time [ms]") +
   xlab("Number of servers") +
   asl_theme
@@ -252,8 +255,8 @@ ggsave(paste0(result_dir_base, "/graphs/response_time_vs_servers_get.pdf"),
 
 ggplot(data1 %>% filter(type=="SET"),
        aes(x=servers_str, y=response_time_mean, group=1)) +
-  geom_ribbon(aes(ymin=response_time_q05,
-                  ymax=response_time_q95),
+  geom_ribbon(aes(ymin=response_time_q25,
+                  ymax=response_time_q75),
               fill=color_triad2, alpha=0.2) +
   geom_errorbar(aes(ymin=response_time_mean-response_time_confidence_delta,
                     ymax=response_time_mean+response_time_confidence_delta),
@@ -261,6 +264,7 @@ ggplot(data1 %>% filter(type=="SET"),
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
   facet_wrap(~replication_str, ncol=3) +
+  ylim(0, NA) +
   ylab("Response time [ms]") +
   xlab("Number of servers") +
   asl_theme
