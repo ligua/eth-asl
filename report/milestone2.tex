@@ -128,6 +128,9 @@ In the trace experiment the throughput was roughly 10300 requests per second so 
 
 I predict that the graph of throughput as a function of the number of clients will look like in Figure~\ref{fig:exp1:hyp:throughput}: rapidly increasing at first, then reaching the knee after which throughput growth is much slower, and then completely saturating. After saturation, the throughput may fall due to unexpected behaviour in the middleware.
 
+\paragraph{Breakdown of response time}
+I expect that the most expensive operations inside the middleware will be queueing ($t_{dequeued}-t_{enqueued}$) and waiting for a response from memcached ($t_{forwarded}-t_{received}$). Queueing takes time because for a $C$ that gives a high throughput, the queue will also be non-empty and requests will need to wait. Requesting a response from memcached takes time because of a) the time it takes for memcached to process the request and b) the round-trip network latency.
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/hypothesis_throughput.pdf}
@@ -159,47 +162,53 @@ The values of $T$ to test were $T=1$ as the lowest possible value, and then from
 Some parameter combinations did not yield the required confidence interval in the first 6-minute repetition of the experiment. When that was the case, I re-ran the experiment (in some cases for a longer time), thus producing more datapoints and decreasing the confidence interval.
 
 \subsection{Results}
-Reporting experiment results.
+
+\paragraph{Maximum sustained throughput}
+Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). This is reasonably close to the expected value of $C=550$. However, since we are trying to maximise sustained throughput, we also need to look at response times.
+
+Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T > 1$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable.
+
+Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- 180 clients and 32 threads -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Both $C$ and throughput are close to the expected values; $T$ is lower but \todo{}.
+
+\todo{Explain} why the system reaches its maximum throughput at these points and show how the performance changes around these configurations.
+
+\paragraph{Breakdown of response time} The distribution of time spent in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response for memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms because \todo{why?}.
 
 \begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_breakdown.pdf}
+\caption{The distribution of times that GET requests spend in different parts of SUT. Note the time axis only shows values up to 30ms (this range includes almost all datapoints).}
+\label{fig:exp1:res:breakdown}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tabular}{|c|c|c|r|}
+	\hline \textbf{Name} & \textbf{Begin timestamp} & \textbf{End timestamp} & \textbf{Mean [ms]} \\
+	\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0043 \\
+	\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 1.40 \\
+	\hline tWorker & $t_{dequeued}$ & $t_{forwarded}$ & 0.0191 \\
+	\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 2.85 \\
+	\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0221 \\
+	\end{tabular}
+	\caption{The amount of time spent on different operations inside the middleware for the optimal run ($C=180$ and $T=32$).}
+	\label{fig:exp1:table}
+\end{center}
+\end{figure}
+
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/throughput/graphs/tp_vs_clients.pdf}
 \caption{Throughput as a function of $C$ for different values of $T$. Errorbars show the 95\% confidence interval around the mean value which is shown with points connected by lines.}
 \label{fig:exp1:res:throughput}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_vs_clients.pdf}
 \caption{The 1\%, 5\%, 50\%, 95\% and 99\% percentiles of the response time (middleware) distribution, as a function of $C$ for different values of $T$. Values above 100ms are not shown.}
 \label{fig:exp1:res:responsetime}
 \end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_breakdown.pdf}
-\caption{The distribution of times that GET requests spend in different parts of SUT. Note the time axis only shows values up to 50ms (which contains the majority of datapoints) cut off at 50ms. Measurements were made with an accuracy of 1ms.}
-\label{fig:exp1:res:breakdown}
-\end{figure}
-
-\begin{tabular}{|c|c|c|r|}
-\hline \textbf{Name} & \textbf{Begin timestamp} & \textbf{End timestamp} & \textbf{Mean [ms]} \\
-\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0043 \\
-\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 1.40 \\
-\hline tWorker & $t_{dequeued}$ & $t_{forwarded}$ & 0.0191 \\
-\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 2.85 \\
-\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0221 \\
-\end{tabular}
-
-
-\todo{Comparison of hypothesis and experiment results.}
-
-\todo{Mention the table of mean times and Figure~\ref{fig:exp1:res:breakdown}.}
-
-Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). However, since we are trying to maximise sustained throughput, we also need to look at the response times.
-
-Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T > 1$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable. Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- 180 clients and 32 threads -- as the configuration we will declare optimal at a throughput of 18400 requests per second.
-
 
 
 

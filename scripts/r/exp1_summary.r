@@ -272,7 +272,6 @@ g4 <- ggplot(data4 %>% select(type, tLoadBalancer:tReturn) %>% melt(id.vars=c("t
   xlim(-1, 30) +
   xlab("Time spent [ms]") +
   ylab("Number of requests") +
-  ggtitle("Distribution of time that requests spend in different parts of SUT") +
   asl_theme +
   theme(legend.position="none")
 g4
