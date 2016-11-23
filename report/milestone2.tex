@@ -105,10 +105,6 @@ In all experiments, the following holds about the experimental setup:
 % --------------------------------------------------------------------------------
 \label{sec:exp1}
 
-Find the highest throughput of your system for 5 servers with no replication and a read-only workload configuration. What is the minimum number of threads and clients (rounded to multiple of 10) that together achieve this throughput? Explain why the system reaches its maximum throughput at these points and show how the performance changes around these configurations.
-
-Provide a detailed breakdown of the time spent in the middleware for each operation type.
-
 \subsection{Experimental question}
 
 In this section, I will run experiments to find out a) the maximum throughput of the SUT, b) the number of read threads ($T$) in the middleware that achieves this c) the number of virtual clients ($C$) that achieves this.
@@ -213,16 +209,6 @@ Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response tim
 % --------------------------------------------------------------------------------
 \label{sec:exp2}
 
-Explore how the behavior of your system changes for a 5\%-write workload with S=3,5 and 7 server backends and the following three replication factors:
-\begin{itemize} 
-\item Write to $1$ (no replication) 
-\item Write to $\ceil{\frac{S}{2}}$ (half) 
-\item Write to all 
-\end{itemize}
-
-Answer at least the following questions: Are \texttt{get} and \texttt{set} requests impacted the same way by different setups? If yes/no, why? Which operations become more expensive inside the middleware as the configuration changes? How does the scalability of your system compare to that of an ideal implementation? Provide the graphs and tables necessary to support your claims.
-
-
 \subsection{Experimental question}
 
 In this section, I will run experiments to find out how the response time of the SUT depends on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether gets and sets are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
@@ -322,11 +308,6 @@ How does the scalability of your system compare to that of an ideal implementati
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 \label{sec:exp3}
-
-In this section, you should study the changes in throughput and response time of your system as the percentage of write operations increases. Use a combination of 3 to 7 servers and vary the number of writes between 1\% and 10\% (e.g. 1\%, 5\% and 10\%). The experiments need to be carried out for the replication factors R=1 and R=all.  
-
-For what number of servers do you see the biggest impact (relative to base case) on performance? Investigate the main reason for the reduced performance and provide a detailed explanation of the behavior of the system. Provide the graphs and tables necessary to support your claims.
-
 
 \subsection{Experimental question}
 
