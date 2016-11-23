@@ -86,7 +86,7 @@ In all experiments, the following definitions hold.
 \item The \emph{system under test} (SUT) is the middleware together with the connected memcached servers, running on Ubuntu virtual machines in the Azure cloud.
 \item \emph{Throughput} is the number of requests the SUT successfully responds to, per unit of time, as measured by memaslap.
 \item \emph{Response time (memaslap)} is the time from sending to receiving the request to the SUT including any network latencies, as measured by the client (memaslap).
-\item \emph{Response time (middleware)} is the time from receiving the request in the middleware ($t_{created}$) to returning it to the client ($t_{returned}$), as measured by the middleware.
+\item \emph{Response time (middleware)} is the time from receiving the request in the middleware ($t_{created}$) to returning it to the client ($t_{returned}$), as measured by the middleware. This is the measurement used in most graphs here; the reasoning behind this is shown in \hyperref[sec:appa]{Appendix A}.
 \end{itemize}
 
 In all experiments, the following holds about the experimental setup:
@@ -398,6 +398,32 @@ The line and points show the mean response time; red errorbars show the 95\% con
 \caption{Relative cost of operations inside SUT, for different values of $S$ and $R$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT, and then normalised to 100\%.}
 \label{fig:exp3:res:breakdown:set:rel}
 \end{figure}
+
+
+\clearpage
+
+\section*{Appendix A: Comparison of middleware and memaslap data}
+\label{sec:appa}
+\addcontentsline{toc}{section}{Appendix A: Comparison of middleware and memaslap data}
+
+The response time statistics that memaslap outputs are useful but limited. Since using middleware data allows studying the response time distribution in more detail, we would like to use response times measured by the middleware. To do this, however, we need to show that these two are interchangeable up to a constant delay caused by the network latency on the roundtrip between memaslap and the middleware.
+
+Figures~\ref{fig:appa:comparison:exp2} and \ref{fig:appa:comparison:exp3} show the mean response times as measured by memaslap and the middleware. It is clear that for all parameter combinations, the difference is indeed constant at about 5ms. Thus, we can rely on response times logged by the middleware.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/compare_mw_ms.pdf}
+\caption{Mean response time as measured by memaslap and middleware in all experiments of Section~\ref{sec:exp2}.}
+\label{fig:appa:comparison:exp2}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/writes/graphs/compare_mw_ms.pdf}
+\caption{Mean response time as measured by memaslap and middleware in all experiments of Section~\ref{sec:exp3}.}
+\label{fig:appa:comparison:exp3}
+\end{figure}
+
 
 
 \clearpage

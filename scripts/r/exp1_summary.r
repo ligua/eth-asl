@@ -59,6 +59,7 @@ memaslap_summary <- function(df) {
 
 middleware_summary <- function(df2) {
   res <- list()
+  res$response_time_mean <- mean(df2$tAll)
   res$response_time_q01 <- quantile(df2$tAll, 0.01)
   res$response_time_q05 <- quantile(df2$tAll, 0.05)
   res$response_time_q50 <- quantile(df2$tAll, 0.50)

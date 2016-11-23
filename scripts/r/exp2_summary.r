@@ -354,10 +354,19 @@ cat(paste0(nrow(data1), " experiments total, ", nrow(not_confident2),
 print(not_confident2)
 
 # Compare middleware and memaslap
-ggplot(all_results %>% filter(type=="SET"), aes(x=replication_str, group=1)) +
-  geom_line(aes(y=mean_response_time_set), color="red") +
-  geom_line(aes(y=response_time_mean)) +
-  facet_wrap(~servers, ncol=3) +
+data_compare <- all_results %>%
+  filter(type=="all") %>%
+  rename(memaslap=mean_response_time, middleware=response_time_mean) %>%
+  select(replication_str, servers_str, memaslap, middleware) %>%
+  melt(id.vars=c("replication_str", "servers_str")) %>%
+  rename(Measurer=variable)
+ggplot(data_compare, aes(x=replication_str, y=value, color=Measurer, group=Measurer)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~servers_str, ncol=3) +
   ylim(0, NA) +
+  xlab("Replication") + ylab("Mean response time") +
   asl_theme
+ggsave(paste0(result_dir_base, "/graphs/compare_mw_ms.pdf"),
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
 
