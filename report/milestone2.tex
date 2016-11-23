@@ -411,19 +411,18 @@ The line and points show the mean response time; red errorbars show the 95\% con
 \end{figure}
 
 
-\pagebreak
+\clearpage
 
 \section*{Log file listing}
 \addcontentsline{toc}{section}{Log file listing}
 
-Each experiment's logs are compressed into a respective \verb+compressed.zip+ file and should be extracted to the directory where the \verb+.zip+ file is located.
-
-\todo{}
+Each experiment's logs are compressed into a respective \verb+compressed.zip+ file and should be extracted to the directory where the \verb+.zip+ file is located. Each location mentioned in the table below is a directory that contains the middleware log (\verb+main.log+), the request log (\verb+request.log+) and memaslap outputs (\verb+memaslap*.out+). \\
 
 \begin{tabular}{|c|l|}
-\hline \textbf{Short name }& \textbf{Location} \\ 
-\hline baseline-m*-c*-r* & \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/baseline}{gitlab.inf.ethz.ch/.../results/baseline/baseline\_memaslap*\_conc*\_rep*.out} \\ 
-\hline trace-ms4 & \resultsurl{trace\_rep3/memaslap4.out} \\ 
+\hline \textbf{Short name}& \textbf{Location} \\ 
+\hline throughput-C*-T*-r* & \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/throughput}{gitlab.inf.ethz.ch/.../results/throughput/clients*\_threads*\_rep*} \\ 
+\hline replication-S*-R*-r* & \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/replication}{gitlab.inf.ethz.ch/.../results/replication/S*\_R*\_rep*} \\ 
+\hline writes-S*-R*-W*-r* & \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/writes}{gitlab.inf.ethz.ch/.../results/writes/S*\_R*\_writes*\_rep*} \\ 
 \hline 
 \end{tabular} 
  
