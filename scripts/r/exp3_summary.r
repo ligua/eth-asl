@@ -213,7 +213,7 @@ ggplot(data1 %>% filter(type=="GET"),
   geom_line(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
   ylim(0, NA) +
-  ylab("Response time [ms]") +
+  ylab("Response time (middleware) [ms]") +
   xlab("Proportion of write requests") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_writes_get.pdf"),
@@ -231,7 +231,7 @@ ggplot(data1 %>% filter(type=="SET"),
   geom_line(color=color_dark) +
   facet_wrap(~replication_str+servers_str, nrow=2) +
   ylim(0, NA) +
-  ylab("Response time [ms]") +
+  ylab("Response time (middleware) [ms]") +
   xlab("Proportion of write requests") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_writes_set.pdf"),

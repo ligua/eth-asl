@@ -202,7 +202,7 @@ g3 <- ggplot(data3_melt, aes(x=clients, y=value, color=Percentile)) +
   facet_wrap(~threads) +
   ylim(NA, 100) +
   xlab("Number of clients") +
-  ylab("Response time [ms]") +
+  ylab("Response time (middleware) [ms]") +
   asl_theme +
   theme(legend.position="top")
 g3
