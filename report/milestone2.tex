@@ -276,11 +276,23 @@ For get requests, the ideal system would have linear speed-up (assuming the load
 
 \subsection{Results}
 
-\subsubsection{Get and set requests}
+\subsubsection{Get requests}
+From Figure~\ref{fig:exp2:res:replication:get} we can see that increasing $R$ from 1 to $S$ does have an impact on get requests (contrary to the hypothesis) and this effect is amplified as $S$ grows. This is explained by the fact that for higher $R$, write threads need to do more work and since they compete with read threads for processor time, get requests are also non-negligibly affected. Since increasing $S$ also means more writes per each write request, replication has a stronger impact on gets as $S$ increases.
+
+I predicted that increasing $S$ while keeping $R$ constant would decrease the response time of get requests. Figure~\ref{fig:exp2:res:servers:get} shows I was mistaken: increasing $S$ only improves the response time at $R=1$, and $R>1$ response time gets worse when we add servers. \todo{Why?}
+
+\todo{}
+
+\subsubsection{Set requests}
+
+Figure~\ref{fig:exp2:res:replication:set} shows that increasing $R$ does increase response time for $S=7$ but the trend is not so clear for $S=3$ and $S=5$. If we also consider the breakdown of response time by component (Figure~\ref{fig:exp2:res:breakdown}) we can explain \todo{}
+
+Adding servers at $R=1$ decreases response time to set requests -- this is in line with the hypothesis. For $R>1$ adding servers does not have a linear effect on response time, which corresponds to the prediction that two factors (serial writes and differing memcached response times) affect the response time, each in a different direction.
+
 \todo{}
 
 \subsubsection{Relative cost of operations}
-\todo{analyse relative cost of operations}
+\todo{}
 
 \subsubsection{Scalability}
 \todo{}
