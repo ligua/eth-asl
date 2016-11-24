@@ -362,8 +362,7 @@ To this end, I will measure throughput (in 10-second time windows) and response 
 
 I predict the following.
 
-\subsubsection{Performance impact}
-Increasing $W$ will decrease throughput and increase mean response time for any combination of $S$ and $R$ because \set{} requests take longer to process. Fully replicated setups ($R=S$) will suffer a larger performance decrease than setups with no replication ($R=1$) because in the case of full replication, WriteWorkers do more work for each \set{} request (i.e. the response time of each write request will be higher).
+Increasing $W$ will decrease throughput and increase mean response time for any combination of $S$ and $R$ because \set{}s take longer to process than \get{}s. Fully replicated setups ($R=S$) will suffer a larger performance decrease than setups with no replication ($R=1$) because in the case of full replication, WriteWorkers do more work for each \set{} request (i.e. the response time of each write request will be higher).
 
 The setups with $S=3$ servers will suffer the largest relative performance decrease (compared to $S > 3$) because there are fewer WriteWorkers dealing with the same load of \set{} requests, which in turn increases the queue wait time $tQueue$.
 
@@ -400,7 +399,7 @@ Figure~\ref{fig:exp3:res:relative:set} shows the impact of $W$ on response times
 
 \todo{}
 
-\begin{figure}[h]
+\begin{figure}[p]
 \centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_get.pdf}
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_set.pdf}

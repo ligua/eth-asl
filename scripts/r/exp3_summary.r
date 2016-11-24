@@ -239,7 +239,7 @@ ggplot(data1 %>% filter(type=="SET"),
   ggtitle("SET requests") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_writes_set.pdf"),
-       width=fig_width, height=fig_height, device=cairo_pdf)
+       width=fig_width, height=fig_height*1.7, device=cairo_pdf)
 
 # Proportion of time spent in different parts of system
 data3 <- all_results %>%
