@@ -11,6 +11,8 @@
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 
 \newcommand{\code}[1]{\lstinline[language=Java]{#1}}
+\newcommand{\get}[0]{\texttt{GET}}
+\newcommand{\set}[0]{\texttt{SET}}
 \newcommand{\todo}[1]{\fcolorbox{black}{Apricot}{TODO: #1}}
 \newcommand{\linkmain}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/main/java/asl/#1.java}{#1}}
 \newcommand{\linktest}[1]{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/src/test/java/asl/#1.java}{#1}}
@@ -124,7 +126,7 @@ Given that requests spend most of their time ($\sim90\%$ in the trace experiment
 Throughput is maximised at roughly 110 virtual clients per memcached server, so 550 virtual clients in total. This is based on the fact that in the Milestone 1 baseline experiment, the throughput of a single memcached server without middleware saturated at around 110 virtual clients. However, the knee of the graph was at 40 to 50 clients per server, so we can expect the knee to occur at around 200 clients in our setup. The maximum sustained throughput will be in that region because after the knee, additional clients don't increase throughput much but significantly increase response time.
 
 \subsubsection{Throughput}
-In the trace experiment the throughput was roughly 10300 requests per second so we have a lower bound for the expected throughput. Naively assuming that the throughput of GET requests scales linearly with the number of servers $S$ would yield an expected throughput of $\frac{5}{3} \cdot 10300 = 17200$ requests per second. However, this does not take into account that we will also increase the number of threads (from $T=5$ in the trace experiment). Thus I expect the maximum sustained throughput to be definitely more than 10300 requests per second, and likely to be more than 17200 requests per second.
+In the trace experiment the throughput was roughly 10300 requests per second so we have a lower bound for the expected throughput. Naively assuming that the throughput of \get{} requests scales linearly with the number of servers $S$ would yield an expected throughput of $\frac{5}{3} \cdot 10300 = 17200$ requests per second. However, this does not take into account that we will also increase the number of threads (from $T=5$ in the trace experiment). Thus I expect the maximum sustained throughput to be definitely more than 10300 requests per second, and likely to be more than 17200 requests per second.
 
 I predict that the graph of throughput as a function of the number of clients will look like in Figure~\ref{fig:exp1:hyp:throughput}: rapidly increasing at first, then reaching the knee after which throughput growth is much slower, and then completely saturating. After saturation, the throughput may fall due to unexpected behaviour in the middleware.
 
@@ -173,12 +175,12 @@ Of the remaining setups, the highest throughput is achieved both by 180 and 216 
 
 \todo{Explain} why the system reaches its maximum throughput at these points and show how the performance changes around these configurations.
 
-\paragraph{Breakdown of response time} The distribution of time spent in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms because \todo{why?}.
+\paragraph{Breakdown of response time} The distribution of time \get{} requests spend in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms because \todo{why?}.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_breakdown.pdf}
-\caption{The distribution of times that GET requests spend in different parts of SUT. Note the time axis only shows values up to 30ms (this range includes almost all datapoints).}
+\caption{The distribution of times that \get{} requests spend in different parts of SUT. Note the time axis only shows values up to 30ms (this range includes almost all datapoints).}
 \label{fig:exp1:res:breakdown}
 \end{figure}
 
@@ -192,7 +194,7 @@ Of the remaining setups, the highest throughput is achieved both by 180 and 216 
 	\hline tMemcached & $t_{forwarded}$ & $t_{received}$ & 2.85 \\
 	\hline tReturn & $t_{received}$ & $t_{returned}$ & 0.0221 \\
 	\end{tabular}
-	\caption{The amount of time spent on different operations inside the middleware for the optimal run ($C=180$ and $T=32$).}
+	\caption{The amount of time spent on different operations inside the middleware for the optimal run ($C=180$ and $T=32$), for \get{} requests.}
 	\label{fig:exp1:table}
 \end{center}
 \end{figure}
@@ -223,7 +225,7 @@ Of the remaining setups, the highest throughput is achieved both by 180 and 216 
 
 \subsection{Experimental question}
 
-In this section, I will run experiments to find out how the response time of SUT depends on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether GETs and SETs are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
+In this section, I will run experiments to find out how the response time of SUT depends on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether \get{}s and \set{}s are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
 
 To this end, I will measure response time (middleware) for every 10th request as a function of $S$ and $R$, and measure how long requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean response time, but not less than 3 repetitions.
 
@@ -231,14 +233,14 @@ To this end, I will measure response time (middleware) for every 10th request as
 
 I predict the following.
 
-\subsubsection{Get and set requests}
-Get and set requests will not be impacted the same way by different setups.
+\subsubsection{\get{} and \set{} requests}
+\get{} and \set{} requests will not be impacted the same way by different setups.
 
-Get requests will be processed faster as we increase $S$ because the same load will be distributed across more threads. Increasing $R$ will have no effect on get requests because replication is only done for set requests (there may be secondary effects due to e.g. write threads requiring more CPU time, but this should be negligible).
+\get{} requests will be processed faster as we increase $S$ because the same load will be distributed across more threads. Increasing $R$ will have no effect on \get{} requests because replication is only done for \set{} requests (there may be secondary effects due to e.g. write threads requiring more CPU time, but this should be negligible).
 
-Set requests will be strongly affected by $R$. If $R=1$, set requests will be processed faster for higher $S$ because each request is only written to one server, and for a higher $S$ the same load is distirbuted across more write threads. However, if $R>1$, response time of sets increases due to two factors: a) the request is written serially to $R$ servers, and b) not all $R$ responses are received at the same time. Assuming a) is negligible compared to b), we will observe an increase in the mean response time.
+\set{} requests will be strongly affected by $R$. If $R=1$, \set{} requests will be processed faster for higher $S$ because each request is only written to one server, and for a higher $S$ the same load is distirbuted across more write threads. However, if $R>1$, response time of \set{}s increases due to two factors: a) the request is written serially to $R$ servers, and b) not all $R$ responses are received at the same time. Assuming a) is negligible compared to b), we will observe an increase in the mean response time.
 
-All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For get requests, response time will be independent of $R$ for any fixed $S$. For set requests, response time increases linearly with increasing $R$, and the slope increases with $S$.
+All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For \get{} requests, response time will be independent of $R$ for any fixed $S$. For \set{} requests, response time increases linearly with increasing $R$, and the slope increases with $S$.
 
 \begin{figure}[h]
 \centering
@@ -252,14 +254,16 @@ All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For get requ
 I also predict the total throughput will decrease as $R$ increases because the servers will need to do additional work (communicating more with memcached servers).
 
 \subsubsection{Relative cost of operations}
-As explained previously, more replication means that the middleware needs to send each set request to more servers and wait for more answers. Thus, as $R$ increases, tMemcached will increase. Since each set request takes longer to process, this means that tQueue will increase as well. I also predict that the relative cost of get operations will not change.
+As explained previously, more replication means that the middleware needs to send each \set{} request to more servers and wait for more answers. Thus, as $R$ increases, $tMemcached$ will increase. Since each \set{} request takes longer to process, this means that $tQueue$ will increase as well. I also predict that the relative cost of \get{} operations will not change.
 
 \subsubsection{Scalability}
 \label{sec:exp2:hyp:scalability}
 
 In an ideal system, a) there would be enough resources to concurrently run all threads; b) all memcached servers would take an equal and constant amount of time to respond; c) there would be no network latencies; d) dequeueing would take constant time.
 
-For get requests, the ideal system would have linear speed-up (assuming the load balancer does not become a bottleneck). I predict that the SUT will have sublinear speed-up because the response time also includes network latency -- a term that is not dependent on $S$: $response \; time = const. + \frac{const.}{S}$. In addition, since threads compete for resources in the SUT, the speed-up will be even lower than what's predicted by the formula above.
+For \get{} requests, the ideal system would have linear speed-up (assuming the load balancer does not become a bottleneck). I predict that the SUT will have sublinear speed-up because the response time also includes network latency -- a term that is not dependent on $S$: $response \; time = const. + \frac{const.}{S}$. In addition, since threads compete for resources in the SUT, the speed-up will be even lower than what's predicted by the formula above.
+
+\todo{and for sets?} what's the hypothesis?
 
 \subsection{Experiments}
 \begin{center}
@@ -280,22 +284,22 @@ For get requests, the ideal system would have linear speed-up (assuming the load
 
 \subsection{Results}
 
-\subsubsection{Get requests}
-From Figure~\ref{fig:exp2:res:replication} we can see that increasing $R$ from 1 to $S$ does have an impact on the mean response time of get requests (contrary to the hypothesis) and this effect is amplified as $S$ grows. However, the 25\%, 50\%, and 75\% percentiles stay constant, implying that most of the requests aren't affected (in accordance with the hypothesis) -- only the response time of outliers (gets with high response times) increases. Figure~\ref{fig:exp2:res:breakdown} shows that queue time is constant and the increase in response time comes almost entirely from waiting for memcached's response; this means the increase is caused by either increased network latency (due to more traffic at a higher value of $R$) or increased memcached response time.
+\subsubsection{\get{} requests}
+From Figure~\ref{fig:exp2:res:replication} we can see that increasing $R$ from 1 to $S$ does have an impact on the mean response time of \get{} requests (contrary to the hypothesis) and this effect is amplified as $S$ grows. However, the 25\%, 50\%, and 75\% percentiles stay constant, implying that most of the requests aren't affected (in accordance with the hypothesis) -- only the response time of outliers (\get{}s with high response times) increases. Figure~\ref{fig:exp2:res:breakdown} shows that queue time is constant and the increase in response time comes almost entirely from waiting for memcached's response; this means the increase is caused by either increased network latency (due to more traffic at a higher value of $R$) or increased memcached response time.
 
-I predicted that increasing $S$ while keeping $R$ constant would decrease the response time of get requests. In fact I was only partly right: the 25\%, 50\%, and 75\% percentiles stay constant, but the mean decreases with $S$ at $R=1$ and increases at $R>1$. Investigating the breakdown of time spent inside the middleware (Figure~\ref{fig:exp2:res:breakdown}) gives an answer: queueing time does decrease with $S$ for all replication levels, but this gain is offset by the increase in time spent waiting for memcached's response.
+I predicted that increasing $S$ while keeping $R$ constant would decrease the response time of \get{} requests. In fact I was only partly right: the 25\%, 50\%, and 75\% percentiles stay constant, but the mean decreases with $S$ at $R=1$ and increases at $R>1$. Investigating the breakdown of time spent inside the middleware (Figure~\ref{fig:exp2:res:breakdown}) gives an answer: queueing time does decrease with $S$ for all replication levels, but this gain is offset by the increase in time spent waiting for memcached's response.
 
 Given that $tMemcached$ increased with $S$ even when $R$ was constant, we can conclude that the performance degradation was mostly due to networking -- if it had been caused by memcached's slower responses, $tMemcached$ would not have changed with $S$.
 
-\subsubsection{Set requests}
+\subsubsection{\set{} requests}
 
 Figure~\ref{fig:exp2:res:replication} shows that increasing $R$ does increase response time for $S=7$ but unexpectedly, decreases response time for $S=3$. This is counterintuitive: how can a system that is under a higher load also be faster?
 
-From Figure~\ref{fig:exp2:res:breakdown} we see that queueing time actually decreases with $R$ at all values of $S$ and the increase in $tMemcached$ offsets the decrease at $S=5$ and $S=7$. Why, then, do set requests spend less time in the queue as $R$ increases? We can explain this by looking at the architecture of \linkmain{WriteWorker}. Two steps are done in the same loop: first, if the write queue has any elements, one is taken and sent to all $R$ servers. The second step is checking for responses from memcached (waiting up to 1ms using the function \verb+Selector.select(long timeout)+). This means that if there were no responses from memcached servers, the thread just sleeps 1ms.
+From Figure~\ref{fig:exp2:res:breakdown} we see that queueing time actually decreases with $R$ at all values of $S$ and the increase in $tMemcached$ offsets the decrease at $S=5$ and $S=7$. Why, then, do \set{} requests spend less time in the queue as $R$ increases? We can explain this by looking at the architecture of \linkmain{WriteWorker}. Two steps are done in the same loop: first, if the write queue has any elements, one is taken and sent to all $R$ servers. The second step is checking for responses from memcached (waiting up to 1ms using the function \verb+Selector.select(long timeout)+). This means that if there were no responses from memcached servers, the thread just sleeps 1ms.
 
 The result of this design is that a system with a larger replication factor -- which means more responses from memcached servers -- sleeps less at \verb+Selector.select()+ and thus can faster go back to processing elements from the queue.
 
-Adding servers at $R=1$ decreases response time to set requests -- this is in line with the hypothesis. For $R>1$ adding servers does not have a linear effect on response time: for 50\% replication, response time (and the time spent in each component) is constant and at full replication response time increases slightly with $S$ because of increased $tMemcached$.
+Adding servers at $R=1$ decreases response time to \set{} requests -- this is in line with the hypothesis. For $R>1$ adding servers does not have a linear effect on response time: for 50\% replication, response time (and the time spent in each component) is constant and at full replication response time increases slightly with $S$ because of increased $tMemcached$.
 
 $tMemcached$ is almost constant at 50\% replication because the difference between values of $R$ is small: $R \in \{2,3,4\}$. At full replication tMemcached has a larger effect because the difference is larger: $R \in \{3,5,7\}$. (The slowest response determines $tMemcached$; it can be modelled as the maximum of $R$ samples where each sample is the response time to one request from the middleware to a memcached server.).
 
@@ -303,7 +307,7 @@ $tMemcached$ is almost constant at 50\% replication because the difference betwe
 \centering
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_get.pdf}
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_set.pdf}
-\caption{Response time (middleware) to GET and SET requests as a function of $R$, for different values of $S$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
+\caption{Response time (middleware) as a function of $R$, for different values of $S$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
 \label{fig:exp2:res:replication}
 \end{figure}
 
@@ -319,7 +323,7 @@ $tMemcached$ is almost constant at 50\% replication because the difference betwe
 \centering
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_get.pdf}
 \includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_set.pdf}
-\caption{Response time (middleware) to GET and SET requests as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the red line shows the median.}
+\caption{Response time (middleware) as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the red line shows the median.}
 \label{fig:exp2:res:servers}
 \end{figure}
 
@@ -335,10 +339,10 @@ From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed
 \end{figure}
 
 \subsubsection{Relative cost of operations}
-As hypothesized, increasing $R$ also increases $tMemcached$ for SET requests. Unexpected though was the decrease in $tQueue$ for SET requests as $R$ increased, and the increase in $tMemcached$ for GETs. Both are explained in previous sections of this chapter.
+As hypothesized, increasing $R$ also increases $tMemcached$ for \set{} requests. Unexpected though was the decrease in $tQueue$ for \set{} requests as $R$ increased, and the increase in $tMemcached$ for \get{}s. Both are explained in previous sections of this chapter.
 
 \subsubsection{Scalability}
-As Figure~\ref{fig:exp2:res:servers} shows, there is no speed-up for GET requests when we add servers, and there is even a slight increase the mean response time. Increasing $S$ does decrease mean response time to SET requests, but only at $R=1$ and sublinearly -- as hypothesized. At $R>1$ there is no speed-up. In summary, SUT performs significantly worse than the ideal system described in Section~\ref{sec:exp2:hyp:scalability}, and worse than expected.
+As Figure~\ref{fig:exp2:res:servers} shows, there is no speed-up for \get{} requests when we add servers, and there is even a slight increase the mean response time. Increasing $S$ does decrease mean response time to \set{} requests, but only at $R=1$ and sublinearly -- as hypothesized. At $R>1$ there is no speed-up. In summary, SUT performs significantly worse than the ideal system described in Section~\ref{sec:exp2:hyp:scalability}, and worse than expected.
 
  \clearpage
 % --------------------------------------------------------------------------------
@@ -359,9 +363,9 @@ To this end, I will measure throughput (in 10-second time windows) and response 
 I predict the following.
 
 \subsubsection{Performance impact}
-Increasing $W$ will decrease throughput and increase mean response time for any combination of $S$ and $R$ because write requests take longer to process. Fully replicated setups ($R=S$) will suffer a larger performance decrease than setups with no replication ($R=1$) because in the case of full replication, WriteWorkers do more work for each write request (i.e. the response time of each write request will be higher).
+Increasing $W$ will decrease throughput and increase mean response time for any combination of $S$ and $R$ because \set{} requests take longer to process. Fully replicated setups ($R=S$) will suffer a larger performance decrease than setups with no replication ($R=1$) because in the case of full replication, WriteWorkers do more work for each \set{} request (i.e. the response time of each write request will be higher).
 
-The setups with $S=3$ servers will suffer the largest relative performance decrease (compared to $S > 3$) because there are fewer WriteWorkers dealing with the same load of write requests, which in turn increases the queue wait time $tQueue$.
+The setups with $S=3$ servers will suffer the largest relative performance decrease (compared to $S > 3$) because there are fewer WriteWorkers dealing with the same load of \set{} requests, which in turn increases the queue wait time $tQueue$.
 
 \subsection{Experiments}
 \begin{center}
@@ -380,18 +384,16 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 \end{tabular} }
 \end{center}
 
-One parameter combination ($S=3, R=3, W=1\%$) did not yield the required confidence interval in the first repetition of the experiment so I re-ran the experiment thus producing more datapoints and decreasing the confidence interval.
-
 \subsection{Results}
 Reporting experiment results. Comparison of hypothesis and experiment results.
 
 \subsubsection{Impact on get requests}
 
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on get requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are constant for all setups but one ($S=7, W=7\%$, full replication) which is still very close. Thus the performance of get requests does not depend much on $W$. \todo{comparison with hypothesis?}
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \get{} requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are constant for all setups but one ($S=7, W=7\%$, full replication) which is still very close. Thus the performance of \get{} requests does not depend much on $W$. \todo{comparison with hypothesis?}
 
 \subsubsection{Impact on set requests}
 
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on set requests. It is clear that increasing $W$ also increases response time; the effect seems mostly linear. An outlier is $S=3,R=1$ where the effect is much stronger. This can be attributed to the server being overloaded, similarly to Section \todo{ref to exp2 discussion}.
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} requests. It is clear that increasing $W$ also increases response time; the effect seems mostly linear. An outlier is $S=3,R=1$ where the effect is much stronger. This can be attributed to the server being overloaded, similarly to Section \todo{ref to exp2 discussion}.
 
 \subsubsection{Relative impact}
 Figure~\ref{fig:exp3:res:relative:set} shows the impact of $W$ on response times, compared to base cases. \todo{}
@@ -402,14 +404,14 @@ Figure~\ref{fig:exp3:res:relative:set} shows the impact of $W$ on response times
 \centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_get.pdf}
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_set.pdf}
-\caption{Response time (middleware) to GET and SET requests as a function of $W$, for different values of $S$ and $R$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
+\caption{Response time (middleware) as a function of $W$, for different values of $S$ and $R$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
 \label{fig:exp3:res:responsetime}
 \end{figure}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/relative_performance_set.pdf}
-\caption{Relative performance of SET requests for different values of $S$ and $R$: the response time (middleware) of each setup relative to (divided by) the response time in the base case. The base case is taken to be $W=1\%$ for each combination of $R$ and $S$.
+\caption{Relative performance of \set{} requests for different values of $S$ and $R$: the response time (middleware) of each setup relative to (divided by) the response time in the base case. The base case is taken to be $W=1\%$ for each combination of $R$ and $S$.
 The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test.}
 \label{fig:exp3:res:relative:set}
 \end{figure}
@@ -424,7 +426,7 @@ The line and points show the mean response time; red errorbars show the 95\% con
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/time_breakdown_vs_writes_set_abs.pdf}
-\caption{Absolute cost of SET requests inside SUT, for different values of $S$ and $R$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT.}
+\caption{Absolute cost of \set{} requests inside SUT, for different values of $S$ and $R$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT.}
 \label{fig:exp3:res:breakdown:set:abs}
 \end{figure}
 
