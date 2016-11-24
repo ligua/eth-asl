@@ -184,7 +184,7 @@ Of the remaining setups, the highest throughput is achieved both by 180 and 216 
 
 \begin{figure}[h]
 \begin{center}
-	\begin{tabular}{|c|c|c|r|}
+	\begin{tabular}{|c|c|c|l |}
 	\hline \textbf{Name} & \textbf{Begin timestamp} & \textbf{End timestamp} & \textbf{Mean [ms]} \\
 	\hline tLoadBalancer & $t_{created}$ & $t_{enqueued}$ & 0.0043 \\
 	\hline tQueue & $t_{enqueued}$ & $t_{dequeued}$ & 1.40 \\
@@ -240,9 +240,6 @@ Set requests will be strongly affected by $R$. If $R=1$, set requests will be pr
 
 All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For get requests, response time will be independent of $R$ for any fixed $S$. For set requests, response time increases linearly with increasing $R$, and the slope increases with $S$.
 
-\subsubsection{Throughput}
-I also predict the total throughput will decrease as $R$ increases because the servers will need to do additional work (communicating more with memcached servers).
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/hypothesis_replication.pdf}
@@ -250,11 +247,15 @@ I also predict the total throughput will decrease as $R$ increases because the s
 \label{fig:exp2:hyp:replication}
 \end{figure}
 
+
+\subsubsection{Throughput}
+I also predict the total throughput will decrease as $R$ increases because the servers will need to do additional work (communicating more with memcached servers).
+
 \subsubsection{Relative cost of operations}
 As explained previously, more replication means that the middleware needs to send each set request to more servers and wait for more answers. Thus, as $R$ increases, tMemcached will increase. Since each set request takes longer to process, this means that tQueue will increase as well. I also predict that the relative cost of get operations will not change.
 
-
 \subsubsection{Scalability}
+\label{sec:exp2:hyp:scalability}
 
 In an ideal system, a) there would be enough resources to concurrently run all threads; b) all memcached servers would take an equal and constant amount of time to respond; c) there would be no network latencies; d) dequeueing would take constant time.
 
@@ -324,7 +325,7 @@ $tMemcached$ is almost constant at 50\% replication because the difference betwe
 
 \subsubsection{Throughput}
 
-From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed decrease with $R$ -- which is in line with the hypothesis --, and higher $S$ amplifies this effect. At $S=3$ throughput is almost constant; this is because the value of $R \in \{1,2,3\}$ does not change enough to make a significant difference, similarly to the previous section.
+From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed decrease with $R$ -- which is in line with the hypothesis --, and higher $S$ amplifies this effect. At $S=3$ throughput is almost constant; this is because the value of $R \in \{1,2,3\}$ does not change enough to make a significant difference, similarly to the previous section. Maximum throughput is achieved at $S=5, R=1$ which is likely because in Section~\ref{sec:exp1} we picked the values of $C$ and $T$ that maximised throughput under exactly those parameters.
 
 \begin{figure}[h]
 \centering
@@ -333,9 +334,11 @@ From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed
 \label{fig:exp2:res:throughput}
 \end{figure}
 
-\subsubsection{Scalability}
-\todo{}
+\subsubsection{Relative cost of operations}
+As hypothesized, increasing $R$ also increases $tMemcached$ for SET requests. Unexpected though was the decrease in $tQueue$ for SET requests as $R$ increased, and the increase in $tMemcached$ for GETs. Both are explained in previous sections of this chapter.
 
+\subsubsection{Scalability}
+As Figure~\ref{fig:exp2:res:servers} shows, there is no speed-up for GET requests when we add servers, and there is even a slight increase the mean response time. Increasing $S$ does decrease mean response time to SET requests, but only at $R=1$ and sublinearly -- as hypothesized. At $R>1$ there is no speed-up. In summary, SUT performs significantly worse than the ideal system described in Section~\ref{sec:exp2:hyp:scalability}, and worse than expected.
 
  \clearpage
 % --------------------------------------------------------------------------------
