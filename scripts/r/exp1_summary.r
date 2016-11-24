@@ -177,16 +177,16 @@ data1 <- all_results %>%
 g1 <- ggplot(data1, aes(x=clients, y=tps_mean)) +
   geom_errorbar(aes(ymin=tps_mean-tps_confidence_delta,
                     ymax=tps_mean+tps_confidence_delta),
-                color=color_triad2, width=20, size=0.5) +
+                color=color_triad2, width=40, size=0.5) +
   geom_line(color=color_dark) +
   geom_point(color=color_dark) +
-  facet_wrap(~threads) +
+  facet_wrap(~threads, nrow=1) +
   xlab("Number of clients") +
   ylab("Total throughput [requests/s]") +
   asl_theme
 g1
 ggsave(paste0(result_dir_base, "/graphs/tp_vs_clients.pdf"), g1,
-       width=fig_width, height=fig_height, device=cairo_pdf)
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
 
 # ---- Response time vs clients ----
 data3 <- all_results %>%
@@ -200,7 +200,7 @@ data3_melt <- all_results %>%
 g3 <- ggplot(data3_melt, aes(x=clients, y=value, color=Percentile)) +
   geom_line() +
   geom_point() +
-  facet_wrap(~threads) +
+  facet_wrap(~threads, nrow=1) +
   ylim(NA, 100) +
   xlab("Number of clients") +
   ylab("Response time (middleware) [ms]") +
@@ -208,7 +208,7 @@ g3 <- ggplot(data3_melt, aes(x=clients, y=value, color=Percentile)) +
   theme(legend.position="top")
 g3
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_clients.pdf"), g3,
-       width=fig_width, height=fig_height, device=cairo_pdf)
+       width=fig_width, height=fig_height*0.7, device=cairo_pdf)
 
 # ---- Throughput not within 95% confidence interval ----
 not_confident <- data1 %>%
