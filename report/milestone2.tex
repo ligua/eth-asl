@@ -7,9 +7,6 @@
 \usepackage{graphicx}
 \usepackage[colorlinks=true,urlcolor=blue,linkcolor=black]{hyperref}
 
-
-\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
-
 \newcommand{\code}[1]{\lstinline[language=Java]{#1}}
 \newcommand{\get}[0]{\texttt{GET}}
 \newcommand{\set}[0]{\texttt{SET}}
@@ -89,15 +86,19 @@ In all experiments, the following definitions hold.
 \item \emph{Throughput} is the number of requests the SUT successfully responds to, per unit of time, as measured by memaslap.
 \item \emph{Response time (memaslap)} is the time from sending to receiving the request to the SUT including any network latencies, as measured by the client (memaslap).
 \item \emph{Response time (middleware)} is the time from receiving the request in the middleware ($t_{created}$) to returning it to the client ($t_{returned}$), as measured by the middleware. This is the measurement used in most graphs here; the reasoning behind this is shown in \hyperref[sec:appa]{Appendix A}.
+\item $S$ denotes the number of memcached servers in SUT.
+\item $R$ denotes the replication factor. ``No replication'' means $R=1$, ``half'' or ``50\%'' replication means $R=\lceil\frac{S}{2}\rceil$, ``full replication'' means $R=S$.
+\item $W$ denotes the proportion of \set{}s in the workload.
+\item $C$ denotes the total number of virtual clients (i.e. summed over all memaslap instances).
 \end{itemize}
-
+\vspace{1mm}
 In all experiments, the following holds about the experimental setup:
 \begin{itemize}
 \item The middleware was run on Basic A4 instances, and both memaslap and memcached were run on Basic A2 instances.
 \item The first 2 and last 2 minutes of each experiment were discarded from analyses as warm-up and cool-down time.
 \item The request sampling rate for logging is set to $\frac{1}{100}$ in throughput experiments (Section~\ref{sec:exp1}) and $\frac{1}{10}$ in replication and write proportion experiments (Sections~\ref{sec:exp2} and \ref{sec:exp3}).
 \item Response times inside the middleware were measured with a 1 millisecond accuracy.
-\item The system is closed because memaslap clients wait for a response before sending a new request.
+\item The system can be considered closed because memaslap clients wait for a response before sending a new request.
 \end{itemize}
 
 
@@ -274,7 +275,7 @@ For \get{} requests, the ideal system would have linear speed-up (assuming the l
 \hline Number of client machines & 3 \\ 
 \hline Virtual clients & 180 \\ 
 \hline Workload & Key 16B, Value 128B, Writes 5\% \\
-\hline Middleware: replication factor & $\in \{1, ceil(S/2), S\}$ \\ 
+\hline Middleware: replication factor & $\in \{1, \lceil\frac{S}{2}\rceil, S\}$ \\ 
 \hline Middleware: read threads & 32 \\ 
 \hline Runtime x repetitions & 6min x 3 \\ 
 \hline Log files & replication-S*-R*-r* \\
