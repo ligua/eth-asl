@@ -283,6 +283,7 @@ For \get{} requests, the ideal system would have linear speed-up (assuming the l
 \end{center}
 
 \subsection{Results}
+\label{sec:exp2:res}
 
 \subsubsection{\get{} requests}
 From Figure~\ref{fig:exp2:res:replication} we can see that increasing $R$ from 1 to $S$ does have an impact on the mean response time of \get{} requests (contrary to the hypothesis) and this effect is amplified as $S$ grows. However, the 25\%, 50\%, and 75\% percentiles stay constant, implying that most of the requests aren't affected (in accordance with the hypothesis) -- only the response time of outliers (\get{}s with high response times) increases. Figure~\ref{fig:exp2:res:breakdown} shows that queue time is constant and the increase in response time comes almost entirely from waiting for memcached's response; this means the increase is caused by either increased network latency (due to more traffic at a higher value of $R$) or increased memcached response time.
@@ -409,9 +410,9 @@ As Figure~\ref{fig:exp3:res:throughput} shows, throughput does indeed decrease w
 I predicted that the largest relative performance decrease would be for a lower number of servers, i.e. $S=3$ would be hit worst by increasing $W$; Figure~\ref{fig:exp3:res:relative:set} confirms this strongly for $R=1$ and mildly for $R=S$.
 
 \subsubsection{Reasons for reduced performance}
-Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT
+Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. For full replication, the relationship is straightforward: $tQueue$ is constant and the total response time is mostly affected by $tMemcached$ increasing; the reasons for this increase (increased network latency and/or higher load on memcached) have been discussed in Section~\ref{sec:exp2:res}.
 
-\todo{}
+For $R=1$, however, the relationship is different. The major component in response time is $tQueue$ which increases significantly with $W$. The design decisions causing the non-replicated system to perform much worse than the replicated one were discussed in Section~\ref{sec:exp2:res:set} and should hold here as well.
 
 \begin{figure}[p]
 \centering
