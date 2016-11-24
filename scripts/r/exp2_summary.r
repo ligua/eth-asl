@@ -351,6 +351,20 @@ ggplot(data2, aes(x=replication_str, y=tps_mean, group=1)) +
 ggsave(paste0(result_dir_base, "/graphs/tp_vs_replication_all.pdf"),
        width=fig_width, height=fig_height/2, device=cairo_pdf)
 
+ggplot(data2, aes(x=servers_str, y=tps_mean, group=1)) +
+  geom_errorbar(aes(ymin=tps_mean-tps_confidence_delta,
+                    ymax=tps_mean+tps_confidence_delta),
+                color=color_triad2, width=0.2, size=1) +
+  geom_line(color=color_dark) +
+  geom_point(color=color_dark) +
+  facet_wrap(~replication_str, ncol=3) +
+  ylim(0, NA) +
+  xlab("Replication") +
+  ylab("Total throughput [requests/s]") +
+  asl_theme
+ggsave(paste0(result_dir_base, "/graphs/tp_vs_servers_all.pdf"),
+       width=fig_width, height=fig_height/2, device=cairo_pdf)
+
 # Not within confidence interval
 not_confident <- data1 %>%
   filter(response_time_confidence_delta_rel > 0.05) %>%

@@ -238,7 +238,10 @@ Get requests will be processed faster as we increase $S$ because the same load w
 
 Set requests will be strongly affected by $R$. If $R=1$, set requests will be processed faster for higher $S$ because each request is only written to one server, and for a higher $S$ the same load is distirbuted across more write threads. However, if $R>1$, response time of sets increases due to two factors: a) the request is written serially to $R$ servers, and b) not all $R$ responses are received at the same time. Assuming a) is negligible compared to b), we will observe an increase in the mean response time.
 
-All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For get requests, response time will be independent of $R$ for any fixed $S$. For set requests, response time increases linearly with increasing $R$, and the slope increases with $S$. I also predict the total throughput will decrease as $R$ increases because the servers will need to do additional work (communicating more with memcached servers).
+All of this is summarised in Figure~\ref{fig:exp2:hyp:replication}. For get requests, response time will be independent of $R$ for any fixed $S$. For set requests, response time increases linearly with increasing $R$, and the slope increases with $S$.
+
+\subsubsection{Throughput}
+I also predict the total throughput will decrease as $R$ increases because the servers will need to do additional work (communicating more with memcached servers).
 
 \begin{figure}[h]
 \centering
@@ -285,19 +288,15 @@ Given that $tMemcached$ increased with $S$ even when $R$ was constant, we can co
 
 \subsubsection{Set requests}
 
-Figure~\ref{fig:exp2:res:replication} shows that increasing $R$ does increase response time for $S=7$ but the trend is not so clear for $S=3$ and $S=5$. If we also consider the breakdown of response time by component (Figure~\ref{fig:exp2:res:breakdown}) we can explain \todo{}
+Figure~\ref{fig:exp2:res:replication} shows that increasing $R$ does increase response time for $S=7$ but unexpectedly, decreases response time for $S=3$. This is counterintuitive: how can a system that is under a higher load also be faster?
 
-Adding servers at $R=1$ decreases response time to set requests -- this is in line with the hypothesis. For $R>1$ adding servers does not have a linear effect on response time, which corresponds to the prediction that two factors (serial writes and differing memcached response times) affect the response time, each in a different direction.
+From Figure~\ref{fig:exp2:res:breakdown} we see that queueing time actually decreases with $R$ at all values of $S$ and the increase in $tMemcached$ offsets the decrease at $S=5$ and $S=7$. Why, then, do set requests spend less time in the queue as $R$ increases? We can explain this by looking at the architecture of \linkmain{WriteWorker}. Two steps are done in the same loop: first, if the write queue has any elements, one is taken and sent to all $R$ servers. The second step is checking for responses from memcached (waiting up to 1ms using the function \verb+Selector.select(long timeout)+). This means that if there were no responses from memcached servers, the thread just sleeps 1ms.
 
-\todo{}
+The result of this design is that a system with a larger replication factor -- which means more responses from memcached servers -- sleeps less at \verb+Selector.select()+ and thus can faster go back to processing elements from the queue.
 
-\todo{Also mention throughput}
+Adding servers at $R=1$ decreases response time to set requests -- this is in line with the hypothesis. For $R>1$ adding servers does not have a linear effect on response time: for 50\% replication, response time (and the time spent in each component) is constant and at full replication response time increases slightly with $S$ because of increased $tMemcached$.
 
-\subsubsection{Relative cost of operations}
-\todo{}
-
-\subsubsection{Scalability}
-\todo{}
+$tMemcached$ is almost constant at 50\% replication because the difference between values of $R$ is small: $R \in \{2,3,4\}$. At full replication tMemcached has a larger effect because the difference is larger: $R \in \{3,5,7\}$. (The slowest response determines $tMemcached$; it can be modelled as the maximum of $R$ samples where each sample is the response time to one request from the middleware to a memcached server.).
 
 \begin{figure}[h]
 \centering
@@ -309,18 +308,33 @@ Adding servers at $R=1$ decreases response time to set requests -- this is in li
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{../results/replication/graphs/tp_vs_replication_all.pdf}
-\caption{Throughput of SUT as a function of $R$, for different values of $S$. The line and points show the mean throughput; red errorbars show the 95\% confidence interval over 10-second samples in a double-tailed t-test.}
-\label{fig:exp2:res:throughput}
-\end{figure}
-
-\begin{figure}[h]
-\centering
 \includegraphics[width=\textwidth]{../results/replication/graphs/time_breakdown_vs_replication_get_abs.pdf}
 \includegraphics[width=\textwidth]{../results/replication/graphs/time_breakdown_vs_replication_set_abs.pdf}
 \caption{Absolute cost of operations inside SUT as a function of $R$, for different values of $S$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT.}
 \label{fig:exp2:res:breakdown}
 \end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_get.pdf}
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_set.pdf}
+\caption{Response time (middleware) to GET and SET requests as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the red line shows the median.}
+\label{fig:exp2:res:servers}
+\end{figure}
+
+\subsubsection{Throughput}
+
+From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed decrease with $R$ -- which is in line with the hypothesis --, and higher $S$ amplifies this effect. At $S=3$ throughput is almost constant; this is because the value of $R \in \{1,2,3\}$ does not change enough to make a significant difference, similarly to the previous section.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/tp_vs_replication_all.pdf}
+\caption{Throughput of SUT as a function of $R$, for different values of $S$. The line and points show the mean throughput; red errorbars show the 95\% confidence interval over 10-second samples in a double-tailed t-test.}
+\label{fig:exp2:res:throughput}
+\end{figure}
+
+\subsubsection{Scalability}
+\todo{}
 
 
  \clearpage
