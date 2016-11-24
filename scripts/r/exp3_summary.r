@@ -269,6 +269,16 @@ ggplot(data3 %>% filter(type=="SET"), aes(x=writes_str, y=value, fill=Component,
 ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_writes_set_rel.pdf"),
        width=fig_width, height=fig_height, device=cairo_pdf)
 
+ggplot(data3 %>% filter(type=="GET"), aes(x=writes_str, y=value, fill=Component, group=1)) +
+  geom_bar(stat="identity") +
+  facet_wrap(~replication_str+servers_str, nrow=2) +
+  xlab("Proportion of write requests") +
+  ylab("Time spent [ms]") +
+  asl_theme +
+  scale_fill_brewer(palette="Set1")
+ggsave(paste0(result_dir_base, "/graphs/time_breakdown_vs_writes_get_abs.pdf"),
+       width=fig_width, height=fig_height, device=cairo_pdf)
+
 # Throughput
 data2 <- all_results %>%
   filter(type=="all")

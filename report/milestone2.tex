@@ -292,6 +292,7 @@ I predicted that increasing $S$ while keeping $R$ constant would decrease the re
 Given that $tMemcached$ increased with $S$ even when $R$ was constant, we can conclude that the performance degradation was mostly due to networking -- if it had been caused by memcached's slower responses, $tMemcached$ would not have changed with $S$.
 
 \subsubsection{\set{} requests}
+\label{sec:exp2:res:set}
 
 Figure~\ref{fig:exp2:res:replication} shows that increasing $R$ does increase response time for $S=7$ but unexpectedly, decreases response time for $S=3$. This is counterintuitive: how can a system that is under a higher load also be faster?
 
@@ -362,8 +363,13 @@ To this end, I will measure throughput (in 10-second time windows) and response 
 
 I predict the following.
 
-Increasing $W$ will decrease throughput and increase mean response time for any combination of $S$ and $R$ because \set{}s take longer to process than \get{}s. Fully replicated setups ($R=S$) will suffer a larger performance decrease than setups with no replication ($R=1$) because in the case of full replication, WriteWorkers do more work for each \set{} request (i.e. the response time of each write request will be higher).
+\subsubsection{\get{} requests}
+Increasing $W$ will have no impact on the performance of \get{}s. This is because (assuming SUT is not completely saturated) read threads will have a similar amount of requests to process ($1-W \approx 1$). There may be secondary effects due to e.g. write threads requiring more CPU time, but this should be negligible.
 
+\subsubsection{\set{} requests}
+Increasing $W$ will decrease total throughput and increase mean \set{} response time for any combination of $S$ and $R$ because \set{}s take longer to process than \get{}s, and because there are more requests per write thread compared to read threads. Fully replicated setups ($R=S$) will suffer a larger performance decrease than setups with no replication ($R=1$) because in the case of full replication, WriteWorkers do more work for each \set{} request (i.e. the response time of each write request will be higher).
+
+\subsubsection{Relative impact}
 The setups with $S=3$ servers will suffer the largest relative performance decrease (compared to $S > 3$) because there are fewer WriteWorkers dealing with the same load of \set{} requests, which in turn increases the queue wait time $tQueue$.
 
 \subsection{Experiments}
@@ -386,16 +392,24 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 \subsection{Results}
 Reporting experiment results. Comparison of hypothesis and experiment results.
 
-\subsubsection{Impact on get requests}
+\subsubsection{Impact on \get{} requests}
 
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \get{} requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are constant for all setups but one ($S=7, W=7\%$, full replication) which is still very close. Thus the performance of \get{} requests does not depend much on $W$. \todo{comparison with hypothesis?}
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \get{} requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are relatively stable with one exception. This is roughly as expected (response time does increase slightly with $W$, but this can be attributed to increased network latency because $tQueue$ is stable across parameter combinations).
 
-\subsubsection{Impact on set requests}
+In the exceptional case, $(S=3,R=1)$, $tQueue$ decreases as $W$ increases. Given that $(S=3,R=3)$ has an otherwise similar behaviour without the decrease in $tQueue$ we can conclude that the decrease is caused by read threads reaching a knee in their performance function: removing just a small proportion of the load gives a large gain in performance.
 
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} requests. It is clear that increasing $W$ also increases response time; the effect seems mostly linear. An outlier is $S=3,R=1$ where the effect is much stronger. This can be attributed to the server being overloaded, similarly to Section \todo{ref to exp2 discussion}.
+\subsubsection{Impact on \set{} requests}
+
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} requests, and Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. It is clear that increasing $W$ also increases response time -- this is in line with the hypothesis. However, the prediction that fully replicated would suffer the most didn't hold: in fact, while response time seems to depend linearly on $W$ in the fully replicated case, the dependence looks exponential in the case of $R=1$. The reasoning for why $R=1$ performs unexpectedly badly (especially for $S=3$) can be found in Section~\ref{sec:exp2:res:set}.
+
+\subsubsection{Throughput}
+As Figure~\ref{fig:exp3:res:throughput} shows, throughput does indeed decrease with $W$ for all combinations of $S$ and $R$, confirming the hypothesis. I also predicted that throughput would suffer more for fully replicated setups; this is indeed the case although the difference is not large (the slope of the line in Figure~\ref{fig:exp3:res:throughput} is steeper in plots of the top row compared to the bottom row).
 
 \subsubsection{Relative impact}
-Figure~\ref{fig:exp3:res:relative:set} shows the impact of $W$ on response times, compared to base cases. \todo{}
+I predicted that the largest relative performance decrease would be for a lower number of servers, i.e. $S=3$ would be hit worst by increasing $W$; Figure~\ref{fig:exp3:res:relative:set} confirms this strongly for $R=1$ and mildly for $R=S$.
+
+\subsubsection{Reasons for reduced performance}
+Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT
 
 \todo{}
 
