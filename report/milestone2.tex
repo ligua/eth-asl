@@ -268,7 +268,7 @@ For get requests, the ideal system would have linear speed-up (assuming the load
 \hline Workload & Key 16B, Value 128B, Writes 5\% \\
 \hline Middleware: replication factor & $\in \{1, ceil(S/2), S\}$ \\ 
 \hline Middleware: read threads & 32 \\ 
-\hline Runtime x repetitions & 6min x 1 \\ 
+\hline Runtime x repetitions & 6min x 3 \\ 
 \hline Log files & replication-S*-R*-r* \\
 \hline 
 \end{tabular} }
@@ -377,7 +377,7 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 \hline Workload & Key 16B, Value 128B, Writes $\in \{1\%, 4\%, 7\%, 10\%\}$ \\
 \hline Middleware: replication factor & $\in \{1, S\}$ \\ 
 \hline Middleware: read threads & 32 \\ 
-\hline Runtime x repetitions & 8min x 1; more in one case \\ 
+\hline Runtime x repetitions & 8min x 3 \\ 
 \hline Log files & writes-S*-R*-W*-r* \\
 \hline 
 \end{tabular} }
