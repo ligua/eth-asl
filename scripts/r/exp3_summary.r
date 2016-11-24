@@ -216,6 +216,7 @@ ggplot(data1 %>% filter(type=="GET"),
   ylim(0, NA) +
   ylab("Response time (middleware) [ms]") +
   xlab("Proportion of write requests") +
+  ggtitle("GET requests") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_writes_get.pdf"),
        width=fig_width, height=fig_height, device=cairo_pdf)
@@ -235,6 +236,7 @@ ggplot(data1 %>% filter(type=="SET"),
   ylim(0, NA) +
   ylab("Response time (middleware) [ms]") +
   xlab("Proportion of write requests") +
+  ggtitle("SET requests") +
   asl_theme
 ggsave(paste0(result_dir_base, "/graphs/response_time_vs_writes_set.pdf"),
        width=fig_width, height=fig_height, device=cairo_pdf)

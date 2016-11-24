@@ -387,11 +387,11 @@ Reporting experiment results. Comparison of hypothesis and experiment results.
 
 \subsubsection{Impact on get requests}
 
-Figure~\ref{fig:exp3:res:responsetime:get} shows the effect of $W$ on get requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are constant for all setups but one ($S=7, W=7\%$, full replication) which is still very close. Thus the performance of get requests does not depend much on $W$. \todo{comparison with hypothesis?}
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on get requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are constant for all setups but one ($S=7, W=7\%$, full replication) which is still very close. Thus the performance of get requests does not depend much on $W$. \todo{comparison with hypothesis?}
 
 \subsubsection{Impact on set requests}
 
-Figure~\ref{fig:exp3:res:responsetime:set} shows the effect of $W$ on set requests. It is clear that increasing $W$ also increases response time; the effect seems mostly linear. An outlier is $S=3,R=1$ where the effect is much stronger. This can be attributed to the server being overloaded, similarly to Section \todo{ref to exp2 discussion}.
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on set requests. It is clear that increasing $W$ also increases response time; the effect seems mostly linear. An outlier is $S=3,R=1$ where the effect is much stronger. This can be attributed to the server being overloaded, similarly to Section \todo{ref to exp2 discussion}.
 
 \subsubsection{Relative impact}
 Figure~\ref{fig:exp3:res:relative:set} shows the impact of $W$ on response times, compared to base cases. \todo{}
@@ -401,15 +401,9 @@ Figure~\ref{fig:exp3:res:relative:set} shows the impact of $W$ on response times
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_get.pdf}
-\caption{Response time (middleware) to \textbf{GET} requests as a function of $W$, for different values of $S$ and $R$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
-\label{fig:exp3:res:responsetime:get}
-\end{figure}
-
-\begin{figure}[h]
-\centering
 \includegraphics[width=\textwidth]{../results/writes/graphs/response_time_vs_writes_set.pdf}
-\caption{Response time (middleware) to \textbf{SET} requests as a function of $W$, for different values of $S$ and $R$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
-\label{fig:exp3:res:responsetime:set}
+\caption{Response time (middleware) to GET and SET requests as a function of $W$, for different values of $S$ and $R$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
+\label{fig:exp3:res:responsetime}
 \end{figure}
 
 \begin{figure}[h]
