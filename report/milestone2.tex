@@ -57,7 +57,7 @@ In all experiments, the following definitions hold.
 \begin{itemize}
 \item The \emph{system under test} (SUT) is the middleware together with the connected memcached servers, running on Ubuntu virtual machines in the Azure cloud.
 \item \emph{Throughput} is the number of requests that SUT successfully responds to, per unit of time, as measured by memaslap.
-\item \emph{Response time (memaslap)} is the time from sending to receiving the request to the SUT including any network latencies, as measured by the client (memaslap).
+\item \emph{Response time (memaslap)} is the time from sending to receiving the request to SUT including any network latencies, as measured by the client (memaslap).
 \item \emph{Response time (middleware)} is the time from receiving the request in the middleware ($t_{created}$) to returning it to the client ($t_{returned}$), as measured by the middleware. This is the measurement used in most graphs here; the reasoning behind this is shown in \hyperref[sec:appb]{Appendix B}.
 \item $S$ denotes the number of memcached servers in SUT.
 \item $R$ denotes the replication factor. ``No replication'' means $R=1$, ``half'' or ``50\%'' replication means $R=\lceil\frac{S}{2}\rceil$, ``full replication'' means $R=S$.
@@ -86,9 +86,9 @@ In all experiments, the following holds about the experimental setup:
 
 \subsection{Experimental question}
 
-In this section, I will run experiments to find out a) the maximum sustained throughput of the SUT, b) the number of read threads ($T$) in the middleware that achieves this, and c) the number of virtual clients ($C$) that achieves this.
+In this section, I will run experiments to find out a) the maximum sustained throughput of SUT, b) the number of read threads ($T$) in the middleware that achieves this, and c) the number of virtual clients ($C$) that achieves this.
 
-To this end, I will measure throughput as a function of $T$ and $C$ in 10-second time windows. I will find the maximum sustained throughput of the SUT, i.e. the throughput at which the response time does not increase rapidly with additional clients. For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) of throughput lies within 5\% of the mean.
+To this end, I will measure throughput as a function of $T$ and $C$ in 10-second time windows. I will find the maximum sustained throughput of SUT, i.e. the throughput at which the response time does not increase rapidly with additional clients. For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) of throughput lies within 5\% of the mean.
 
 \subsection{Hypothesis}
 
@@ -209,7 +209,7 @@ The distribution of time \get{} requests spend in different parts of the middlew
 
 In this section, I will run experiments to find out how the response time of SUT depends on the number of servers $S$ and replication factor $R$. Additionally, I will investigate whether \get{}s and \set{}s are differently affected by these parameters. Finally, I will find out which operations become more time-consuming as these parameters change.
 
-To this end, I will measure response time (middleware) for every 10th request as a function of $S$ and $R$, and measure how long requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval of the response time (calculated using a two-sided t-test) lies within 5\% of the mean, but not less than 3 repetitions.
+To this end, I will measure response time (middleware) for every 10th request as a function of $S$ and $R$, and measure how long requests spend in each part of SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval of the response time (calculated using a two-sided t-test) lies within 5\% of the mean, but not less than 3 repetitions.
 
 \subsection{Hypothesis}
 
@@ -244,7 +244,7 @@ As explained previously, more replication means that the middleware needs to sen
 
 In an ideal system, a) there would be enough resources to concurrently run all threads; b) all memcached servers would take an equal and constant amount of time to respond; c) there would be no network latencies; d) dequeueing would take constant time.
 
-For \get{} requests, the ideal system would have linear speed-up (until the load balancer becomes the bottleneck). I predict that the SUT will have sublinear speed-up for \get{}s because the response time also includes network latency -- a term that is not dependent on $S$: $response \; time = const. + \frac{const.}{S}$. In addition, since threads compete for resources in the SUT, the speed-up will be even lower than what's predicted by the formula above.
+For \get{} requests, the ideal system would have linear speed-up (until the load balancer becomes the bottleneck). I predict that SUT will have sublinear speed-up for \get{}s because the response time also includes network latency -- a term that is not dependent on $S$: $response \; time = const. + \frac{const.}{S}$. In addition, since threads compete for resources in SUT, the speed-up will be even lower than what's predicted by the formula above.
 
 For \set{}s, the ideal system would have linear speed-up if $R=const.$ because in that case, adding servers does not increase the amount of work done per \linkmain{MiddlewareComponent} (again assuming the load balancer does not become a bottleneck). For full replication the ideal system would have sublinear speed-up because each \set{} is serially written to $S$ servers so the response time would have a component that linearly depends on $S$.
 
@@ -340,9 +340,9 @@ As Figure~\ref{fig:exp2:res:servers} shows, there is no speed-up for \get{} requ
 
 \subsection{Experimental question}
 
-In this section, I will run experiments to find out how the response time and throughput of the SUT depend on the proportion of write requests, $W$. I will investigate this relationship for different values of $S$ and $R \in {1, S}$. Finally, I will find out the main reason for the reduced performance.
+In this section, I will run experiments to find out how the response time and throughput of SUT depend on the proportion of write requests, $W$. I will investigate this relationship for different values of $S$ and $R \in \{1, S\}$. Finally, I will find out the main reason for the reduced performance.
 
-To this end, I will measure throughput (in 10-second time windows) and response time (for every 10th request) as a function of $W$, $S$ and $R$, and measure how long requests spend in each part of the SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean throughput, but not less than 3 repetitions.
+To this end, I will measure throughput (in 10-second time windows) and response time (for every 10th request) as a function of $W$, $S$ and $R$, and measure how long requests spend in each part of SUT (based on the timestamps defined in Milestone 1). For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) of both throughput and mean response time to \set{}s lies within 5\% of the mean, but not less than 3 repetitions.
 
 \subsection{Hypothesis}
 
@@ -399,7 +399,7 @@ In the exceptional case, $(S=3,R=1)$, $tQueue$ decreases as $W$ increases. Given
 \label{fig:exp3:res:breakdown:set:abs}
 \end{figure}
 
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} requests, and Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. It is clear that increasing $W$ also increases response time -- this is in line with the hypothesis. However, the prediction that fully replicated would suffer the most didn't hold: in fact, while response time seems to depend linearly on $W$ in the fully replicated case, the dependence looks exponential in the case of $R=1$. The reasoning for why $R=1$ performs unexpectedly badly (especially for $S=3$) can be found in Section~\ref{sec:exp2:res:set}.
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} requests, and Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. It is clear that increasing $W$ also increases response time -- this is in line with the hypothesis. However, the prediction that fully replicated would suffer the most did not hold: in fact, while response time seems to depend linearly on $W$ in the fully replicated case, the dependence looks exponential in the case of $R=1$. The reasoning for why $R=1$ performs unexpectedly badly (especially for $S=3$ which has the highest load per server) can be found in Section~\ref{sec:exp2:res:set}.
 
 \subsubsection{Throughput}
 
@@ -410,7 +410,7 @@ Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} request
 \label{fig:exp3:res:throughput}
 \end{figure}
 
-As Figure~\ref{fig:exp3:res:throughput} shows, throughput does indeed decrease with $W$ for all combinations of $S$ and $R$, confirming the hypothesis. I also predicted that throughput would suffer more for fully replicated setups; this is indeed the case although the difference is not large (the slope of the line in Figure~\ref{fig:exp3:res:throughput} is steeper in plots of the top row compared to the bottom row).
+As Figure~\ref{fig:exp3:res:throughput} shows, throughput does indeed decrease with $W$ for all combinations of $S$ and $R$, confirming the hypothesis. I also predicted that throughput would suffer more for fully replicated setups; this is indeed the case although the difference is not large (the slope of the line in Figure~\ref{fig:exp3:res:throughput} is steeper in plots of the bottom row compared to the top row).
 
 \subsubsection{Reasons for reduced performance}
 Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. For full replication, the relationship is straightforward: $tQueue$ is constant and the total response time is mostly affected by $tMemcached$ increasing; the reasons for this increase (increased network latency and/or higher load on memcached) have been discussed in Section~\ref{sec:exp2:res}.
@@ -444,7 +444,7 @@ I predicted that the largest relative performance decrease would be for a lower 
 \label{sec:appa}
 \addcontentsline{toc}{section}{Appendix A: Modifications to the middleware}
 
-In the last milestone submission, my middleware implemented all functionality as necessary. However, the resource usage was extremely wasteful: each read thread took up nearly 100\% of the resources allocated to them and never went to a sleeping state. This caused more than 10-fold drops in performance when going from $T=1$ to $T=4$ (for $S=5$), and would have made the maximum throughput experiment useless. I made some small changes to fix this; they can be seen on \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/commit/928e9bba132d34ecf9c00936babdd7fa2645e50f}{GitLab}.
+In the last milestone submission, my middleware implemented all functionality as necessary. However, resource usage was extremely wasteful: each read thread took up nearly 100\% of the resources allocated to it and never went to a sleeping state. This caused more than 10-fold drops in performance when going from $T=1$ to $T=4$ (for $S=5$), and would have made the maximum throughput experiment useless. I made some small changes to fix this; they can be seen on \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/commit/928e9bba132d34ecf9c00936babdd7fa2645e50f}{GitLab}.
 
 To verify that the system is still stable, I re-ran the trace experiment. The throughput and response time are shown in Figures~\ref{fig:trace:throughput} and \ref{fig:trace:responsetime}, and are confirmed to be stable (and throughput is roughly 30\% higher). The Interactive Response Time Law also still holds (to within 0.46\%). For explanations of the figures, see Milestone 1 report.
 
@@ -471,7 +471,7 @@ To verify that the system is still stable, I re-ran the trace experiment. The th
 
 The response time statistics that memaslap outputs are useful but limited. Since using middleware data allows studying the response time distribution in more detail, we would like to use response times measured by the middleware. To do this, however, we need to show that these two are interchangeable up to a constant delay caused by the network latency on the roundtrip between memaslap and the middleware.
 
-Figures~\ref{fig:appa:comparison:exp2} and \ref{fig:appa:comparison:exp3} show the mean response times as measured by memaslap and the middleware. It is clear that for all parameter combinations, the difference is indeed constant at about 5ms. Thus, we can rely on response times logged by the middleware.
+Figures~\ref{fig:appa:comparison:exp2} and \ref{fig:appa:comparison:exp3} show the mean response times as measured by memaslap and the middleware. It is clear that for all parameter combinations, the difference is indeed constant at about 7ms. Thus, we can rely on response times logged by the middleware.
 
 \begin{figure}[h]
 \centering
@@ -494,7 +494,7 @@ Figures~\ref{fig:appa:comparison:exp2} and \ref{fig:appa:comparison:exp3} show t
 \section*{Log file listing}
 \addcontentsline{toc}{section}{Log file listing}
 
-Each experiment's logs are compressed into one or more \verb+compressed.zip+ files and should be extracted to the directory where the \verb+.zip+ file is located. Each location mentioned in the table below is a directory that contains the middleware log (\verb+main.log+), the request log (\verb+request.log+) and memaslap outputs (\verb+memaslap*.out+). \\
+Each experiment's logs are compressed into one or more \verb+compressed*.zip+ files and should be extracted to the directory where the \verb+.zip+ file is located. Each location mentioned in the table below is a directory that contains the middleware log (\verb+main.log+), the request log (\verb+request.log+) and memaslap outputs (\verb+memaslap*.out+). \\
 
 \begin{tabular}{|c|l|}
 \hline \textbf{Short name}& \textbf{Location} \\ 
