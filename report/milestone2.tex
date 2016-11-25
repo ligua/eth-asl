@@ -142,11 +142,30 @@ Some parameter combinations did not yield the required confidence interval in th
 \subsection{Results}
 
 \subsubsection{Maximum sustained throughput}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/throughput/graphs/tp_vs_clients.pdf}
+\caption{Throughput as a function of $C$ for different values of $T$. Errorbars show the 95\% confidence interval around the mean value which is shown with points connected by lines.}
+\label{fig:exp1:res:throughput}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_vs_clients.pdf}
+\caption{The 1\%, 5\%, 50\%, 95\% and 99\% percentiles of the response time (middleware) distribution, as a function of $C$ for different values of $T$. Values above 100ms are not shown.}
+\label{fig:exp1:res:responsetime}
+\end{figure}
+
 Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achieved using $T=64$ at 720 clients (20100 requests/s), followed by $T=64$ at 648 clients (20000 requests/s) and $T=32$ at 432 clients (19600 requests/s). This is reasonably close to the expected value of $C=550$. However, since we are trying to maximise sustained throughput, we also need to look at response times.
 
 Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T > 1$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable.
 
 Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- \textbf{180 clients and 32 threads} -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Both $C$ and throughput are close to the expected values; $T$ is lower but not by an order of magnitude.
+
+The dependence of throughput on $C$ for all values of $T$ is as expected: there is a knee at a low value of $C$, a saturation region and a gradual degradation in performance (for $T=64$, this degradation probably occurs at an even higher number of clients than tested here). The saturation regions for $T>1$ have significant fluctuation; however, this is probably noise caused by varying conditions on Azure (this is easy to verify by running more repetitions of these experiments but I decided not to, because the trend is clear and I had limited Azure credit).
+
+Adding threads to the system improves performance: going from $T=1$ to $T=16$ has a strong effect: both median response time and the 95th and 99th percentiles are significantly improved. Going to $T=32$ improves the system much less: it mainly decreases the response time of outliers while keeping median response time similar. Going from $T=32$ to $T=64$ makes almost no difference. 
 
 \todo{Investigate and explain} behaviour at other values of $T$ (with $C=180$), and possibly also at other values of $C$ with $T=32$.
 
@@ -172,20 +191,6 @@ Of the remaining setups, the highest throughput is achieved both by 180 and 216 
 	\caption{The amount of time spent on different operations inside the middleware for the optimal run ($C=180$ and $T=32$), for \get{} requests.}
 	\label{fig:exp1:table}
 \end{center}
-\end{figure}
-
-\begin{figure}[p]
-\centering
-\includegraphics[width=\textwidth]{../results/throughput/graphs/tp_vs_clients.pdf}
-\caption{Throughput as a function of $C$ for different values of $T$. Errorbars show the 95\% confidence interval around the mean value which is shown with points connected by lines.}
-\label{fig:exp1:res:throughput}
-\end{figure}
-
-\begin{figure}[p]
-\centering
-\includegraphics[width=\textwidth]{../results/throughput/graphs/response_time_vs_clients.pdf}
-\caption{The 1\%, 5\%, 50\%, 95\% and 99\% percentiles of the response time (middleware) distribution, as a function of $C$ for different values of $T$. Values above 100ms are not shown.}
-\label{fig:exp1:res:responsetime}
 \end{figure}
 
 
