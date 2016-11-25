@@ -240,9 +240,9 @@ As explained previously, more replication means that the middleware needs to sen
 
 In an ideal system, a) there would be enough resources to concurrently run all threads; b) all memcached servers would take an equal and constant amount of time to respond; c) there would be no network latencies; d) dequeueing would take constant time.
 
-For \get{} requests, the ideal system would have linear speed-up (assuming the load balancer does not become a bottleneck). I predict that the SUT will have sublinear speed-up because the response time also includes network latency -- a term that is not dependent on $S$: $response \; time = const. + \frac{const.}{S}$. In addition, since threads compete for resources in the SUT, the speed-up will be even lower than what's predicted by the formula above.
+For \get{} requests, the ideal system would have linear speed-up (assuming the load balancer does not become a bottleneck). I predict that the SUT will have sublinear speed-up for \get{}s because the response time also includes network latency -- a term that is not dependent on $S$: $response \; time = const. + \frac{const.}{S}$. In addition, since threads compete for resources in the SUT, the speed-up will be even lower than what's predicted by the formula above.
 
-\todo{and for sets?} what's the hypothesis?
+For \set{}s, the ideal system would have linear speed-up if $R=const.$ because in that case, adding servers does not increase the amount of work done \emph{per \linkmain{MiddlewareComponent}} (again assuming the load balancer does not become a bottleneck). For full replication the ideal system would have sublinear speed-up because each \set{} will be serially written to $S$ servers so the response time would have a component that linearly depends on $S$.
 
 \subsection{Experiments}
 \begin{center}
@@ -323,7 +323,7 @@ From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed
 As hypothesized, increasing $R$ also increases $tMemcached$ for \set{} requests. Unexpected though was the decrease in $tQueue$ for \set{} requests as $R$ increased, and the increase in $tMemcached$ for \get{}s. Both are explained in previous sections of this chapter.
 
 \subsubsection{Scalability}
-As Figure~\ref{fig:exp2:res:servers} shows, there is no speed-up for \get{} requests when we add servers, and there is even a slight increase the mean response time. Increasing $S$ does decrease mean response time to \set{} requests, but only at $R=1$ and sublinearly -- as hypothesized. At $R>1$ there is no speed-up. In summary, SUT performs significantly worse than the ideal system described in Section~\ref{sec:exp2:hyp:scalability}, and worse than expected.
+As Figure~\ref{fig:exp2:res:servers} shows, there is no speed-up for \get{} requests when we add servers, and there is even a slight increase the mean response time. Increasing $S$ does decrease mean response time to \set{} requests, but only at $R=1$ -- as hypothesized -- and sublinearly. At $R>1$ there is no speed-up. In summary, SUT performs significantly worse than the ideal system described in Section~\ref{sec:exp2:hyp:scalability}, and worse than expected.
 
  \clearpage
 % --------------------------------------------------------------------------------
