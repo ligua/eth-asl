@@ -385,7 +385,7 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 
 \subsubsection{Impact on \get{} requests}
 
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \get{} requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are relatively stable with one exception. This is roughly as expected (response time does increase slightly with $W$, but this can be attributed to increased network latency because $tQueue$ is stable across parameter combinations).
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \get{} requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are relatively stable with one exception. This is roughly as expected (response time does increase slightly with $W$, but this can be attributed to increased network latency because $tQueue$ is stable across parameter combinations). The plot of breakdown of response time to \get{}s was not included in this report but is available \href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/blob/master/results/writes/graphs/time_breakdown_vs_writes_get_abs.pdf}{on GitLab}.
 
 In the exceptional case, $(S=3,R=1)$, $tQueue$ decreases as $W$ increases. Given that $(S=3,R=3)$ has an otherwise similar behaviour without the decrease in $tQueue$ we can conclude that the decrease is caused by read threads reaching a knee in their performance function: removing just a small proportion of the load gives a large gain in performance.
 
