@@ -94,10 +94,10 @@ To this end, I will measure throughput as a function of $T$ and $C$, in 10-secon
 
 I approximate that the maximum throughput will be 17200 requests per second using 50 read threads in the middleware at a load of 550 clients. The maximum sustained throughput will occur in a range of 200 clients.
 
-\subsubsection{Number of threads} 
+\subsubsection{Optimal number of threads} 
 Given that requests spend most of their time ($\sim90\%$ in the trace experiment) waiting in the queue, increasing $T$ will increase throughput. If we reduce the queueing time by a factor of 10, it will no longer be the bottleneck (then waiting for memcached's response -- which takes $\sim9\%$ of response time in the trace experiment -- becomes the bottleneck). Assuming the time spent in the queue scales linearly with the number of read threads, we should increase $T$ 10-fold, i.e. $T=50$ maximises throughput.
 
-\subsubsection{Number of clients}
+\subsubsection{Optimal number of clients}
 Throughput is maximised at roughly 110 virtual clients per memcached server, so 550 virtual clients in total. This is based on the fact that in the Milestone 1 baseline experiment, the throughput of a single memcached server without middleware saturated at around 110 virtual clients. However, the knee of the graph was at 40 to 50 clients per server, so we can expect the knee to occur at around 200 clients in our setup. The maximum sustained throughput will be in that region because after the knee, additional clients don't increase throughput much but significantly increase response time.
 
 \subsubsection{Throughput}
@@ -161,13 +161,12 @@ Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achie
 
 Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T > 1$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable.
 
-Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- \textbf{180 clients and 32 threads} -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Both $C$ and throughput are close to the expected values; $T$ is lower but not by an order of magnitude.
+Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- \textbf{180 clients and 32 threads} -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Throughput drops rapidly when decreasing $C$ and increases very slowly when increasing $C$. Both $C$ and throughput are close to the expected values; $T$ is lower but not by an order of magnitude.
 
+\subsubsection{Effect of threads and client load}
 The dependence of throughput on $C$ for all values of $T$ is as expected: there is a knee at a low value of $C$, a saturation region and a gradual degradation in performance (for $T=64$, this degradation probably occurs at an even higher number of clients than tested here). The saturation regions for $T>1$ have significant fluctuation; however, this is probably noise caused by varying conditions on Azure (this is easy to verify by running more repetitions of these experiments but I decided not to, because the trend is clear and I had limited Azure credit).
 
-Adding threads to the system improves performance: going from $T=1$ to $T=16$ has a strong effect: both median response time and the 95th and 99th percentiles are significantly improved. Going to $T=32$ improves the system much less: it mainly decreases the response time of outliers while keeping median response time similar. Going from $T=32$ to $T=64$ makes almost no difference. 
-
-\todo{Investigate and explain} behaviour at other values of $T$ (with $C=180$), and possibly also at other values of $C$ with $T=32$.
+Adding threads to the system improves performance: going from $T=1$ to $T=16$ has a strong effect: both median response time and the 95th and 99th percentiles are significantly improved. Going to $T=32$ improves the system much less: it mainly decreases the response time of outliers while keeping median response time similar. Going from $T=32$ to $T=64$ makes almost no difference. This happens because at $T=16$, most of the CPU time available to the middleware is utilised, and at $T=32$, almost all of it is -- which means additional threads don't significantly improve performance.
 
 \subsubsection{Breakdown of response time} The distribution of time \get{} requests spend in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms. The second peak in $tMemcached$ causes the peak in $tQueue$ (because if a request takes a long time in memcached, the next request waits longer in the queue); the peak in $tMemcached$ is most likely to be caused by unusual network conditions for a portion of the requests because there were no \get{} misses in the log.
 
