@@ -56,12 +56,12 @@ In all experiments, the following definitions hold.
 
 \begin{itemize}
 \item The \emph{system under test} (SUT) is the middleware together with the connected memcached servers, running on Ubuntu virtual machines in the Azure cloud.
-\item \emph{Throughput} is the number of requests the SUT successfully responds to, per unit of time, as measured by memaslap.
+\item \emph{Throughput} is the number of requests that SUT successfully responds to, per unit of time, as measured by memaslap.
 \item \emph{Response time (memaslap)} is the time from sending to receiving the request to the SUT including any network latencies, as measured by the client (memaslap).
 \item \emph{Response time (middleware)} is the time from receiving the request in the middleware ($t_{created}$) to returning it to the client ($t_{returned}$), as measured by the middleware. This is the measurement used in most graphs here; the reasoning behind this is shown in \hyperref[sec:appb]{Appendix B}.
 \item $S$ denotes the number of memcached servers in SUT.
 \item $R$ denotes the replication factor. ``No replication'' means $R=1$, ``half'' or ``50\%'' replication means $R=\lceil\frac{S}{2}\rceil$, ``full replication'' means $R=S$.
-\item $W$ denotes the proportion of \set{}s in the workload.
+\item $W$ denotes the proportion of \set{} requests in the workload.
 \item $C$ denotes the total number of virtual clients (i.e. summed over all memaslap instances).
 \end{itemize}
 \vspace{1mm}
@@ -69,10 +69,10 @@ In all experiments, the following holds about the experimental setup:
 \begin{itemize}
 \item The system was modified compared to the last milestone. The modifications and new trace results are shown in \hyperref[sec:appa]{Appendix A}.
 \item The middleware was run on Basic A4 instances, and both memaslap and memcached were run on Basic A2 instances.
-\item The first 2 and last 2 minutes of each experiment were discarded from analyses as warm-up and cool-down time.
-\item The request sampling rate for logging is set to $\frac{1}{100}$ in throughput experiments (Section~\ref{sec:exp1}) and $\frac{1}{10}$ in replication and write proportion experiments (Sections~\ref{sec:exp2} and \ref{sec:exp3}).
-\item Response times inside the middleware were measured with a 1 millisecond accuracy.
-\item The system can be considered closed because memaslap clients wait for a response before sending a new request.
+\item The first 2 and last 2 minutes of each experiment were discarded from all analyses as warm-up and cool-down time.
+\item The request sampling rate for logging was set to $\frac{1}{100}$ in throughput experiments (Section~\ref{sec:exp1}) and $\frac{1}{10}$ in replication and write proportion experiments (Sections~\ref{sec:exp2} and \ref{sec:exp3}).
+\item Response times inside the middleware were measured with a minimal resolution of 1 millisecond.
+\item The system can be considered closed because (memaslap) clients wait for a response before sending a new request.
 \end{itemize}
 
 
@@ -86,19 +86,19 @@ In all experiments, the following holds about the experimental setup:
 
 \subsection{Experimental question}
 
-In this section, I will run experiments to find out a) the maximum throughput of the SUT, b) the number of read threads ($T$) in the middleware that achieves this c) the number of virtual clients ($C$) that achieves this.
+In this section, I will run experiments to find out a) the maximum sustained throughput of the SUT, b) the number of read threads ($T$) in the middleware that achieves this, and c) the number of virtual clients ($C$) that achieves this.
 
-To this end, I will measure throughput as a function of $T$ and $C$, in 10-second time windows. I will find the maximum sustained throughput of the SUT, i.e. the throughput at which the response time does not increase rapidly with additional clients. For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) lies within 5\% of the mean throughput.
+To this end, I will measure throughput as a function of $T$ and $C$ in 10-second time windows. I will find the maximum sustained throughput of the SUT, i.e. the throughput at which the response time does not increase rapidly with additional clients. For each parameter combination, I will run experiments until the 95\% confidence interval (calculated using a two-sided t-test) of throughput lies within 5\% of the mean.
 
 \subsection{Hypothesis}
 
-I approximate that the maximum throughput will be 17200 requests per second using 50 read threads in the middleware at a load of 550 clients. The maximum sustained throughput will occur in a range of 200 clients.
+I approximate that the maximum throughput will be 17200 requests per second using 50 read threads in the middleware at a load of 550 clients. The maximum sustained throughput will occur in a range of 200 clients with a similar amount of threads. See below for details.
 
 \subsubsection{Optimal number of threads} 
-Given that requests spend most of their time ($\sim90\%$ in the trace experiment) waiting in the queue, increasing $T$ will increase throughput. If we reduce the queueing time by a factor of 10, it will no longer be the bottleneck (then waiting for memcached's response -- which takes $\sim9\%$ of response time in the trace experiment -- becomes the bottleneck). Assuming the time spent in the queue scales linearly with the number of read threads, we should increase $T$ 10-fold, i.e. $T=50$ maximises throughput.
+Given that requests spend most of their time ($\sim90\%$ in the trace experiment) waiting in the queue, increasing $T$ will increase throughput. If we reduce the queueing time by a factor of 10, it will no longer be the bottleneck (then waiting for memcached's response -- which takes $\sim9\%$ of response time in the trace experiment -- becomes the bottleneck). Assuming time spent in the queue scales down linearly with the number of read threads, we should increase $T$ 10-fold (compared to $T=5$ in the trace experiment), i.e. $T=50$ maximises throughput.
 
 \subsubsection{Optimal number of clients}
-Throughput is maximised at roughly 110 virtual clients per memcached server, so 550 virtual clients in total. This is based on the fact that in the Milestone 1 baseline experiment, the throughput of a single memcached server without middleware saturated at around 110 virtual clients. However, the knee of the graph was at 40 to 50 clients per server, so we can expect the knee to occur at around 200 clients in our setup. The maximum sustained throughput will be in that region because after the knee, additional clients don't increase throughput much but significantly increase response time.
+Throughput is maximised at roughly 110 virtual clients per memcached server, so 550 virtual clients in total. I predict this because in the Milestone 1 baseline experiment, the throughput of a single memcached server without middleware saturated at around 110 virtual clients, and here we have 5 servers. However, the knee of the graph was at roughly 40 clients per server, so we can expect the knee to occur at around $5 \cdot 40 = 200$ clients in our setup. The maximum sustained throughput will be in that region because after the knee, additional clients don't increase throughput much but significantly increase response time.
 
 \subsubsection{Throughput}
 
@@ -109,12 +109,12 @@ Throughput is maximised at roughly 110 virtual clients per memcached server, so 
 \label{fig:exp1:hyp:throughput}
 \end{figure}
 
-In the trace experiment the throughput was roughly 10300 requests per second so we have a lower bound for the expected throughput. Naively assuming that the throughput of \get{} requests scales linearly with the number of servers $S$ would yield an expected throughput of $\frac{5}{3} \cdot 10300 = 17200$ requests per second. However, this does not take into account that we will also increase the number of threads (from $T=5$ in the trace experiment). Thus I expect the maximum sustained throughput to be definitely more than 10300 requests per second, and likely to be more than 17200 requests per second.
+In the trace experiment the throughput was roughly 10300 requests per second, which gives us a lower bound for the expected throughput. Naively assuming that the throughput of \get{} requests scales linearly with the number of servers $S$ would yield an expected throughput of $\frac{5}{3} \cdot 10300 = 17200$ requests per second. However, this does not take into account that we will also increase the number of threads (from $T=5$ in the trace experiment). Thus I expect the maximum sustained throughput to be definitely more than 10300 requests per second, and likely to be more than 17200 requests per second.
 
 I predict that the graph of throughput as a function of the number of clients will look like in Figure~\ref{fig:exp1:hyp:throughput}: rapidly increasing at first, then reaching the knee after which throughput growth is much slower, and then completely saturating. After saturation, the throughput may fall due to unexpected behaviour in the middleware.
 
 \subsubsection{Breakdown of response time}
-I expect that the most expensive operations inside the middleware will be queueing ($t_{dequeued}-t_{enqueued}$) and waiting for a response from memcached ($t_{forwarded}-t_{received}$). Queueing takes time because for a $C$ that gives a high throughput, the queue will also be non-empty and requests will need to wait. Requesting a response from memcached takes time because of a) the time it takes for memcached to process the request and b) the round-trip network latency.
+I expect that the most expensive operations inside the middleware will be queueing ($tQueue=t_{dequeued}-t_{enqueued}$) and waiting for a response from memcached ($tMemcached=t_{forwarded}-t_{received}$). Queueing takes time because for a $C$ that gives a high throughput, the queue will also be non-empty and requests will need to wait. Requesting a response from memcached takes time because of a) the time it takes for memcached to process the request and b) the round-trip network latency.
 
 \subsection{Experiments}
 \begin{center}
@@ -135,7 +135,7 @@ I expect that the most expensive operations inside the middleware will be queuei
 
 Three client machines were used for all experiments, except for the 1-client experiment, where only one machine was used.
 
-The values of $T$ to test were $T=1$ as the lowest possible value, and then from $T=16$ in multiplicative steps of 2. The reason for the small number of tested values of $T$ is pragmatic: it doesn't require hundreds of experiments and at the same time gives a reasonable approximation of the optimal $T$.
+The values of $T$ to test were $T=1$ as the lowest possible value, and then from $T=16$ in multiplicative steps of 2. The reason for the small number of tested values of $T$ and multiplicative steps is pragmatic: it doesn't require hundreds of experiments and at the same time gives a reasonable approximation of the optimal $T$.
 
 Some parameter combinations did not yield the required confidence interval in the first 6-minute repetition of the experiment. When that was the case, I re-ran the experiment (in some cases for a longer time), thus producing more datapoints and decreasing the confidence interval.
 
@@ -161,13 +161,13 @@ Figure~\ref{fig:exp1:res:throughput} shows that the highest throughput was achie
 
 Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response time distribution for each parameter set. It is apparent that for all values of $T > 1$, both the median response time (green line) and 95\% quantile (blue line) increase significantly after 216 clients. For this reason, we will exclude all values of $T > 216$ from consideration as unsustainable.
 
-Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- \textbf{180 clients and 32 threads} -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Throughput drops rapidly when decreasing $C$ and increases very slowly when increasing $C$. Both $C$ and throughput are close to the expected values; $T$ is lower but not by an order of magnitude.
+Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- \textbf{180 clients and 32 threads} -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Throughput drops rapidly when decreasing $C$ and increases very slowly when increasing $C$. Both $C$ and throughput are close to the predicted values; $T$ is lower but not by an order of magnitude.
 
 \subsubsection{Effect of threads and client load}
 
-The dependence of throughput on $C$ for all values of $T$ is as expected: there is a knee at a low value of $C$, a saturation region and a gradual degradation in performance (for $T=64$, this degradation probably occurs at an even higher number of clients than tested here). The saturation regions for $T>1$ have significant fluctuation; however, this is probably noise caused by varying conditions on Azure (this is easy to verify by running more repetitions of these experiments but I decided not to, because the trend is clear and I had limited Azure credit).
+The dependence of throughput on $C$ for all values of $T$ is as expected: there is a knee at a low value of $C$, a saturation region and a gradual degradation in performance (for $T=64$, this degradation probably occurs outside the range of $C$ tested here). The saturation regions for $T>1$ have significant fluctuation; however, this is probably noise caused by varying conditions on Azure (this would be easy to verify by running more repetitions of these experiments, but I decided not to because the trend is clear and I had limited Azure credit).
 
-Adding threads to the system improves performance: going from $T=1$ to $T=16$ has a strong effect: both median response time and the 95th and 99th percentiles are significantly improved. Going to $T=32$ improves the system much less: it mainly decreases the response time of outliers while keeping median response time similar. Going from $T=32$ to $T=64$ makes almost no difference. This happens because at $T=16$, most of the CPU time available to the middleware is utilised, and at $T=32$, almost all of it is -- which means additional threads don't significantly improve performance.
+Adding threads to the system improves performance: going from $T=1$ to $T=16$ has a strong effect: both median response time and the 95th and 99th percentiles are significantly improved at most values of $C$. Going to $T=32$ improves the system much less: it mainly decreases the response time of outliers while keeping median response time similar. Going from $T=32$ to $T=64$ makes almost no difference. This happens because at $T=16$, most of the CPU resources available to the middleware are utilised, and at $T=32$, almost all of it is -- which means additional threads don't significantly improve performance.
 
 \subsubsection{Breakdown of response time}
 
@@ -178,7 +178,7 @@ Adding threads to the system improves performance: going from $T=1$ to $T=16$ ha
 \label{fig:exp1:res:breakdown}
 \end{figure}
 
-The distribution of time \get{} requests spend in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms. The second peak in $tMemcached$ causes the peak in $tQueue$ (because if a request takes a long time in memcached, the next request waits longer in the queue); the peak in $tMemcached$ is most likely to be caused by unusual network conditions for a portion of the requests because there were no \get{} misses in the log.
+The distribution of time \get{} requests spend in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms. The second peak in $tMemcached$ causes the peak in $tQueue$ (because if a request takes a long time in memcached, the next request waits longer in the queue); the peak in $tMemcached$ is most likely to be caused by unusual network conditions for a portion of the requests because there were no \get{} misses in the log that could hypothetically have different response times than successes.
 
 \begin{figure}[h]
 \begin{center}
