@@ -121,12 +121,12 @@ I expect that the most expensive operations inside the middleware will be queuei
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
-\hline Number of servers & 5 \\ 
+\hline Number of servers & $S=5$ \\ 
 \hline Number of client machines & $\in \{1, 3\}$ \\ 
-\hline Virtual clients & $\in \{1, 36, 72, 144, 180, 216, 288, 360, 432, 504, 576, 648\}$ \\ 
-\hline Workload & Key 16B, Value 128B, Writes 0\% \\
-\hline Middleware: replication factor & 1 \\ 
-\hline Middleware: read threads & $\in\{1, 16, 32, 64\}$ \\ 
+\hline Virtual clients & $C \in \{1, 36, 72, 144, 180, 216, 288, 360, 432, 504, 576, 648\}$ \\ 
+\hline Workload & Key 16B, Value 128B, $W=0\%$ \\
+\hline Middleware: replication factor & $R=1$ \\ 
+\hline Middleware: read threads & $T \in\{1, 16, 32, 64\}$ \\ 
 \hline Runtime x repetitions & at least 6min x 1; more in some cases \\ 
 \hline Log files & throughput-C*-T*-r* \\
 \hline 
@@ -164,11 +164,12 @@ Figure~\ref{fig:exp1:res:responsetime} shows the percentiles of the response tim
 Of the remaining setups, the highest throughput is achieved both by 180 and 216 clients at $T=32$. Thus we pick the one with the lower number of clients -- \textbf{180 clients and 32 threads} -- as the configuration we will declare optimal at a throughput of 18400 requests per second. Throughput drops rapidly when decreasing $C$ and increases very slowly when increasing $C$. Both $C$ and throughput are close to the expected values; $T$ is lower but not by an order of magnitude.
 
 \subsubsection{Effect of threads and client load}
+
 The dependence of throughput on $C$ for all values of $T$ is as expected: there is a knee at a low value of $C$, a saturation region and a gradual degradation in performance (for $T=64$, this degradation probably occurs at an even higher number of clients than tested here). The saturation regions for $T>1$ have significant fluctuation; however, this is probably noise caused by varying conditions on Azure (this is easy to verify by running more repetitions of these experiments but I decided not to, because the trend is clear and I had limited Azure credit).
 
 Adding threads to the system improves performance: going from $T=1$ to $T=16$ has a strong effect: both median response time and the 95th and 99th percentiles are significantly improved. Going to $T=32$ improves the system much less: it mainly decreases the response time of outliers while keeping median response time similar. Going from $T=32$ to $T=64$ makes almost no difference. This happens because at $T=16$, most of the CPU time available to the middleware is utilised, and at $T=32$, almost all of it is -- which means additional threads don't significantly improve performance.
 
-\subsubsection{Breakdown of response time} The distribution of time \get{} requests spend in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms. The second peak in $tMemcached$ causes the peak in $tQueue$ (because if a request takes a long time in memcached, the next request waits longer in the queue); the peak in $tMemcached$ is most likely to be caused by unusual network conditions for a portion of the requests because there were no \get{} misses in the log.
+\subsubsection{Breakdown of response time}
 
 \begin{figure}[h]
 \centering
@@ -176,6 +177,8 @@ Adding threads to the system improves performance: going from $T=1$ to $T=16$ ha
 \caption{The distribution of times that \get{} requests spend in different parts of SUT. Note the time axis only shows values up to 30ms (this range includes almost all datapoints).}
 \label{fig:exp1:res:breakdown}
 \end{figure}
+
+The distribution of time \get{} requests spend in different parts of the middleware is shown in Figure~\ref{fig:exp1:res:breakdown}, and the means in Figure~\ref{fig:exp1:table}. As expected, the most expensive operations are queueing and waiting for a response from memcached. The distributions of $tQueue$ and $tMemcached$ are bimodal with a second peak at roughly 8ms. The second peak in $tMemcached$ causes the peak in $tQueue$ (because if a request takes a long time in memcached, the next request waits longer in the queue); the peak in $tMemcached$ is most likely to be caused by unusual network conditions for a portion of the requests because there were no \get{} misses in the log.
 
 \begin{figure}[h]
 \begin{center}
@@ -249,12 +252,12 @@ For \set{}s, the ideal system would have linear speed-up if $R=const.$ because i
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
-\hline Number of servers & $\in \{3, 5, 7\}$ \\ 
+\hline Number of servers & $S \in \{3, 5, 7\}$ \\ 
 \hline Number of client machines & 3 \\ 
-\hline Virtual clients & 180 \\ 
-\hline Workload & Key 16B, Value 128B, Writes 5\% \\
-\hline Middleware: replication factor & $\in \{1, \lceil\frac{S}{2}\rceil, S\}$ \\ 
-\hline Middleware: read threads & 32 \\ 
+\hline Virtual clients & $C=180$ \\ 
+\hline Workload & Key 16B, Value 128B, $W=5\%$ \\
+\hline Middleware: replication factor & $R \in \{1, \lceil\frac{S}{2}\rceil, S\}$ \\ 
+\hline Middleware: read threads & $T=32$ \\ 
 \hline Runtime x repetitions & 6min x 3 \\ 
 \hline Log files & replication-S*-R*-r* \\
 \hline 
@@ -263,6 +266,23 @@ For \set{}s, the ideal system would have linear speed-up if $R=const.$ because i
 
 \subsection{Results}
 \label{sec:exp2:res}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_get.pdf}
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_set.pdf}
+\caption{Response time (middleware) as a function of $R$, for different values of $S$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
+\label{fig:exp2:res:replication}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/time_breakdown_vs_replication_get_abs.pdf}
+\includegraphics[width=\textwidth]{../results/replication/graphs/time_breakdown_vs_replication_set_abs.pdf}
+\caption{Absolute cost of operations inside SUT as a function of $R$, for different values of $S$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT.}
+\label{fig:exp2:res:breakdown}
+\end{figure}
+
 
 \subsubsection{\get{} requests}
 From Figure~\ref{fig:exp2:res:replication} we can see that increasing $R$ from 1 to $S$ does have an impact on the mean response time of \get{} requests (contrary to the hypothesis) and this effect is amplified as $S$ grows. However, the 25\%, 50\%, and 75\% percentiles stay constant, implying that most of the requests aren't affected (in accordance with the hypothesis) -- only the response time of outliers (\get{}s with high response times) increases. Figure~\ref{fig:exp2:res:breakdown} shows that queue time is constant and the increase in response time comes almost entirely from waiting for memcached's response; this means the increase is caused by either increased network latency (due to more traffic at a higher value of $R$) or increased memcached response time.
@@ -284,33 +304,7 @@ Adding servers at $R=1$ decreases response time to \set{} requests -- this is in
 
 $tMemcached$ is almost constant at 50\% replication because the difference between values of $R$ is small: $R \in \{2,3,4\}$. At full replication tMemcached has a larger effect because the difference is larger: $R \in \{3,5,7\}$. (The slowest response determines $tMemcached$; it can be modelled as the maximum of $R$ samples where each sample is the response time to one request from the middleware to a memcached server.).
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_get.pdf}
-\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_replication_set.pdf}
-\caption{Response time (middleware) as a function of $R$, for different values of $S$. The blue line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the green area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the green line shows the median.}
-\label{fig:exp2:res:replication}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/replication/graphs/time_breakdown_vs_replication_get_abs.pdf}
-\includegraphics[width=\textwidth]{../results/replication/graphs/time_breakdown_vs_replication_set_abs.pdf}
-\caption{Absolute cost of operations inside SUT as a function of $R$, for different values of $S$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT.}
-\label{fig:exp2:res:breakdown}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_get.pdf}
-\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_set.pdf}
-\caption{Response time (middleware) as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the red line shows the median.}
-\label{fig:exp2:res:servers}
-\end{figure}
-
 \subsubsection{Throughput}
-
-From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed decrease with $R$ -- which is in line with the hypothesis --, and higher $S$ amplifies this effect. At $S=3$ throughput is almost constant; this is because the value of $R \in \{1,2,3\}$ does not change enough to make a significant difference, similarly to the previous section. Maximum throughput is achieved at $S=5, R=1$ which is likely because in Section~\ref{sec:exp1} we picked the values of $C$ and $T$ that maximised throughput under exactly those parameters.
 
 \begin{figure}[h]
 \centering
@@ -319,10 +313,20 @@ From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed
 \label{fig:exp2:res:throughput}
 \end{figure}
 
+From Figure~\ref{fig:exp2:res:throughput} we can see that throughput does indeed decrease with $R$ -- which is in line with the hypothesis --, and higher $S$ amplifies this effect. At $S=3$ throughput is almost constant; this is because the value of $R \in \{1,2,3\}$ does not change enough to make a significant difference, similarly to the previous section. Maximum throughput is achieved at $S=5, R=1$ which is likely because in Section~\ref{sec:exp1} we picked the values of $C$ and $T$ that maximised throughput under exactly those parameters.
+
 \subsubsection{Relative cost of operations}
-As hypothesized, increasing $R$ also increases $tMemcached$ for \set{} requests. Unexpected though was the decrease in $tQueue$ for \set{} requests as $R$ increased, and the increase in $tMemcached$ for \get{}s. Both are explained in previous sections of this chapter.
+As hypothesized, increasing $R$ also increases $tMemcached$ for \set{} requests (see Figure~\ref{fig:exp2:res:breakdown}). Unexpected though was the decrease in $tQueue$ for \set{} requests as $R$ increased, and the increase in $tMemcached$ for \get{}s. Both are explained in previous sections of this chapter.
 
 \subsubsection{Scalability}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_get.pdf}
+\includegraphics[width=\textwidth]{../results/replication/graphs/response_time_vs_servers_set.pdf}
+\caption{Response time (middleware) as a function of $S$, for different values of $R$. The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test; the light red area shows the 25\% (bottom edge) and 75\% (top edge) quantiles of response times; the red line shows the median.}
+\label{fig:exp2:res:servers}
+\end{figure}
+
 As Figure~\ref{fig:exp2:res:servers} shows, there is no speed-up for \get{} requests when we add servers, and there is even a slight increase the mean response time. Increasing $S$ does decrease mean response time to \set{} requests, but only at $R=1$ -- as hypothesized -- and sublinearly. At $R>1$ there is no speed-up. In summary, SUT performs significantly worse than the ideal system described in Section~\ref{sec:exp2:hyp:scalability}, and worse than expected.
 
  \clearpage
@@ -357,12 +361,12 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 \small{
 \smallskip
 \begin{tabular}{|c|c|}
-\hline Number of servers & $\in \{3, 5, 7\}$ \\ 
+\hline Number of servers & $S \in \{3, 5, 7\}$ \\ 
 \hline Number of client machines & 3 \\ 
-\hline Virtual clients & 180 \\ 
-\hline Workload & Key 16B, Value 128B, Writes $\in \{1\%, 4\%, 7\%, 10\%\}$ \\
-\hline Middleware: replication factor & $\in \{1, S\}$ \\ 
-\hline Middleware: read threads & 32 \\ 
+\hline Virtual clients & $C=180$ \\ 
+\hline Workload & Key 16B, Value 128B, $W \in \{1\%, 4\%, 7\%, 10\%\}$ \\
+\hline Middleware: replication factor & $R \in \{1, S\}$ \\ 
+\hline Middleware: read threads & $T=32$ \\ 
 \hline Runtime x repetitions & 8min x 3 \\ 
 \hline Log files & writes-S*-R*-W*-r* \\
 \hline 
@@ -370,28 +374,6 @@ The setups with $S=3$ servers will suffer the largest relative performance decre
 \end{center}
 
 \subsection{Results}
-Reporting experiment results. Comparison of hypothesis and experiment results.
-
-\subsubsection{Impact on \get{} requests}
-
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \get{} requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are relatively stable with one exception. This is roughly as expected (response time does increase slightly with $W$, but this can be attributed to increased network latency because $tQueue$ is stable across parameter combinations).
-
-In the exceptional case, $(S=3,R=1)$, $tQueue$ decreases as $W$ increases. Given that $(S=3,R=3)$ has an otherwise similar behaviour without the decrease in $tQueue$ we can conclude that the decrease is caused by read threads reaching a knee in their performance function: removing just a small proportion of the load gives a large gain in performance.
-
-\subsubsection{Impact on \set{} requests}
-
-Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} requests, and Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. It is clear that increasing $W$ also increases response time -- this is in line with the hypothesis. However, the prediction that fully replicated would suffer the most didn't hold: in fact, while response time seems to depend linearly on $W$ in the fully replicated case, the dependence looks exponential in the case of $R=1$. The reasoning for why $R=1$ performs unexpectedly badly (especially for $S=3$) can be found in Section~\ref{sec:exp2:res:set}.
-
-\subsubsection{Throughput}
-As Figure~\ref{fig:exp3:res:throughput} shows, throughput does indeed decrease with $W$ for all combinations of $S$ and $R$, confirming the hypothesis. I also predicted that throughput would suffer more for fully replicated setups; this is indeed the case although the difference is not large (the slope of the line in Figure~\ref{fig:exp3:res:throughput} is steeper in plots of the top row compared to the bottom row).
-
-\subsubsection{Relative impact}
-I predicted that the largest relative performance decrease would be for a lower number of servers, i.e. $S=3$ would be hit worst by increasing $W$; Figure~\ref{fig:exp3:res:relative:set} confirms this strongly for $R=1$ and mildly for $R=S$.
-
-\subsubsection{Reasons for reduced performance}
-Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. For full replication, the relationship is straightforward: $tQueue$ is constant and the total response time is mostly affected by $tMemcached$ increasing; the reasons for this increase (increased network latency and/or higher load on memcached) have been discussed in Section~\ref{sec:exp2:res}.
-
-For $R=1$, however, the relationship is different. The major component in response time is $tQueue$ which increases significantly with $W$. The design decisions causing the non-replicated system to perform much worse than the replicated one were discussed in Section~\ref{sec:exp2:res:set} and should hold here as well.
 
 \begin{figure}[p]
 \centering
@@ -401,13 +383,24 @@ For $R=1$, however, the relationship is different. The major component in respon
 \label{fig:exp3:res:responsetime}
 \end{figure}
 
+\subsubsection{Impact on \get{} requests}
+
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \get{} requests. While the mean response time does vary slightly (up to 1ms), the 25\% and 75\% quantiles are relatively stable with one exception. This is roughly as expected (response time does increase slightly with $W$, but this can be attributed to increased network latency because $tQueue$ is stable across parameter combinations).
+
+In the exceptional case, $(S=3,R=1)$, $tQueue$ decreases as $W$ increases. Given that $(S=3,R=3)$ has an otherwise similar behaviour without the decrease in $tQueue$ we can conclude that the decrease is caused by read threads reaching a knee in their performance function: removing just a small proportion of the load gives a large gain in performance.
+
+\subsubsection{Impact on \set{} requests}
+
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{../results/writes/graphs/relative_performance_set.pdf}
-\caption{Relative performance of \set{} requests for different values of $S$ and $R$: the response time (middleware) of each setup relative to (divided by) the response time in the base case. The base case is taken to be $W=1\%$ for each combination of $R$ and $S$.
-The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test.}
-\label{fig:exp3:res:relative:set}
+\includegraphics[width=\textwidth]{../results/writes/graphs/time_breakdown_vs_writes_set_abs.pdf}
+\caption{Absolute cost of \set{} requests inside SUT, for different values of $S$ and $R$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT.}
+\label{fig:exp3:res:breakdown:set:abs}
 \end{figure}
+
+Figure~\ref{fig:exp3:res:responsetime} shows the effect of $W$ on \set{} requests, and Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. It is clear that increasing $W$ also increases response time -- this is in line with the hypothesis. However, the prediction that fully replicated would suffer the most didn't hold: in fact, while response time seems to depend linearly on $W$ in the fully replicated case, the dependence looks exponential in the case of $R=1$. The reasoning for why $R=1$ performs unexpectedly badly (especially for $S=3$) can be found in Section~\ref{sec:exp2:res:set}.
+
+\subsubsection{Throughput}
 
 \begin{figure}[h]
 \centering
@@ -416,12 +409,26 @@ The line and points show the mean response time; red errorbars show the 95\% con
 \label{fig:exp3:res:throughput}
 \end{figure}
 
+As Figure~\ref{fig:exp3:res:throughput} shows, throughput does indeed decrease with $W$ for all combinations of $S$ and $R$, confirming the hypothesis. I also predicted that throughput would suffer more for fully replicated setups; this is indeed the case although the difference is not large (the slope of the line in Figure~\ref{fig:exp3:res:throughput} is steeper in plots of the top row compared to the bottom row).
+
+\subsubsection{Reasons for reduced performance}
+Figure~\ref{fig:exp3:res:breakdown:set:abs} shows the relative cost of operations inside SUT. For full replication, the relationship is straightforward: $tQueue$ is constant and the total response time is mostly affected by $tMemcached$ increasing; the reasons for this increase (increased network latency and/or higher load on memcached) have been discussed in Section~\ref{sec:exp2:res}.
+
+For $R=1$, however, the relationship is different. The major component in response time is $tQueue$ which increases significantly with $W$. The design decisions causing the non-replicated system to perform much worse than the replicated one were discussed in Section~\ref{sec:exp2:res:set} and should hold here as well.
+
+
+\subsubsection{Relative impact}
+
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{../results/writes/graphs/time_breakdown_vs_writes_set_abs.pdf}
-\caption{Absolute cost of \set{} requests inside SUT, for different values of $S$ and $R$. Each column is divided into sections by the \emph{average} time spent in the respective component of SUT.}
-\label{fig:exp3:res:breakdown:set:abs}
+\includegraphics[width=\textwidth]{../results/writes/graphs/relative_performance_set.pdf}
+\caption{Relative performance of \set{} requests for different values of $S$ and $R$: the response time (middleware) of each setup relative to (divided by) the response time in the base case. The base case is taken to be $W=1\%$ for each combination of $R$ and $S$.
+The line and points show the mean response time; red errorbars show the 95\% confidence interval in a double-tailed t-test.}
+\label{fig:exp3:res:relative:set}
 \end{figure}
+
+I predicted that the largest relative performance decrease would be for a lower number of servers, i.e. $S=3$ would be hit worst by increasing $W$; Figure~\ref{fig:exp3:res:relative:set} confirms this strongly for $R=1$ and mildly for $R=S$.
+
 
 
 % --------------------------------------------------------------------------------
