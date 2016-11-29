@@ -191,8 +191,8 @@ all_results <- cbind(sr_combinations, results) %>%
   mutate(replication_str=get_replication_factor(servers, replication),
          servers_str=paste0(servers, " servers"))
 
-write.csv(all_results, file=paste0(result_dir_base, "/all_results.csv",
-                                   row.names=FALSE))
+write.csv(all_results, file=paste0(result_dir_base, "/all_results.csv"),
+          row.names=FALSE)
 
 # ------------------
 # ---- PLOTTING ----

@@ -166,8 +166,8 @@ all_results <- cbind(client_thread_combinations, results) %>%
   mutate(clients=as.numeric(as.character(clients)),
          threads=as.numeric(as.character(threads)))
 
-write.csv(all_results, file=paste0(result_dir_base, "/all_results.csv",
-                                   row.names=FALSE))
+write.csv(all_results, file=paste0(result_dir_base, "/all_results.csv"),
+          row.names=FALSE)
 
 # ------------------
 # ---- PLOTTING ----
