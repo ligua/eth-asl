@@ -195,6 +195,9 @@ all_results <- cbind(sr_combinations, results) %>%
          servers_str=paste0(servers, " servers"),
          writes_str=get_writes_factor(writes))
 
+write.csv(all_results, file=paste0(result_dir_base, "/all_results.csv",
+                                   row.names=FALSE))
+
 # ------------------
 # ---- PLOTTING ----
 # ------------------
