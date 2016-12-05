@@ -10,8 +10,8 @@ result_dir_base <- "results/replication"
 # ---------------------------
 
 memaslap_summary <- function(df) {
-  DROP_TIMES_BEFORE = 2 * 60 # How many seconds in the beginning we want to drop
-  DROP_TIMES_AFTER = max((df %>% filter(type=="t"))$time) - 2 * 60
+  DROP_TIMES_BEFORE = 0 #2 * 60 # How many seconds in the beginning we want to drop
+  DROP_TIMES_AFTER = max((df %>% filter(type=="t"))$time) # - 2 * 60
   
   df2 <- df %>%
     mutate(min=min/1000, max=max/1000, avg=avg/1000, std=std/1000) %>%
@@ -94,8 +94,8 @@ normalise_request_log_df <- function(df) {
   
   first_request_time <- min(df2$timeCreated)
   last_request_time <- max(df2$timeCreated)
-  DROP_TIMES_BEFORE = first_request_time + 2 * 60 * 1000
-  DROP_TIMES_AFTER = last_request_time - 2 * 60 * 1000
+  DROP_TIMES_BEFORE = first_request_time # + 2 * 60 * 1000
+  DROP_TIMES_AFTER = last_request_time # - 2 * 60 * 1000
   
   df2 <- df2 %>% filter(timeCreated > first_request_time &
                           timeCreated >= DROP_TIMES_AFTER) %>%
@@ -133,8 +133,6 @@ for(i in 1:nrow(sr_combinations)) {
   repetitions <- result_params %>%
     filter(servers==n_servers & replication==n_replication)
   
-  combined_result <- NA
-  combined_mw_result <- NA
   for(j in 1:nrow(repetitions)) {
     params <- repetitions[j,]
     print(dirname(params$path))
@@ -150,14 +148,14 @@ for(i in 1:nrow(sr_combinations)) {
     ms_result_row <- memaslap_summary(repetition_result)
     mw_result_row <- middleware_summary(mw_result) %>%
       mutate(servers=n_servers, replication=n_replication)
-  }
-  
-  if(is.na(results)) {
-    results <- ms_result_row
-    mw_results <- mw_result_row
-  } else {
-    results <- rbind(results, ms_result_row)
-    mw_results <- rbind(mw_results, mw_result_row)
+    
+    if(is.na(results)) {
+      results <- ms_result_row
+      mw_results <- mw_result_row
+    } else {
+      results <- rbind(results, ms_result_row)
+      mw_results <- rbind(mw_results, mw_result_row)
+    }
   }
 }
 
@@ -170,3 +168,29 @@ all_results <- cbind(sr_combinations, results) %>%
 
 write.csv(all_results, file=paste0(output_dir, "/all_results.csv"),
           row.names=FALSE)
+
+
+# ------------------
+# ---- Analysis ----
+# ------------------
+
+# IRTL: R = N / X - Z  <==> Z = N / X - R <==> X = N / (R + Z)
+# R - response time
+# Z - think time
+# N - number of users
+# X - throughput
+
+get_wait_time <- function(N, R, X) {
+  return(N / X - R)
+}
+get_response_time <- function(N, X, Z) {
+  return(N / X - Z)
+}
+get_throughput <- function(N, R, Z) {
+  return(N / (R + Z))
+}
+
+N = 180 # constant
+
+
+
