@@ -102,8 +102,8 @@ normalise_request_log_df <- function(df) {
   DROP_TIMES_BEFORE = first_request_time + 2 * 60 * 1000
   DROP_TIMES_AFTER = last_request_time - 2 * 60 * 1000
   
-  df2 <- df2 %>% filter(timeCreated > first_request_time &
-                          timeCreated >= DROP_TIMES_AFTER) %>%
+  df2 <- df2 %>% filter(timeCreated > DROP_TIMES_BEFORE &
+                          timeCreated <= DROP_TIMES_AFTER) %>%
     select(-timeCreated, -timeEnqueued, -timeDequeued, -timeForwarded,
            -timeReceived, -timeReturned)
   return(df2)
