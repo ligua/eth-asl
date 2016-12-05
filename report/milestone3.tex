@@ -1,12 +1,19 @@
-% % % % % % % % % % % % % % %
 \documentclass[11pt]{article}
 \usepackage[a4paper, portrait, margin=1in]{geometry}
-% % % % % % % % % % % % % % %
-
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=black]{hyperref}
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
+
+
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
@@ -118,6 +125,26 @@ Design a $2^k$ factorial experiment and follow the best practices outlined in th
 Length: 1-2 pages
 
 Check the validity of all experiments from one of the three sections in your Milestone 2 report using the interactive law (choose a section in which your system has at least 9 different configurations). Analyze the results and explain them in detail.
+
+which experiment I chose, did I remove beginning and end, ...
+
+mention mean error
+
+\todo{why do I predict lower throughput?} because total cycle time is higher than it should for given throughput -- but why? since measuring is done by memaslap, probably the problem lies on that side
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+\includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/predicted_vs_actual_throughput.pdf}
+\caption{ \todo{} }
+\label{fig:part5:predicted_vs_actual}
+\end{subfigure}
+\begin{subfigure}[b]{0.49\textwidth}
+\includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/error_percentage.pdf}
+\caption{ \todo{} . note scale}
+\label{fig:part5:error_percentage}
+\end{subfigure}
+\end{figure}
 
 
 

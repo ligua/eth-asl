@@ -21,54 +21,16 @@ memaslap_summary <- function(df) {
     group_by(request_type) %>%
     summarise(mean_response_time=sum(ops*avg)/sum(ops))
   
-  response_times <- df2 %>%
-    group_by(time) %>%
-    summarise(mean_response_time=sum(ops*avg)/sum(ops)) %>%
-    select(time, mean_response_time)
-  
   res <- list()
   tps_summed <- df2 %>% group_by(time, repetition) %>%
     summarise(tps=sum(tps))
   tps_values <- tps_summed$tps
   res$tps_mean <- mean(tps_values)
-  res$tps_std <- sd(tps_values)
-  two_sided_t_val <- qt(c(.025, .975), df=length(tps_values)-1)[2]
-  res$tps_confidence_delta <- two_sided_t_val * res$tps_std/sqrt(length(tps_values))
-  res$tps_confidence_delta_rel <- res$tps_confidence_delta / res$tps_mean
   res$mean_response_time_get <- (means %>% filter(request_type=="GET"))$mean_response_time[1]
   res$mean_response_time_set <- (means %>% filter(request_type=="SET"))$mean_response_time[1]
   res$mean_response_time <- (res$mean_response_time_get * sum((df2 %>% filter(request_type=="GET"))$ops) +
                                res$mean_response_time_set * sum((df2 %>% filter(request_type=="SET"))$ops)) / sum(df2$ops)
   res$std_response_time <- sqrt(sum(df2$ops * df2$std * df2$std) / sum(df2$ops))
-  
-  return(as.data.frame(res))
-}
-
-middleware_summary <- function(dfmw) {
-  num_requests <- length(dfmw$tAll)
-  
-  res <- list()
-  res$num_requests <- num_requests
-  res$response_time_mean <- mean(dfmw$tAll)
-  res$response_time_std <- sd(dfmw$tAll)
-  two_sided_t_val <- qt(c(.025, .975), df=num_requests-1)[2]
-  res$response_time_confidence_delta <-
-    two_sided_t_val * res$response_time_std/sqrt(num_requests)
-  res$response_time_confidence_delta_rel <-
-    res$response_time_confidence_delta / res$response_time_mean
-  res$response_time_q01 <- quantile(dfmw$tAll, 0.01)
-  res$response_time_q05 <- quantile(dfmw$tAll, 0.05)
-  res$response_time_q25 <- quantile(dfmw$tAll, 0.25)
-  res$response_time_q50 <- quantile(dfmw$tAll, 0.50)
-  res$response_time_q75 <- quantile(dfmw$tAll, 0.75)
-  res$response_time_q95 <- quantile(dfmw$tAll, 0.95)
-  res$response_time_q99 <- quantile(dfmw$tAll, 0.99)
-  res$tLoadBalancer <- mean(dfmw$tLoadBalancer)
-  res$tQueue <- mean(dfmw$tQueue)
-  res$tWorker <- mean(dfmw$tWorker)
-  res$tMemcached <- mean(dfmw$tMemcached)
-  res$tReturn <- mean(dfmw$tReturn)
-  res$tAll <- mean(dfmw$tReturn)
   
   return(as.data.frame(res))
 }
@@ -81,27 +43,6 @@ file_to_df <- function(file_path, sep=";") {
     result <- data.frame()
   }
   return(result)
-}
-
-normalise_request_log_df <- function(df) {
-  df2 <- df %>%
-    mutate(tLoadBalancer=timeEnqueued-timeCreated,
-           tQueue=timeDequeued-timeEnqueued,
-           tWorker=timeForwarded-timeDequeued,
-           tMemcached=timeReceived-timeForwarded,
-           tReturn=timeReturned-timeReceived,
-           tAll=timeReturned-timeCreated)
-  
-  first_request_time <- min(df2$timeCreated)
-  last_request_time <- max(df2$timeCreated)
-  DROP_TIMES_BEFORE = first_request_time # + 2 * 60 * 1000
-  DROP_TIMES_AFTER = last_request_time # - 2 * 60 * 1000
-  
-  df2 <- df2 %>% filter(timeCreated > first_request_time &
-                          timeCreated >= DROP_TIMES_AFTER) %>%
-    select(-timeCreated, -timeEnqueued, -timeDequeued, -timeForwarded,
-           -timeReceived, -timeReturned)
-  return(df2)
 }
 
 # ------------------
@@ -122,7 +63,6 @@ result_params <- result_params  %>%
 #summarise(paths=paste0(path, collapse=";"))
 
 results <- NA
-mw_results <- NA
 sr_combinations <- result_params %>%
   select(servers, replication) %>%
   unique()
@@ -138,31 +78,27 @@ for(i in 1:nrow(sr_combinations)) {
     print(dirname(params$path))
     rep_id <- params$repetition
     file_path <- params$path
-    mw_file_path <- paste0(dirname(file_path), "/request.log")
     repetition_result <- file_to_df(file_path) %>%
       mutate(repetition=rep_id)
-    mw_result <- file_to_df(mw_file_path, sep=",") %>%
-      mutate(repetition=rep_id) %>%
-      normalise_request_log_df()
     
     ms_result_row <- memaslap_summary(repetition_result)
-    mw_result_row <- middleware_summary(mw_result) %>%
-      mutate(servers=n_servers, replication=n_replication)
+    ms_result_row$repetition_id <- rep_id
+    ms_result_row$replication <- n_replication
+    ms_result_row$servers <- n_servers
     
     if(is.na(results)) {
       results <- ms_result_row
-      mw_results <- mw_result_row
     } else {
       results <- rbind(results, ms_result_row)
-      mw_results <- rbind(mw_results, mw_result_row)
     }
   }
 }
 
-all_results <- cbind(sr_combinations, results) %>%
-  right_join(mw_results, by=c("servers", "replication")) %>%
+all_results <- sr_combinations %>%
+  full_join(results, by=c("servers", "replication")) %>%
   mutate(servers=as.numeric(as.character(servers)),
-         replication=as.numeric(as.character(replication))) %>%
+         replication=as.numeric(as.character(replication)),
+         repetition=as.numeric(as.character(repetition_id))) %>%
   mutate(replication_str=get_replication_factor(servers, replication),
          servers_str=paste0(servers, " servers"))
 
@@ -181,16 +117,50 @@ write.csv(all_results, file=paste0(output_dir, "/all_results.csv"),
 # X - throughput
 
 get_wait_time <- function(N, R, X) {
-  return(N / X - R)
+  X <- X / 1000  # convert throughput from s to ms
+  return((N / X - R))
 }
 get_response_time <- function(N, X, Z) {
   return(N / X - Z)
 }
 get_throughput <- function(N, R, Z) {
-  return(N / (R + Z))
+  X <- N / (R + Z)
+  return(X * 1000) # convert from ms to s
 }
 
 N = 180 # constant
 
+data <- all_results %>%
+  select(servers, replication, repetition,
+         tps_mean, mean_response_time) %>%
+  rename(X=tps_mean, R=mean_response_time) %>%
+  mutate(Z_est=get_wait_time(N, R, X)) %>%
+  mutate(X_est=get_throughput(N, R, 0))
+
+# Predicted throughput vs actual throughput
+ggplot(data, aes(x=X, y=X_est)) +
+  geom_point(color=color_dark) +
+  geom_line(color=color_dark) +
+  xlab("Actual throughput") +
+  ylab("Predicted throughput") +
+  ylim(0, NA) +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/predicted_vs_actual_throughput.pdf"),
+       width=fig_width/2, height=fig_height/2)
+
+# Error percentage distribution
+ggplot(data, aes(x=(X_est-X)/X)) +
+  geom_histogram(bins=10, fill=color_light, color=color_medium) +
+  scale_x_continuous(labels = scales::percent) +
+  xlab("Relative error in predicted throughput") +
+  ylab("Number of experiments") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/error_percentage.pdf"),
+       width=fig_width/2, height=fig_height/2)
+
+# Mean error
+mean_err <- mean((data$X_est-data$X)/data$X)
+print(paste0("Mean prediction error for throughput: ",
+             round(mean_err*100, digits=2), "%"))
 
 
