@@ -123,3 +123,13 @@ for(i in 1:length(filtered_dirs)) {
     comparisons <- rbind(comparisons, summary)
   }
 }
+
+
+# ---- Plotting ----
+data1 <- comparisons %>%
+  filter(clients != 180)
+ggplot(data1, aes(x=clients, y=mean_response_time, color=type)) +
+  geom_line() +
+  asl_theme
+  
+
