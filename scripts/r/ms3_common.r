@@ -45,7 +45,8 @@ get_service_and_queue_distributions <- function(requests2) {
   service_timestamps <- c()
   for(i in 1:nrow(requests2)) {
     if(i %% 1000 == 0) {
-      print(paste0("At row ", i, " out of ", nrow(requests2)))
+      print(paste0("At row ", i, " out of ", nrow(requests2), " [",
+                   round(i/nrow(requests2)*100, digits=0), "%]"))
     }
     row <- requests2[i,]
     total_expanded <- seq(row$timeCreated, row$timeReturned, 1)
@@ -100,3 +101,23 @@ get_service_and_queue_distributions <- function(requests2) {
   
   return(counts)
 }
+
+get_mmm_p0 <- function(m, rho) {
+  if(m == 1) {
+    return(1 - rho)
+  }
+  first_summand <- (m * rho)^m / (factorial(m) * (1 - rho))
+  n <- seq(1, m-1, 1)
+  second_summand <- sum((m * rho) ^ n / factorial(n))
+  return(1/(1 + first_summand + second_summand))
+}
+
+get_mmm_weird_rho <- function(m, rho, p0) {
+  return(p0 * (m * rho)^m / (factorial(m) * (1 - rho)))
+}
+
+
+
+
+
+
