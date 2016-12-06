@@ -1,4 +1,5 @@
 source("scripts/r/common.r")
+library(xtable)
 
 memaslap_summary <- function(df) {
   DROP_TIMES_BEFORE = 0 #2 * 60 # How many seconds in the beginning we want to drop

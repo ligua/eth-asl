@@ -80,10 +80,13 @@ actual$mean_response_time <- mean(response_times)
 actual$response_time_q50 <- quantile(response_times, probs=c(0.5))
 actual$response_time_q95 <- quantile(response_times, probs=c(0.95))
 
-comparison <- rbind(data.frame(predicted), data.frame(actual))
+comparison <- rbind(data.frame(predicted), data.frame(actual)) %>%
+  melt(id.vars=c("type")) %>%
+  dcast(variable ~ type)
 
-
-
+comparison_table <- xtable(comparison, caption="Comparison of experimental results and predictions of the M/M/1 model.",
+                           label="tbl:part1:comparison_table")
+print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
 
 
 # ---- Plots ----
@@ -100,7 +103,8 @@ ggplot(data1, aes(x=num_elements, y=value, color=variable, fill=variable)) +
   facet_wrap(~variable, nrow=1) +
   xlab("Number of jobs in the system") +
   ylab("Probability") +
-  asl_theme
+  asl_theme +
+  theme(legend.position="none")
 ggsave(paste0(output_dir, "/graphs/job_count_dist_actual_and_predicted.pdf"),
        width=fig_width, height=fig_height/2)
 
@@ -119,11 +123,10 @@ ggplot(data2, aes(x=value, y=quantiles, color=variable)) +
   facet_wrap(~variable, scales="free_x") +
   xlab("Response time") +
   ylab("Quantile") +
-  asl_theme
+  asl_theme +
+  theme(legend.position="none")
 ggsave(paste0(output_dir, "/graphs/quantiles_actual_and_predicted.pdf"),
        width=fig_width, height=fig_height/2)
-
-
 
 
 
