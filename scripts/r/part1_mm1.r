@@ -43,11 +43,12 @@ print(paste0("Traffic intensity: ", round(traffic_intensity, digits=2)))
 predicted = list()
 predicted$type <- "predicted"
 predicted$mean_num_jobs_in_system <- traffic_intensity / (1-traffic_intensity)
+predicted$std_num_jobs_in_system <- traffic_intensity / (1-traffic_intensity)^2
 predicted$mean_num_jobs_in_queue <- traffic_intensity^2 / (1-traffic_intensity)
 predicted$utilisation <- 1 - traffic_intensity
 predicted$mean_response_time <- 1 / (service_rate) / (1 - traffic_intensity) * 1000 # ms
-predicted$response_time_q50 <- predicted$mean_response_time * log(100 / (100-50))
-predicted$response_time_q95 <- predicted$mean_response_time * log(100 / (100-95))
+predicted$response_time_q50 <- predicted$mean_response_time * log(1 / (1-0.5))
+predicted$response_time_q95 <- predicted$mean_response_time * log(1 / (1-0.95))
 
 # ---- Actual results ----
 actual = list()
@@ -72,6 +73,7 @@ response_times <- requests$timeReturned - requests$timeEnqueued
 
 actual$type <- "actual"
 actual$mean_num_jobs_in_system <- means$total
+actual$std_num_jobs_in_system <- sum(distributions$total * (distributions$num_elements-means$total)^2)
 actual$mean_num_jobs_in_queue <- means$queue
 actual$utilisation <- 1 - (distributions %>% filter(num_elements==0))$total
 actual$mean_response_time <- mean(response_times)
@@ -79,3 +81,49 @@ actual$response_time_q50 <- quantile(response_times, probs=c(0.5))
 actual$response_time_q95 <- quantile(response_times, probs=c(0.95))
 
 comparison <- rbind(data.frame(predicted), data.frame(actual))
+
+
+
+
+
+# ---- Plots ----
+# Distribution of number of jobs in system
+num_elements <- distributions$num_elements
+actual_prob <- distributions$total
+predicted_prob <- (1-traffic_intensity) * traffic_intensity^num_elements
+
+data1 <- data.frame(num_elements, actual=actual_prob, predicted=predicted_prob) %>%
+  melt(id.vars=c("num_elements"))
+
+ggplot(data1, aes(x=num_elements, y=value, color=variable, fill=variable)) +
+  geom_bar(stat="identity") +
+  facet_wrap(~variable, nrow=1) +
+  xlab("Number of jobs in the system") +
+  ylab("Probability") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/job_count_dist_actual_and_predicted.pdf"),
+       width=fig_width, height=fig_height/2)
+
+# Quantiles of response time
+quantiles <- c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99)
+actual_response_times <- quantile(response_times, probs=quantiles)
+predicted_response_times <- predicted$mean_response_time * log(100 / (100-quantiles))
+predicted_response_times <- ifelse(quantiles > 1-traffic_intensity, predicted_response_times, 0)
+
+data2 <- data.frame(quantiles, actual=actual_response_times,
+                    predicted=predicted_response_times) %>%
+  melt(id.vars=c("quantiles"))
+ggplot(data2, aes(x=value, y=quantiles, color=variable)) +
+  geom_line(size=1) +
+  geom_point(size=2) +
+  facet_wrap(~variable, scales="free_x") +
+  xlab("Response time") +
+  ylab("Quantile") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/quantiles_actual_and_predicted.pdf"),
+       width=fig_width, height=fig_height/2)
+
+
+
+
+
