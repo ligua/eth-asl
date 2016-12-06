@@ -13,6 +13,14 @@
 \pagestyle{fancy}
 \fancyhf{}
 
+\fancypagestyle{firstpagefooter}
+{
+\lfoot{Compiled: \today}
+\cfoot{}
+\rfoot{\thepage}
+}
+\cfoot{\thepage}
+
 
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
@@ -50,36 +58,26 @@
 }
 
 \maketitle
+\thispagestyle{firstpagefooter}
 \newpage
 
 \tableofcontents
 
-
-\section*{Notes on writing the report}
-
-The report does not need to be extensive but it must be concise, complete, and correct. Conciseness is important  in  terms  of  content  and explanations,  focusing  on  what  has  been  done and  explanations  of the results. A long report is not necessarily a better report, especially if there are aspects that  remain  unexplained.  Completeness  implies  that  the  report  should  give  a comprehensive idea of what has been done by mentioning all key aspects of the modeling and analysis effort. Limited analysis because of flaws in the system or lack of experimental data from Milestones 1 or 2 are not  valid  arguments  for  an incomplete  report.  If  bugs  or  lack  of  data  prevent  you  from  doing  a  correct analysis, the system must be debugged and new data collected. In case the system has been modified, include a short description of the changes as an appendix.
-
-Remember  that  this is  a  report  about modeling  and  analyzing the  system you  have  designed  and  built, using  the experimental data you have collected. There is no unique way to do the report and you may choose  to  focus  on  different  aspects  of  the  system  as  long  as  you deliver a  complete analysis of  its behavior. Keep in mind that, \emph{for all queuing models in the report}, you need to explain how the the parameters of the model were determined and from which experiments the data comes from (adding a reference to the exact graph, table, etc. from the previous milestones). You have to find all system metrics that can be derived using the corresponding formulas and then match to the experimental results, explaining the similarities and differences in quantitative and qualitative terms. The calculations and the numbers you derive might need to be explained with references to the logs and sources in the previous reports. Make sure to mark these references, as well as the ones pointing to experimental results clearly. \textit{Missing parts of the above requirements might lead to significant loss of points in each section.}
-
-The report should be organized in sections as explained in the next pages, and each section should address at least the questions mentioned for each point. You might be called for a meeting in person to clarify aspects of the report or the system and to make a short presentation of the work done. By submitting the report, you  confirm  that  you  have  done  the  work  on  your  own,  the  data used comes  from  experiments  your have  done,  you  have  written  the  report  on  your  own,  and  you have  not  copied  neither text nor data from other sources.
-
-\medskip
-The milestone is worth 200 points. 
-
-\pagebreak
-
 \clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
-\section{System as One Unit}\label{sec:system-one-unit}
+\section{System as One Unit}\label{sec:part1-system-one-unit}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
 \subsection{Data}
 
-The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}}. For details, see Milestone 2, Appendix A. The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
+The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}} (short names \texttt{trace\_ms*}, \texttt{trace\_mw} and \texttt{trace\_req} in Milestone~1). For details, see Milestone~2, Appendix A.
+
+The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
 
 \subsection{Model}
+\label{sec:part1:model}
 
 In this section I create an M/M/1 model of the system. This means the following definitions and assumptions:
 \begin{itemize}
@@ -99,6 +97,8 @@ The assumptions above obviously do not hold for our actual system. Especially st
 
 \subsection{Comparison of model and experiments}
 
+\todo{this whole subsection}
+
 \input{../results/analysis/part1_mm1/comparison_table.txt}
 
 \begin{figure}[h]
@@ -117,24 +117,37 @@ The assumptions above obviously do not hold for our actual system. Especially st
 \clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
-\section{Analysis of System Based on Scalability Data}\label{sec:analysis-scalability}
+\section{Analysis of System Based on Scalability Data}\label{sec:part2-analysis-scalability}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
-
-\subsection{Guidelines}
-Length: 1-4 pages
-
-Starting from the different configurations that you used in the second milestone, build M/M/m queuing models of the system as a whole. Detail the characteristics of these series of models and compare them with experimental data. The goal is the analysis of the model and the real scalability of the system (explain the similarities, the differences, and map them to aspects of the design or the experiments). Make sure to follow the model-related guidelines described in the Notes!
-
-\subsection{Model}
-
-\todo{} describe the model I was using, and how I found the parameters
-
-bad model because I map requests to servers uniformly. M/M/m assumes that each server takes a request when it finishes with the previous one, but that is not true in my case.
 
 \subsection{Data}
 
-The experimental data used in this section comes from \todo{Section x} and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{\todo{}}}.
+The experimental data used in this section comes from \todo{Section~x} and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{\todo{}}}.
+
+
+\subsection{Model}
+
+The assumptions and definitions of the M/M/m model are the same as for the M/M/1 model laid out in Section~\ref{sec:part1:model} with the following modifications:
+
+\begin{itemize}
+	\item We treat the SUT as a collection of $m$ servers.
+	\item All jobs waiting for service are held in one queue.
+	\item If any server is idle, an arriving job is serviced immediately.
+	\item If all servers are busy, an arriving job is added to the queue.
+\end{itemize}
+
+\paragraph{Parameters}
+\todo{} describe how I found the parameters
+
+
+\paragraph{Problems}
+\todo{}
+
+\begin{enumerate}
+	\item I actually have $m$ queues (one for each server), not a single queue; each request is assigned to a server when \linkmain{LoadBalancer} receives it.
+	\item I map requests to servers uniformly. M/M/m assumes that each server takes a request when it finishes with the previous one, but that is not true in my case -- I take earlier
+\end{enumerate}
 
 \subsection{Comparison of model and experiments}
 
@@ -142,7 +155,7 @@ The experimental data used in this section comes from \todo{Section x} and can b
 \clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
-\section{System as Network of Queues}\label{sec:network-of-queues}
+\section{System as Network of Queues}\label{sec:part3-network-of-queues}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
@@ -155,7 +168,7 @@ Based on the outcome of the different modeling efforts from the previous section
 \clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
-\section{Factorial Experiment}\label{sec:2k-experiment}
+\section{Factorial Experiment}\label{sec:part4-2k-experiment}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
@@ -167,24 +180,19 @@ Design a $2^k$ factorial experiment and follow the best practices outlined in th
 \clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
-\section{Interactive Law Verification}\label{sec:interactive-law}
+\section{Interactive Law Verification}\label{sec:part5-interactive-law}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
-
-\subsection{Guidelines}
-Length: 1-2 pages
-
-Check the validity of all experiments from one of the three sections in your Milestone 2 report using the interactive law (choose a section in which your system has at least 9 different configurations). Analyze the results and explain them in detail.
 
 \subsection{Data}
 
-The experimental data used in this section comes from Milestone 2, Section 2 (Effect of Replication) and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}.
+The experimental data used in this section comes from Milestone~2, Section~2 (Effect of Replication) and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}} (short name \texttt{replication-S*-R*-r*} in Milestone~2).
+
+The first 2 minutes and last 2 minutes were \textbf{not} dropped because IRTL should hold also in warm-up and cool-down periods. Repetitions at the same configuration were considered as separate experiments.
 
 \subsection{Results}
 
-which experiment I chose, did I remove beginning and end, ...
-
-mention mean error
+mention value of mean error (mean of Figure~\ref{fig:part5:error_percentage})
 
 \todo{also show graphs as function of parameters (like in ms2 exp2)?}
 
@@ -192,16 +200,17 @@ mention mean error
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[b]{0.49\textwidth}
+\begin{subfigure}[t]{0.49\textwidth}
 \includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/predicted_vs_actual_throughput.pdf}
-\caption{ \todo{} }
+\caption{Throughput predicted using IRTL, as a function of actual throughput calculated from experimental data. Note the horizontal scale does not include 0.}
 \label{fig:part5:predicted_vs_actual}
 \end{subfigure}
-\begin{subfigure}[b]{0.49\textwidth}
+\begin{subfigure}[t]{0.49\textwidth}
 \includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/error_percentage.pdf}
-\caption{ \todo{} . note scale}
+\caption{Histogram of the relative error of throughput predicted using IRTL, counting the number of experiments in a given error range. Note the horizontal scale does not include 0.}
 \label{fig:part5:error_percentage}
 \end{subfigure}
+\caption{Evaluation of the validity of Milestone~2 Section~2 experiments}
 \end{figure}
 
 
