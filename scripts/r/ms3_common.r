@@ -47,8 +47,8 @@ get_service_and_queue_distributions <- function(requests2) {
       print(paste0("At row ", i, " out of ", nrow(requests2)))
     }
     row <- requests2[i,]
-    total_expanded <- seq(row$timeEnqueued, row$timeReturned, 1)
-    queue_expanded <- seq(row$timeEnqueued, row$timeDequeued, 1)
+    total_expanded <- seq(row$timeCreated, row$timeReturned, 1)
+    queue_expanded <- seq(row$timeCreated, row$timeDequeued, 1)
     service_expanded <- seq(row$timeDequeued, row$timeReturned, 1)
     total_timestamps <- append(total_timestamps, total_expanded)
     queue_timestamps <- append(queue_timestamps, queue_expanded)

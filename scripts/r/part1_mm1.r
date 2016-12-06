@@ -57,11 +57,11 @@ actual = list()
 time_zero <- min(requests$timeCreated)
 N_SAMPLES <- 5000
 requests2 <- requests %>%
-  select(timeEnqueued, timeDequeued, timeReturned) %>%
-  mutate(timeEnqueued=timeEnqueued-time_zero,
+  select(timeCreated, timeDequeued, timeReturned) %>%
+  mutate(timeCreated=timeCreated-time_zero,
          timeDequeued=timeDequeued-time_zero,
          timeReturned=timeReturned-time_zero) %>%
-  top_n(N_SAMPLES, wt=desc(timeEnqueued))
+  top_n(N_SAMPLES, wt=desc(timeCreated))
 
 distributions <- get_service_and_queue_distributions(requests2)
 means <- distributions %>%
