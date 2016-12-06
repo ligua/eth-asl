@@ -81,9 +81,23 @@ Build an M/M/1 model of your entire system based on the stability trace that you
 
 \todo{mention where data came from (new trace from MS2)}
 
-problems: assumption that arrival rate is independent doesn't hold (closed system => memaslap sends new request as soon as it receives response)
+book: "Unless explicitly specified, the queues are defined as having infinite buffer capacity, infinite population size, and an FCFS service discipline."
+
+book: "For example, the number of jobs in a queue with a single server and individual arrivals (not bulk arrivals) can be represented as a birth-death process" => we have birth-death process!
+
+book about M/M/1 queues: "It is assumed that the interarrival times and the service times are exponentially distributed and there is only one server. There are no buffer or population size limitations and the service discipline is FCFS."
+ 
+problems: assumption that arrival rate is i.i.d doesn't hold (closed system => memaslap sends new request as soon as it receives response)
 
 took service rate to be max of throughput and arrival rate as mean of throughput
+
+
+
+Once I have parameters, calculate:
+\begin{itemize}
+	\item mean number of jobs in system and queue, using Little's law (Ch30.2)
+	\item distribution of number of jobs in system and queue
+\end{itemize}
 
 
 \clearpage

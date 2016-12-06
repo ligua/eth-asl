@@ -35,3 +35,67 @@ file_to_df <- function(file_path, sep=";") {
   }
   return(result)
 }
+
+
+get_service_and_queue_distributions <- function(requests2) {
+  
+  total_timestamps <- c()
+  queue_timestamps <- c()
+  service_timestamps <- c()
+  for(i in 1:nrow(requests2)) {
+    if(i %% 1000 == 0) {
+      print(paste0("At row ", i, " out of ", nrow(requests2)))
+    }
+    row <- requests2[i,]
+    total_expanded <- seq(row$timeEnqueued, row$timeReturned, 1)
+    queue_expanded <- seq(row$timeEnqueued, row$timeDequeued, 1)
+    service_expanded <- seq(row$timeDequeued, row$timeReturned, 1)
+    total_timestamps <- append(total_timestamps, total_expanded)
+    queue_timestamps <- append(queue_timestamps, queue_expanded)
+    service_timestamps <- append(service_timestamps, service_expanded)
+  }
+  
+  total_counts <- data.frame(timestamp=total_timestamps) %>%
+    group_by(timestamp) %>%
+    summarise(num_elements=n())
+  zeros <- data.frame(timestamp=seq(0, max(total_counts$timestamp), 1))
+  total_counts <- total_counts %>%
+    full_join(zeros, by=c("timestamp")) %>%
+    mutate(num_elements=ifelse(is.na(num_elements), 0, num_elements)) %>%
+    group_by(num_elements) %>%
+    summarise(count=n())
+  
+  queue_counts <- data.frame(timestamp=queue_timestamps) %>%
+    group_by(timestamp) %>%
+    summarise(num_elements=n())
+  zeros <- data.frame(timestamp=seq(0, max(queue_counts$timestamp), 1))
+  queue_counts <- queue_counts %>%
+    full_join(zeros, by=c("timestamp")) %>%
+    mutate(num_elements=ifelse(is.na(num_elements), 0, num_elements)) %>%
+    group_by(num_elements) %>%
+    summarise(count=n())
+  
+  service_counts <- data.frame(timestamp=service_timestamps) %>%
+    group_by(timestamp) %>%
+    summarise(num_elements=n())
+  zeros <- data.frame(timestamp=seq(0, max(service_counts$timestamp), 1))
+  service_counts <- service_counts %>%
+    full_join(zeros, by=c("timestamp")) %>%
+    mutate(num_elements=ifelse(is.na(num_elements), 0, num_elements)) %>%
+    group_by(num_elements) %>%
+    summarise(count=n())
+  
+  counts <- queue_counts %>%
+    full_join(service_counts, by=c("num_elements")) %>%
+    rename(queue=count.x, service=count.y) %>%
+    full_join(total_counts, by=c("num_elements")) %>%
+    rename(total=count) %>%
+    mutate(queue=ifelse(is.na(queue), 0, queue),
+           service=ifelse(is.na(service), 0, service),
+           total=ifelse(is.na(total), 0, total)) %>%
+    mutate(queue=queue/sum(queue),
+           service=service/sum(service),
+           total=total/sum(total))
+  
+  return(counts)
+}
