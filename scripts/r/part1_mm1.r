@@ -26,6 +26,7 @@ requests <- requests %>%
 # ---- Analysis ----
 # ------------------
 WINDOW_SIZE <- 1 # seconds
+SAMPLING_RATE <- 100 # from exp1 setup
 service_rates <- requests %>%
   mutate(secondCreated=floor(timeCreated/1000/WINDOW_SIZE)) %>%
   group_by(secondCreated) %>%
@@ -34,8 +35,8 @@ service_rates <- requests %>%
 
 # ---- Parameters ----
 # TODO atm using kind of a shitty way to calc params
-service_rate <- max(service_rates$count) / WINDOW_SIZE * 100 # 1/100 sampling
-arrival_rate <- mean(service_rates$count) / WINDOW_SIZE * 100 # 1/100 sampling
+service_rate <- max(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
+arrival_rate <- mean(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
 traffic_intensity = arrival_rate / service_rate
 print(paste0("Traffic intensity: ", round(traffic_intensity, digits=2)))
 
@@ -69,7 +70,7 @@ means <- distributions %>%
             service=sum(num_elements * service),
             total=sum(num_elements * total))
 
-response_times <- requests$timeReturned - requests$timeEnqueued
+response_times <- requests$timeReturned - requests$timeCreated
 
 actual$type <- "actual"
 actual$mean_num_jobs_in_system <- means$total
