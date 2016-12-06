@@ -75,38 +75,31 @@ The milestone is worth 200 points.
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\subsection{Guidelines}
-Length: 1-2 pages
+\subsection{Data}
 
-Build an M/M/1 model of your entire system based on the stability trace that you had to run for the first milestone. Explain the characteristics and behavior of the model built, and compare it with the experimental data (collected both outside and inside the middleware). Analyze the modeled and real-life behavior of the system (explain the similarities, the differences, and map them to aspects of the design or the experiments). Make sure to follow the model-related guidelines described in the Notes!
+The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}}. For details, see Milestone 2, Appendix A. The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
 
 \subsection{Model}
 
-\todo{} describe the model I was using, and how I found the parameters. also describe problems
-
-book: "Unless explicitly specified, the queues are defined as having infinite buffer capacity, infinite population size, and an FCFS service discipline."
-
-book: "For example, the number of jobs in a queue with a single server and individual arrivals (not bulk arrivals) can be represented as a birth-death process" => we have birth-death process!
-
-book about M/M/1 queues: "It is assumed that the interarrival times and the service times are exponentially distributed and there is only one server. There are no buffer or population size limitations and the service discipline is FCFS."
+In this section I create an M/M/1 model of the system. This means the following definitions and assumptions:
+\begin{itemize}
+	\item The queues are defined as having infinite buffer capacity.
+	\item The population size is infinite.
+	\item The service discipline is FCFS.
+	\item Interarrival times and the service times are exponentially distributed.
+	\item We treat the SUT as a single server and as a black box.
+	\item Arrivals are individual, so we have a birth-death process.
+\end{itemize}
  
-problems: assumption that arrival rate is i.i.d doesn't hold (closed system => memaslap sends new request as soon as it receives response)
+\paragraph{Parameter estimation}
+Using the available experimental data, it is not possible to directly calculate the mean arrival rate $\lambda$ and mean service rate $\mu$ so we need to estimate them somehow. I estimated both using throughput of the system: I take $\lambda$ to be the \emph{mean} throughput over 1-second windows, and $\mu$ to be the the \emph{maximum} throughput in any 1-second window, calculated from middleware logs. I chose a 1-second window because a too small window is highly susceptible to noise whereas a too large window size drowns out useful information.
 
-\subsection{Data}
-
-The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}}. For details, see Milestone 2, Appendix A.
+\paragraph{Problems}
+The assumptions above obviously do not hold for our actual system. Especially strong is the assumption of a single server; since we actually have multiple servers, this model is likely to predict the behaviour of the system very poorly. A second problem arises from my very indirect method of estimating parameters for the model (and an arbitrary choice of time window) which introduces inaccuracies.
 
 \subsection{Comparison of model and experiments}
 
-took service rate to be max of throughput and arrival rate as mean of throughput
-
 \todo{Table of predicted vs actual numbers about the system}
-
-Once I have parameters, calculate:
-\begin{itemize}
-	\item mean number of jobs in system and queue, using Little's law (Ch30.2)
-	\item distribution of number of jobs in system and queue
-\end{itemize}
 
 \begin{figure}[h]
 \includegraphics[width=\textwidth]{../results/analysis/part1_mm1/graphs/job_count_dist_actual_and_predicted.pdf}
