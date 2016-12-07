@@ -116,7 +116,21 @@ get_mmm_weird_rho <- function(m, rho, p0) {
   return(p0 * (m * rho)^m / (factorial(m) * (1 - rho)))
 }
 
+get_mmm_response_time_mean <- function(rho, weird_rho, mu, m) {
+  return(1 / mu * (1 + weird_rho / (m * (1 - rho))))
+}
 
+get_mmm_response_time_std <- function(rho, weird_rho, mu, m) {
+  return(sqrt(1 / mu^2 * (1 + (weird_rho * (2 - weird_rho))/(m^2 * (1-rho)^2))))
+}
+
+get_mmm_num_jobs_in_system_mean <- function(rho, weird_rho, mu, m) {
+  return(m * rho + rho * weird_rho / (1 - rho))
+}
+
+get_mmm_num_jobs_in_system_std <- function(rho, weird_rho, mu, m) {
+  return(sqrt(m * rho + rho * weird_rho * ((1 + rho - rho * weird_rho)/((1 - rho)^2) + m)))
+}
 
 
 
