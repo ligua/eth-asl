@@ -99,6 +99,8 @@ The assumptions above obviously do not hold for our actual system. Especially st
 
 \todo{this whole subsection}
 
+\todo{mention that IRTL doesn't hold}
+
 \input{../results/analysis/part1_mm1/comparison_table.txt}
 
 \begin{figure}[h]
@@ -223,7 +225,7 @@ Using IRTL, we can verify the validity of experiments by calculating the predict
 \end{subfigure}
 \begin{subfigure}[t]{0.49\textwidth}
 \includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/predicted_vs_actual_throughput.pdf}
-\caption{Throughput predicted using IRTL, as a function of actual throughput calculated from experimental data. The red line shows perfect predictions (the $x=y$ line). Note the horizontal scale does not include 0.}
+\caption{Throughput predicted using IRTL (dark points), as a function of actual throughput calculated from experimental data. The red line shows hypothetical perfect predictions (the $x=y$ line). Note the horizontal scale does not include 0.}
 \label{fig:part5:predicted_vs_actual}
 \end{subfigure}
 \caption{Evaluation of the validity of Milestone~2 Section~2 experiments}
@@ -231,13 +233,17 @@ Using IRTL, we can verify the validity of experiments by calculating the predict
 
 If we assume the wait time $Z$ to be 0, we get a mean relative prediction error of $-1.01\%$, defined as $\frac{X_{predicted}-X_{actual}}{X_{actual}}$. The distribution of these errors is shown in Figure~\ref{fig:part5:error_percentage}; the distribution looks reasonably symmetric. Figure~\ref{fig:part5:predicted_vs_actual} plots $X_{predicted}$ against $X_{actual}$ and shows again that the predicted throughput is very close to actual throughput, but consistently smaller in all regions of the graph.
 
-If we assume a nonzero $Z$ and estimate it from the experiments, we get a mean estimated wait time of -0.111ms. Clearly this is impossible: wait time must be non-negative. It could be that memaslap starts the clock for a new request before stopping the clock for the previous request -- which would violate the closed system assumption -- but this is very unlikely.
+If we assume a nonzero $Z$ and estimate it from the experiments, we get a mean estimated wait time of -0.111ms. Clearly this is impossible: wait time must be non-negative.
 
-To explain these results, we need to answer the question: what could be causing the unexpectedly high throughput (caused by a shorter-than-predicted total cycle time)?
+To explain these results, we need to answer the question: why is the actual throughput lower than the actual throughput? It could be that memaslap starts the clock for a new request before stopping the clock for the previous request -- which would violate the closed system assumption -- but this is very unlikely as it would be a major design flaw in memaslap.
 
-\todo{} because total cycle time is higher than it should for given throughput -- but why? since measuring is done by memaslap, probably the problem lies on that side
+A more plausible hypothesis is that the effective value of $N$ is slightly lower than the concurrency I set using the relevant command line flags -- because the number of cores in the memaslap machine is much lower than the concurrency I'm using.
 
-\todo{} slides: network effects, processing overhead, exceptions and non-normal return values
+Regardless of the exact reason of the deviation, the IRTL holds to a reasonably high accuracy. Perfect accuracy is impossible even without the middleware: in the baseline experiments (Milestone~1 Section~2), relative prediction error is 0.2\%-0.5\% in a selection of values of $N$ that I checked.
+
+
+
+% potential reasons from slides: network effects, processing overhead, exceptions and non-normal return values
 
 
 

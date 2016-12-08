@@ -141,7 +141,7 @@ colnames(result_params) <- c("path", "clients", "threads", "repetition")
 result_params <- result_params  %>%
   mutate(path=as.character(path))
 
-result <- NA
+result_temp <- NA
 for(i in 1:nrow(result_params)) {
   n_clients <- result_params[i,]$clients
   n_threads <- result_params[i,]$threads
@@ -152,20 +152,30 @@ for(i in 1:nrow(result_params)) {
   mss <- memaslap_summary(memaslap) %>%
     mutate(repetition=rep_id, clients=n_clients, threads=n_threads)
   
-  if(is.na(result)) {
-    result <- mss
+  if(is.na(result_temp)) {
+    result_temp <- mss
   } else {
-    result <- rbind(result, mss)
+    result_temp <- rbind(result_temp, mss)
   }
 }
 
-result <- result %>%
+result <- result_temp %>%
   select(repetition, clients, threads, tps_mean, mean_response_time_get) %>%
   mutate(clients=as.numeric(as.character(clients)),
          threads=as.factor(paste0(threads, " threads"))) %>%
   rename(N=clients, X=tps_mean, R=mean_response_time_get) %>%
   mutate(X_est=get_throughput(N, R, 0)) %>%
   mutate(X_rel_err=(X_est-X)/X)
+
+
+ggplot(result %>% group_by(N, threads) %>% top_n(1) %>% filter(threads=="32 threads"),
+       aes(x=N)) +
+  geom_point(aes(y=X), size=2) +
+  geom_line(aes(y=X), size=1) +
+  geom_line(aes(y=X_est), color="red") +
+  xlab("Number of clients") +
+  ylim(0, NA) +
+  asl_theme
 
 ggplot(result %>% group_by(N, threads) %>% summarise(X_rel_err=mean(X_rel_err)),
        aes(x=N, y=abs(X_rel_err), color=threads)) +
@@ -178,4 +188,19 @@ ggplot(result %>% group_by(N, threads) %>% summarise(X_rel_err=mean(X_rel_err)),
 ggsave(paste0(output_dir, "/graphs/irtl_error_vs_clients_and_threads.pdf"),
        width=fig_width, height=fig_height)
 
+
+# ---- IRTL for baseline ----
+# 2 memaslaps
+X <- 17376 + 16464
+R <- (1051320*3.674 + 996672*3.880) / (1051320+996672)
+N <- 128
+X_est <- get_throughput(N, R, 0)
+(X_est - X) / X_est * 100
+
+# 1 memaslap
+X <- 1552
+R <- 0.641
+N <- 1
+X_est <- get_throughput(N, R, 0)
+(X_est - X) / X_est * 100
 
