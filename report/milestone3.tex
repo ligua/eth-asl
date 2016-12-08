@@ -104,9 +104,17 @@ The assumptions above obviously do not hold for our actual system. Especially st
 \input{../results/analysis/part1_mm1/comparison_table.txt}
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{../results/analysis/part1_mm1/graphs/quantiles_actual_and_predicted.pdf}
+\includegraphics[width=\textwidth]{../results/analysis/part1_mm1/graphs/response_time_quantiles_actual_and_predicted.pdf}
 \caption{Quantiles of the response time distribution: experimental results and predictions of the M/M/1 model. Note the extreme difference in the response time scale.}
-\label{fig:part1:quantiles}
+\label{fig:part1:quantiles_responsetime}
+\end{figure}
+
+\todo{mention} that number of jobs is calculated using Little's law
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{../results/analysis/part1_mm1/graphs/queue_time_quantiles_actual_and_predicted.pdf}
+\caption{Quantiles of the waiting time distribution: experimental results and predictions of the M/M/1 model. Note the extreme difference in the queue time scale.}
+\label{fig:part1:quantiles_queuetime}
 \end{figure}
 
 

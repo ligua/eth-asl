@@ -35,45 +35,69 @@ service_rates <- requests %>%
 
 # ---- Parameters ----
 # TODO atm using kind of a shitty way to calc params
-service_rate <- max(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
+mu <- max(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE # service rate
 arrival_rate <- mean(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
-traffic_intensity = arrival_rate / service_rate
-print(paste0("Traffic intensity: ", round(traffic_intensity, digits=2)))
+rho = arrival_rate / mu # traffic intensity
+print(paste0("Traffic intensity: ", round(rho, digits=2)))
 
 # ---- Predictions ----
 predicted = list()
 predicted$type <- "predicted"
-predicted$utilisation <- 1 - traffic_intensity
-predicted$mean_response_time <- 1 / (service_rate) / (1 - traffic_intensity) * 1000 # ms
-predicted$response_time_q50 <- predicted$mean_response_time * log(1 / (1-0.5))
-predicted$response_time_q95 <- predicted$mean_response_time * log(1 / (1-0.95))
+predicted$response_time_mean <- 1 / (mu) / (1 - rho) * 1000 # ms
+predicted$response_time_std <- sqrt((mu^-2)/((1-rho)^2)) * 1000
+predicted$response_time_quantile50 <- predicted$response_time_mean * log(1 / (1-0.5))
+predicted$response_time_quantile95 <- predicted$response_time_mean * log(1 / (1-0.95))
+predicted$waiting_time_mean <- rho * (1 / mu) / (1 - rho) * 1000 # ms
+predicted$waiting_time_std <- sqrt((2-rho) * rho / (mu^2 * (1-rho)^2)) * 1000 # ms
+predicted$utilisation <- 1 - rho
+predicted$num_jobs_in_system_mean <- rho / (1-rho)		
+predicted$num_jobs_in_system_std <- sqrt(rho / (1-rho)^2)
+predicted$num_jobs_in_queue_mean <- rho^2 / (1-rho)
+predicted$num_jobs_in_queue_std <- sqrt(rho^2 * (1 + rho - rho^2) / ((1-rho)^2))
+predicted$num_jobs_served_in_busy_period_mean <- 1 / (1-rho)
+predicted$num_jobs_served_in_busy_period_std <- sqrt(rho * (1 + rho) / (1 - rho)^3)
+predicted$busy_period_duration_mean <- 1 / (mu * (1 - rho)) * 1000
+predicted$busy_period_duration_std <- sqrt(1 / (mu^2 * (1-rho)^3) - 1 / (mu^2 * (1-rho)^2)) * 1000
 
 # ---- Actual results ----
 actual = list()
 
 response_times <- requests$timeReturned - requests$timeCreated
+queue_times <- requests$timeDequeued - requests$timeEnqueued
 
 actual$type <- "actual"
-actual$utilisation <- 1 - (distributions %>% filter(num_elements==0))$total
-actual$mean_response_time <- mean(response_times)
-actual$response_time_q50 <- quantile(response_times, probs=c(0.5))
-actual$response_time_q95 <- quantile(response_times, probs=c(0.95))
+actual$response_time_mean <- mean(response_times)
+actual$response_time_std <- sd(response_times)
+actual$response_time_quantile50 <- quantile(response_times, probs=c(0.5))
+actual$response_time_quantile95 <- quantile(response_times, probs=c(0.95))
+actual$waiting_time_mean <- mean(queue_times)
+actual$waiting_time_std <- sd(queue_times)
+actual$utilisation <- NA
+actual$num_jobs_in_system_mean <- arrival_rate * actual$response_time_mean / 1000 # ms -> s # Little's law
+actual$num_jobs_in_system_std <- NA
+actual$num_jobs_in_queue_mean <- arrival_rate * actual$waiting_time_mean / 1000# TODO Little's law?
+actual$num_jobs_in_queue_std <- NA
+actual$num_jobs_served_in_busy_period_mean <- NA
+actual$num_jobs_served_in_busy_period_std <- NA
+actual$busy_period_duration_mean <- NA
+actual$busy_period_duration_std <- NA
 
 comparison <- rbind(data.frame(predicted), data.frame(actual)) %>%
   melt(id.vars=c("type")) %>%
-  dcast(variable ~ type)
+  dcast(variable ~ type) %>%
+  rename(metric=variable)
 
-comparison_table <- xtable(comparison, caption="Comparison of experimental results and predictions of the M/M/1 model.",
+comparison_table <- xtable(comparison, caption="Comparison of experimental results ('actual') and predictions of the M/M/1 model ('predicted') for different metrics. Where the 'actual' column is empty, experimental data was not detailed enough to calculate the desired metric. All time units are milliseconds.",
                            label="tbl:part1:comparison_table")
 print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
 
 
 # ---- Plots ----
 # Quantiles of response time
-quantiles <- c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99)
+quantiles <- c(0.01, seq(0.1, 0.9, 0.1), 0.99)
 actual_response_times <- quantile(response_times, probs=quantiles)
-predicted_response_times <- predicted$mean_response_time * log(100 / (100-quantiles))
-predicted_response_times <- ifelse(quantiles > 1-traffic_intensity, predicted_response_times, 0)
+predicted_response_times <- predicted$response_time_mean * log(1 / (1-quantiles))
+predicted_response_times <- ifelse(quantiles > 1-rho, predicted_response_times, 0)
 
 data2 <- data.frame(quantiles, actual=actual_response_times,
                     predicted=predicted_response_times) %>%
@@ -86,8 +110,26 @@ ggplot(data2, aes(x=value, y=quantiles, color=variable)) +
   ylab("Quantile") +
   asl_theme +
   theme(legend.position="none")
-ggsave(paste0(output_dir, "/graphs/quantiles_actual_and_predicted.pdf"),
+ggsave(paste0(output_dir, "/graphs/response_time_quantiles_actual_and_predicted.pdf"),
        width=fig_width, height=fig_height/2)
 
 
+# Quantiles of waiting time
+quantiles <- c(0.01, seq(0.1, 0.9, 0.1), 0.99)
+actual_queue_times <- quantile(queue_times, probs=quantiles)
+predicted_queue_times <- pmax(0, predicted$waiting_time_mean / rho * log((rho)/(1-quantiles)))
+
+data3 <- data.frame(quantiles, actual=actual_queue_times,
+                    predicted=predicted_queue_times) %>%
+  melt(id.vars=c("quantiles"))
+ggplot(data3, aes(x=value, y=quantiles, color=variable)) +
+  geom_line(size=1) +
+  geom_point(size=2) +
+  facet_wrap(~variable, scales="free_x") +
+  xlab("Waiting time") +
+  ylab("Quantile") +
+  asl_theme +
+  theme(legend.position="none")
+ggsave(paste0(output_dir, "/graphs/queue_time_quantiles_actual_and_predicted.pdf"),
+       width=fig_width, height=fig_height/2)
 
