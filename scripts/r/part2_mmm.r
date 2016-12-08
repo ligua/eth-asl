@@ -121,8 +121,7 @@ for(i in 1:length(filtered_dirs)) {
 
 # Saving table
 comparisons_to_save <- comparisons %>%
-  select(clients, type:response_time_std) %>%
-  select(-utilisation) %>%
+  select(clients, type, response_time_mean:response_time_std) %>%
   melt(id.vars=c("type", "clients")) %>%
   dcast(variable + clients ~ type)
 comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model.",

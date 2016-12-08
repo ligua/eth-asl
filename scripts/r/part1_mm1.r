@@ -43,9 +43,6 @@ print(paste0("Traffic intensity: ", round(traffic_intensity, digits=2)))
 # ---- Predictions ----
 predicted = list()
 predicted$type <- "predicted"
-predicted$mean_num_jobs_in_system <- traffic_intensity / (1-traffic_intensity)
-predicted$std_num_jobs_in_system <- traffic_intensity / (1-traffic_intensity)^2
-predicted$mean_num_jobs_in_queue <- traffic_intensity^2 / (1-traffic_intensity)
 predicted$utilisation <- 1 - traffic_intensity
 predicted$mean_response_time <- 1 / (service_rate) / (1 - traffic_intensity) * 1000 # ms
 predicted$response_time_q50 <- predicted$mean_response_time * log(1 / (1-0.5))
@@ -54,28 +51,9 @@ predicted$response_time_q95 <- predicted$mean_response_time * log(1 / (1-0.95))
 # ---- Actual results ----
 actual = list()
 
-# Number of jobs in system
-time_zero <- min(requests$timeCreated)
-N_SAMPLES <- 5000
-requests2 <- requests %>%
-  select(timeCreated, timeDequeued, timeReturned) %>%
-  mutate(timeCreated=timeCreated-time_zero,
-         timeDequeued=timeDequeued-time_zero,
-         timeReturned=timeReturned-time_zero) %>%
-  top_n(N_SAMPLES, wt=desc(timeCreated))
-
-distributions <- get_service_and_queue_distributions(requests2)
-means <- distributions %>%
-  summarise(queue=sum(num_elements * queue),
-            service=sum(num_elements * service),
-            total=sum(num_elements * total))
-
 response_times <- requests$timeReturned - requests$timeCreated
 
 actual$type <- "actual"
-actual$mean_num_jobs_in_system <- means$total
-actual$std_num_jobs_in_system <- sum(distributions$total * (distributions$num_elements-means$total)^2)
-actual$mean_num_jobs_in_queue <- means$queue
 actual$utilisation <- 1 - (distributions %>% filter(num_elements==0))$total
 actual$mean_response_time <- mean(response_times)
 actual$response_time_q50 <- quantile(response_times, probs=c(0.5))
@@ -91,24 +69,6 @@ print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
 
 
 # ---- Plots ----
-# Distribution of number of jobs in system
-num_elements <- distributions$num_elements
-actual_prob <- distributions$total
-predicted_prob <- (1-traffic_intensity) * traffic_intensity^num_elements
-
-data1 <- data.frame(num_elements, actual=actual_prob, predicted=predicted_prob) %>%
-  melt(id.vars=c("num_elements"))
-
-ggplot(data1, aes(x=num_elements, y=value, color=variable, fill=variable)) +
-  geom_bar(stat="identity") +
-  facet_wrap(~variable, nrow=1) +
-  xlab("Number of jobs in the system") +
-  ylab("Probability") +
-  asl_theme +
-  theme(legend.position="none")
-ggsave(paste0(output_dir, "/graphs/job_count_dist_actual_and_predicted.pdf"),
-       width=fig_width, height=fig_height/2)
-
 # Quantiles of response time
 quantiles <- c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99)
 actual_response_times <- quantile(response_times, probs=quantiles)

@@ -161,13 +161,6 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 \label{fig:part2:responsetime}
 \end{figure}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/analysis/part2_mmm/graphs/number_of_jobs_predicted_and_actual.pdf}
-\caption{\todo{}}
-\label{fig:part2:numberofjobs}
-\end{figure}
-
 \input{../results/analysis/part2_mmm/comparison_table.txt}
 
 
@@ -240,8 +233,11 @@ If we assume the wait time $Z$ to be 0, we get a mean relative prediction error 
 
 If we assume a nonzero $Z$ and estimate it from the experiments, we get a mean estimated wait time of -0.111ms. Clearly this is impossible: wait time must be non-negative. It could be that memaslap starts the clock for a new request before stopping the clock for the previous request -- which would violate the closed system assumption -- but this is very unlikely.
 
+To explain these results, we need to answer the question: what could be causing the unexpectedly high throughput (caused by a shorter-than-predicted total cycle time)?
 
-\todo{why the consistent -1\% error?} because total cycle time is higher than it should for given throughput -- but why? since measuring is done by memaslap, probably the problem lies on that side
+\todo{} because total cycle time is higher than it should for given throughput -- but why? since measuring is done by memaslap, probably the problem lies on that side
+
+\todo{} slides: network effects, processing overhead, exceptions and non-normal return values
 
 
 
