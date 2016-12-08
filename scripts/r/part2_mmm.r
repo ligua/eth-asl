@@ -125,7 +125,8 @@ comparisons_to_save <- comparisons %>%
   melt(id.vars=c("type", "clients")) %>%
   dcast(variable + clients ~ type)
 comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model.",
-                           label="tbl:part2:comparison_table")
+                           label="tbl:part2:comparison_table",
+                           digits=c(NA, NA, 0, 2, 2))
 print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
 
 
