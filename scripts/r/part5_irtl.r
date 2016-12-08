@@ -99,6 +99,7 @@ data <- all_results %>%
 
 # Predicted throughput vs actual throughput
 ggplot(data, aes(x=X, y=X_est)) +
+  geom_abline(intercept=0, slope=1, color="red") +
   geom_point(color=color_dark) +
   geom_line(color=color_dark) +
   xlab("Actual throughput") +
@@ -122,5 +123,11 @@ ggsave(paste0(output_dir, "/graphs/error_percentage.pdf"),
 mean_err <- mean((data$X_est-data$X)/data$X)
 print(paste0("Mean prediction error for throughput: ",
              round(mean_err*100, digits=2), "%"))
+
+# Mean Z_est
+mean_Z_est <- mean(data$Z_est)
+print(paste0("Mean estimated wait time (Z_est): ",
+             round(mean_Z_est, digits=3), "ms"))
+
 
 

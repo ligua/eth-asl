@@ -207,30 +207,41 @@ Design a $2^k$ factorial experiment and follow the best practices outlined in th
 
 The experimental data used in this section comes from Milestone~2, Section~2 (Effect of Replication) and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}} (short name \texttt{replication-S*-R*-r*} in Milestone~2).
 
-The first 2 minutes and last 2 minutes were \textbf{not} dropped because IRTL should hold also in warm-up and cool-down periods. Repetitions at the same configuration were considered as separate experiments.
+The first 2 minutes and last 2 minutes were \textbf{not} dropped because the Interactive Response Time Law (IRTL) should hold also in warm-up and cool-down periods. Repetitions at the same configuration were considered as separate experiments.
+
+\subsection{Model}
+
+We are assuming a closed system, i.e. clients wait for a response from the server before sending another request. Under this assumption, the IRTL should hold:
+
+$$R = \frac{N}{X} - Z$$
+
+where $R$ is mean response time, $Z$ is waiting time in the client, $N$ is the number of clients and $X$ is throughput.
 
 \subsection{Results}
 
-mention value of mean error (mean of Figure~\ref{fig:part5:error_percentage})
-
-\todo{also show graphs as function of parameters (like in ms2 exp2)?}
-
-\todo{why do I predict lower throughput?} because total cycle time is higher than it should for given throughput -- but why? since measuring is done by memaslap, probably the problem lies on that side
+Using IRTL, we can verify the validity of experiments by calculating the predicted throughput $X_{predicted}$ (given the number of clients $C$ and mean response time $R$) and comparing it with actual throughput $X_{actual}$. This is precisely what I did for all experiments of Milestone~2, Section~2. $C=180$ in all experiments, and both $R$ and $X_{actual}$ are aggregated results reported by the three memaslap instances generating load in that experiment.
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[t]{0.49\textwidth}
-\includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/predicted_vs_actual_throughput.pdf}
-\caption{Throughput predicted using IRTL, as a function of actual throughput calculated from experimental data. Note the horizontal scale does not include 0.}
-\label{fig:part5:predicted_vs_actual}
-\end{subfigure}
 \begin{subfigure}[t]{0.49\textwidth}
 \includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/error_percentage.pdf}
 \caption{Histogram of the relative error of throughput predicted using IRTL, counting the number of experiments in a given error range. Note the horizontal scale does not include 0.}
 \label{fig:part5:error_percentage}
 \end{subfigure}
+\begin{subfigure}[t]{0.49\textwidth}
+\includegraphics[width=\textwidth]{../results/analysis/part5_irtl/graphs/predicted_vs_actual_throughput.pdf}
+\caption{Throughput predicted using IRTL, as a function of actual throughput calculated from experimental data. The red line shows perfect predictions (the $x=y$ line). Note the horizontal scale does not include 0.}
+\label{fig:part5:predicted_vs_actual}
+\end{subfigure}
 \caption{Evaluation of the validity of Milestone~2 Section~2 experiments}
 \end{figure}
+
+If we assume the wait time $Z$ to be 0, we get a mean relative prediction error of $-1.01\%$, defined as $\frac{X_{predicted}-X_{actual}}{X_{actual}}$. The distribution of these errors is shown in Figure~\ref{fig:part5:error_percentage}; the distribution looks reasonably symmetric. Figure~\ref{fig:part5:predicted_vs_actual} plots $X_{predicted}$ against $X_{actual}$ and shows again that the predicted throughput is very close to actual throughput, but consistently smaller in all regions of the graph.
+
+If we assume a nonzero $Z$ and estimate it from the experiments, we get a mean estimated wait time of -0.111ms. Clearly this is impossible: wait time must be non-negative. It could be that memaslap starts the clock for a new request before stopping the clock for the previous request -- which would violate the closed system assumption -- but this is very unlikely.
+
+
+\todo{why the consistent -1\% error?} because total cycle time is higher than it should for given throughput -- but why? since measuring is done by memaslap, probably the problem lies on that side
 
 
 
