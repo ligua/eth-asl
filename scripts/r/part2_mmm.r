@@ -54,11 +54,6 @@ get_mmm_summary <- function(results_dir) {
   predicted = list()
   predicted$type <- "predicted"
   predicted$traffic_intensity <- rho
-  predicted$num_jobs_in_system_mean <- 
-    get_mmm_num_jobs_in_system_mean(rho, weird_rho, mu, m)
-  predicted$num_jobs_in_system_std <-
-    get_mmm_num_jobs_in_system_std(rho, weird_rho, mu, m)
-  predicted$num_jobs_in_queue_mean <- rho * weird_rho * (1 - rho)
   predicted$utilisation <- rho
   predicted$response_time_mean <-
     get_mmm_response_time_mean(rho, weird_rho, single_service_rate, m) * 1000 # ms
@@ -74,29 +69,10 @@ get_mmm_summary <- function(results_dir) {
   # ---- Actual results ----
   actual = list()
   
-  # Number of jobs in system
-  time_zero <- min(requests$timeCreated)
-  N_SAMPLES <- 5000
-  requests2 <- requests %>%
-    select(timeCreated, timeDequeued, timeReturned) %>%
-    mutate(timeCreated=timeCreated-time_zero,
-           timeDequeued=timeDequeued-time_zero,
-           timeReturned=timeReturned-time_zero) %>%
-    top_n(N_SAMPLES, wt=desc(timeCreated))
-  
-  distributions <- get_service_and_queue_distributions(requests2)
-  means <- distributions %>%
-    summarise(queue=sum(num_elements * queue),
-              service=sum(num_elements * service),
-              total=sum(num_elements * total))
-  
   response_times <- requests$timeReturned - requests$timeEnqueued
   
   actual$type <- "actual"
   actual$traffic_intensity <- NA
-  actual$num_jobs_in_system_mean <- means$total
-  actual$num_jobs_in_system_std <- sum(distributions$total * (distributions$num_elements-means$total)^2)
-  actual$num_jobs_in_queue_mean <- means$queue
   actual$utilisation <- NA # can't measure this on a per-server basis here
   actual$response_time_mean <- mean(response_times)
   actual$response_time_std <- sd(response_times)
@@ -145,7 +121,7 @@ for(i in 1:length(filtered_dirs)) {
 
 # Saving table
 comparisons_to_save <- comparisons %>%
-  select(type, clients, num_jobs_in_system_mean:response_time_std) %>%
+  select(clients, type:response_time_std) %>%
   select(-utilisation) %>%
   melt(id.vars=c("type", "clients")) %>%
   dcast(variable + clients ~ type)
@@ -183,20 +159,5 @@ ggplot(comparisons, aes(x=clients, y=response_time_mean, color=type, fill=type))
   theme(legend.position="none")
 ggsave(paste0(output_dir, "/graphs/response_time_predicted_and_actual.pdf"),
        width=fig_width, height=0.75 * fig_height)
-  
-# Mean number of jobs in system
-ggplot(comparisons, aes(x=clients, y=num_jobs_in_system_mean, color=type, fill=type)) +
-  geom_ribbon(aes(ymin=num_jobs_in_system_mean-num_jobs_in_system_std,
-                  ymax=num_jobs_in_system_mean+num_jobs_in_system_std),
-              alpha=0.3, color=NA) +
-  geom_line(size=1) +
-  geom_point(size=2) +
-  facet_wrap(~type, nrow=1) +
-  ylim(0, NA) +
-  xlab("Number of clients") +
-  ylab("Mean number of jobs in system") +
-  asl_theme +
-  theme(legend.position="none")
-ggsave(paste0(output_dir, "/graphs/number_of_jobs_predicted_and_actual.pdf"),
-       width=fig_width, height=0.75 * fig_height)
-  
+
+
