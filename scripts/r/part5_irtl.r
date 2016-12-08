@@ -129,5 +129,53 @@ mean_Z_est <- mean(data$Z_est)
 print(paste0("Mean estimated wait time (Z_est): ",
              round(mean_Z_est, digits=3), "ms"))
 
+# ------------------------------------
+# ---- Error vs number of clients ----
+# ------------------------------------
+file_name_regex <- paste0("results/throughput/clients(\\d{1,3})_threads(\\d{1,2})_rep(\\d{1,2})/memaslap_stats\\.csv$")
+unfiltered_files <- list.files(path=".", "memaslap_stats.csv", recursive=TRUE)
+filtered_files <- grep(file_name_regex, unfiltered_files, value=TRUE, perl=TRUE)
+
+result_params <- as.data.frame(str_match(filtered_files, file_name_regex))
+colnames(result_params) <- c("path", "clients", "threads", "repetition")
+result_params <- result_params  %>%
+  mutate(path=as.character(path))
+
+result <- NA
+for(i in 1:nrow(result_params)) {
+  n_clients <- result_params[i,]$clients
+  n_threads <- result_params[i,]$threads
+  rep_id <- result_params[i,]$repetition
+  memaslap <- file_to_df(result_params[i,]$path, sep=";") %>%
+    mutate(repetition=rep_id, clients=n_clients)
+  
+  mss <- memaslap_summary(memaslap) %>%
+    mutate(repetition=rep_id, clients=n_clients, threads=n_threads)
+  
+  if(is.na(result)) {
+    result <- mss
+  } else {
+    result <- rbind(result, mss)
+  }
+}
+
+result <- result %>%
+  select(repetition, clients, threads, tps_mean, mean_response_time_get) %>%
+  mutate(clients=as.numeric(as.character(clients)),
+         threads=as.factor(paste0(threads, " threads"))) %>%
+  rename(N=clients, X=tps_mean, R=mean_response_time_get) %>%
+  mutate(X_est=get_throughput(N, R, 0)) %>%
+  mutate(X_rel_err=(X_est-X)/X)
+
+ggplot(result %>% group_by(N, threads) %>% summarise(X_rel_err=mean(X_rel_err)),
+       aes(x=N, y=abs(X_rel_err), color=threads)) +
+  geom_point(size=2) +
+  geom_line(size=1) +
+  xlab("Number of clients") +
+  ylab("Magnitude of relative error in predicted throughput") +
+  ylim(0, NA) +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/irtl_error_vs_clients_and_threads.pdf"),
+       width=fig_width, height=fig_height)
 
 
