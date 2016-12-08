@@ -97,9 +97,13 @@ The assumptions above obviously do not hold for our actual system. Especially st
 
 \subsection{Comparison of model and experiments}
 
+Explain the characteristics and behavior of the model built, and compare it with the experimental data (collected both outside and inside the middleware). Map the similarities and differences to aspects of the design or the experiments.
+
+Table~\ref{tbl:part1:comparison_table} shows a comparison of the predictions of the M/M/1 model with actual results from the trace experiment. 
+
 \todo{this whole subsection}
 
-\todo{mention that IRTL doesn't hold}
+\todo{mention that IRTL doesn't hold for the model}
 
 \input{../results/analysis/part1_mm1/comparison_table.txt}
 
@@ -208,7 +212,7 @@ Design a $2^k$ factorial experiment and follow the best practices outlined in th
 
 \subsection{Data}
 
-The experimental data used in this section comes from Milestone~2, Section~2 (Effect of Replication) and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}} (short name \texttt{replication-S*-R*-r*} in Milestone~2).
+The experimental data used in this section comes from Milestone~2, Section~2 (Effect of Replication) and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}} (short name \texttt{replication-S*-R*-r*} in Milestone~2). This includes a total of 27 experiments in 9 different configurations.
 
 The first 2 minutes and last 2 minutes were \textbf{not} dropped because the Interactive Response Time Law (IRTL) should hold also in warm-up and cool-down periods. Repetitions at the same configuration were considered as separate experiments.
 
