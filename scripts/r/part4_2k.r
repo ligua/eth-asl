@@ -38,7 +38,8 @@ exp_results <- exp_results_raw %>%
   mutate(x_ab=xa_servers*xb_replication,
          x_bc=xb_replication*xc_writes,
          x_ac=xa_servers*xc_writes,
-         x_abc=xa_servers*xb_replication*xc_writes)
+         x_abc=xa_servers*xb_replication*xc_writes) %>%
+  mutate(tps_mean=tps_mean)
 
 # ---- Fitting model ----
 averaged <- exp_results %>%
@@ -88,7 +89,7 @@ mean_error = mean(abs(with_predictions$error))
 print(paste0("Mean error magnitude: ", round(mean_error, digits=1), " requests/s"))
 
 # ---- Plots ----
-# Error
+# Error vs predicted throughput
 ggplot(with_predictions, aes(x=tps_predicted, y=error)) +
   geom_point(size=2, color=color_dark) +
   geom_hline(yintercept=0, color="black") +
@@ -97,3 +98,21 @@ ggplot(with_predictions, aes(x=tps_predicted, y=error)) +
   asl_theme
 ggsave(paste0(output_dir, "/graphs/error_vs_predicted_tps.pdf"),
        width=fig_width, height=fig_height)
+
+# Quantile-quantile plot
+quantiles <- seq(1/24, 1-1/24, 1/24)
+vals_residual <- quantile(with_predictions$error, probs=quantiles)
+vals_normal <- qnorm(quantiles)
+data2 <- data.frame(quantile=quantiles, residual=vals_residual, normal=vals_normal)
+fit <- lm(residual ~ normal, data=data2)
+ggplot(data2, aes(x=normal, y=residual)) +
+  geom_point() +
+  geom_abline(aes(yintercept=0), color="red", slope=fit$coefficients[["normal"]]) +
+  xlab("Quantiles of standard normal distribution") +
+  ylab("Quantiles of residual distribution [requests/s]") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/quantile_quantile.pdf"),
+       width=fig_width, height=fig_height)
+
+
+
