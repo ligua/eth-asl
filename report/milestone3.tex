@@ -211,11 +211,24 @@ Based on the outcome of the different modeling efforts from the previous section
 
 \todo{how many repetitions? $2^kr$, $r=?$}
 
+\todo{justify levels} start with the min and max because this way you get an initial idea of whether it makes sense to do more detailed experiments on this factor
+
 \subsection{Data}
-\todo{ms2 exp2}
+\todo{ms2 exp3}, repetitions, total number of runs that i used
 
 \subsection{Results}
 \input{../results/analysis/part4_2k/variation_table.txt}
+
+multiplicative model is not necessary because: a) range of values covered is small, residuals are small compared to actual values and the spread of residuals is independent of whether actual values are small or large \todo{check if this is true}
+
+additive model => mean error
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/error_vs_predicted_tps.pdf}
+\caption{\todo{} note scale}
+\label{fig:part4:errorvspredicted}
+\end{figure}
 
 
 \clearpage

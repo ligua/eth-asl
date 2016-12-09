@@ -1,18 +1,22 @@
 source("scripts/r/common.r")
 source("scripts/r/ms3_common.r")
 
-K <- 2
+K <- 3
 R <- 3
 
 # ---- Directories and files ----
 output_dir <- "results/analysis/part4_2k"
-data_file <- "results/analysis/part5_irtl/all_results.csv"
+data_file <- "results/writes/detailed_results.csv"
 
-make_predictions <- function(coeff, vec1, vec2, vec3, vec4) {
+make_predictions <- function(coeff, vec1, vec2, vec3, vec4, vec5, vec6, vec7, vec8) {
   return(coeff[[1]] * vec1 +
            coeff[[2]] * vec2 +
            coeff[[3]] * vec3 +
-           coeff[[4]] * vec4)
+           coeff[[4]] * vec4 +
+           coeff[[5]] * vec5 +
+           coeff[[6]] * vec6 +
+           coeff[[7]] * vec7 +
+           coeff[[8]] * vec8)
 }
 
 # ---- Reading data ----
@@ -20,43 +24,58 @@ exp_results_raw <- read.csv(data_file)
 
 # ---- Preprocessing ----
 exp_results <- exp_results_raw %>%
-  select(servers, replication, repetition, tps_mean, mean_response_time,
-         replication_str, servers_str) %>%
-  filter(servers != 5 & replication_str != "half") %>%
-  mutate(x_constant=1,
-         x_servers=ifelse(servers==3, -1, 1),
-         x_replication=ifelse(replication_str=="none", -1, 1)) %>%
-  mutate(x_servers_times_replication=x_servers*x_replication)
+  select(servers, replication, writes, repetition, tps_mean, mean_response_time) %>%
+  filter(servers != 5) %>%
+  filter(replication == 1 | replication == servers) %>%
+  filter(writes == 1 | writes == 10) %>%
+  mutate(replication_str=get_replication_factor(servers, replication),
+         writes_str=get_writes_factor(writes),
+         servers_str=paste0(servers, " servers")) %>%
+  mutate(x0_constant=1,
+         xa_servers=ifelse(servers==3, -1, 1),
+         xb_replication=ifelse(replication_str=="none", -1, 1),
+         xc_writes=ifelse(writes==1, -1, 1)) %>%
+  mutate(x_ab=xa_servers*xb_replication,
+         x_bc=xb_replication*xc_writes,
+         x_ac=xa_servers*xc_writes,
+         x_abc=xa_servers*xb_replication*xc_writes)
 
 # ---- Fitting model ----
 averaged <- exp_results %>%
-  group_by(x_constant, x_servers, x_replication, x_servers_times_replication) %>%
-  summarise(tps_mean=mean(tps_mean)) %>%
-  select(x_constant, x_servers, x_replication, x_servers_times_replication, tps_mean)
+  group_by(x0_constant, xa_servers, xb_replication, xc_writes,
+           x_ab, x_bc, x_ac, x_abc) %>%
+  summarise(tps_mean=mean(tps_mean))
 
-solution <- solve(averaged[1:4], as.matrix(averaged[5]))
+solution <- solve(averaged[1:8], as.matrix(averaged[9]))
 coefficients <- c(solution)
-names(coefficients) <- attr(solution, "dimnames")[[1]]
+variable_names <- attr(solution, "dimnames")[[1]]
+names(coefficients) <- variable_names
 
 
 # ---- Making predictions ----
 with_predictions <- exp_results %>%
-  mutate(tps_predicted=make_predictions(coefficients, x_constant, x_servers, x_replication, x_servers_times_replication)) %>%
+  mutate(tps_predicted=
+           make_predictions(coefficients, x0_constant, xa_servers, xb_replication,
+                            xc_writes, x_ab, x_bc, x_ac, x_abc)) %>%
   mutate(error=tps_predicted-tps_mean)
 
 # ---- Allocation of variation ----
 tps_overall_mean <- mean(with_predictions$tps_mean)
-var_total <- sum((with_predictions$tps_mean-tps_overall_mean)^2)
-var_error <- sum(with_predictions$error^2)
-var_servers <- sum(K^2 * R * coefficients["x_servers"]^2)
-var_replication <- sum(K^2 * R * coefficients["x_replication"]^2)
-var_servers_times_replication <- sum(K^2 * R * coefficients["x_servers_times_replication"]^2)
-variations <- data.frame(var_servers, var_replication, var_servers_times_replication,
-                         var_error, var_total) %>%
+var <- list()
+var$total <- sum((with_predictions$tps_mean-tps_overall_mean)^2)
+var$error <- sum(with_predictions$error^2)
+var$xa_servers <- sum(K^2 * R * coefficients["xa_servers"]^2)
+var$xb_replication <- sum(K^2 * R * coefficients["xb_replication"]^2)
+var$xc_writes <- sum(K^2 * R * coefficients["xc_writes"]^2)
+var$x_ab <- sum(K^2 * R * coefficients["x_ab"]^2)
+var$x_bc <- sum(K^2 * R * coefficients["x_bc"]^2)
+var$x_ac <- sum(K^2 * R * coefficients["x_ac"]^2)
+var$x_abc <- sum(K^2 * R * coefficients["x_abc"]^2)
+variations <- data.frame(var) %>%
   melt() %>%
-  mutate(value=value/var_total) %>%
+  mutate(value=value/var$total) %>%
   rename(variation=value) %>%
-  filter(variable != "var_total")
+  filter(variable != "total")
 
 # Save variation table
 variation_table <- xtable(variations, caption="\\todo{} caption",
@@ -64,23 +83,17 @@ variation_table <- xtable(variations, caption="\\todo{} caption",
                            digits=c(NA, NA, 3))
 print(variation_table, file=paste0(output_dir, "/variation_table.txt"))
 
+# Error analysis
+mean_error = mean(abs(with_predictions$error))
+print(paste0("Mean error magnitude: ", round(mean_error, digits=1), " requests/s"))
 
 # ---- Plots ----
-# Prediction and actual, vs servers and replication
-data1 <- with_predictions %>%
-  select(replication_str, servers_str, tps_mean, tps_predicted) %>%
-  group_by(replication_str, servers_str) %>%
-  summarise(actual=mean(tps_mean), predicted=mean(tps_predicted)) %>%
-  melt(id.vars=c("replication_str", "servers_str"))
-ggplot(data1,aes(x=replication_str, y=value, color=variable)) +
-  geom_point(aes(y=value)) +
-  facet_wrap(~servers_str, ncol=3) +
-  #ylim(0, NA) +
-  ylab("Throughput (requests per second)") +
-  xlab("Replication") +
-  asl_theme
-
 # Error
 ggplot(with_predictions, aes(x=tps_predicted, y=error)) +
-  geom_point() +
+  geom_point(size=2, color=color_dark) +
+  geom_hline(yintercept=0, color="black") +
+  xlab("Predicted throughput [requests / s]") +
+  ylab("Error") +
   asl_theme
+ggsave(paste0(output_dir, "/graphs/error_vs_predicted_tps.pdf"),
+       width=fig_width, height=fig_height)
