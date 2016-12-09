@@ -24,7 +24,7 @@ exp_results_raw <- read.csv(data_file)
 
 # ---- Preprocessing ----
 exp_results <- exp_results_raw %>%
-  select(servers, replication, writes, repetition, tps_mean, mean_response_time) %>%
+  select(servers, replication, writes, repetition, tps_mean) %>%
   filter(servers != 5) %>%
   filter(replication == 1 | replication == servers) %>%
   filter(writes == 1 | writes == 10) %>%
@@ -60,7 +60,8 @@ with_predictions <- exp_results %>%
                             xc_writes, x_ab, x_bc, x_ac, x_abc)) %>%
   mutate(error=tps_predicted-tps_mean)
 
-# ---- Allocation of variation ----
+# ---- Analysis ----
+# Allocation of variation
 tps_overall_mean <- mean(with_predictions$tps_mean)
 var <- list()
 var$total <- sum((with_predictions$tps_mean-tps_overall_mean)^2)
@@ -78,17 +79,51 @@ variations <- data.frame(var) %>%
   rename(variation=value) %>%
   filter(variable != "total")
 
+# Save data table
+data_df <- exp_results %>%
+  select(servers, replication_str, writes, repetition, tps_mean) %>%
+  rename(throughput=tps_mean, repetition_id=repetition, replication=replication_str)
+data_table <- xtable(data_df, caption="\\todo{} caption",
+                          label="tbl:part4:data",
+                          digits=0)
+print(data_table, file=paste0(output_dir, "/data_table.txt"))
+
 # Save variation table
 variation_table <- xtable(variations, caption="\\todo{} caption",
                            label="tbl:part4:variation",
                            digits=c(NA, NA, 3))
 print(variation_table, file=paste0(output_dir, "/variation_table.txt"))
 
+# Save coefficient table
+coefficient_df <- data.frame(value=coefficients) %>%
+  mutate(coefficient=variable_names) %>%
+  select(coefficient, value)
+coefficient_table <- xtable(coefficient_df, caption="\\todo{} caption",
+                          label="tbl:part4:coefficients",
+                          digits=c(NA, NA, 1))
+print(coefficient_table, file=paste0(output_dir, "/coefficient_table.txt"))
+
+
 # Error analysis
 mean_error = mean(abs(with_predictions$error))
-print(paste0("Mean error magnitude: ", round(mean_error, digits=1), " requests/s"))
+print(paste0("Mean error magnitude: ", round(mean_error, digits=1), " requests/s [",
+             round(mean_error/tps_overall_mean*100), "%]"))
+mean_error_no_outlier = mean(abs((with_predictions %>% filter(!(servers==3&replication==1)))$error))
+print(paste0("Mean error magnitude without outlier: ", round(mean_error_no_outlier, digits=1), " requests/s [",
+             round(mean_error_no_outlier/tps_overall_mean*100), "%]"))
+
+# Confidence intervals
+s_e <- sqrt(var$error / (2^K * (R - 1)))
+s_q <- s_e / (2^K * R)
+n_eff <- 2^K * R / (1 + length(coefficients))
+s_y <- s_e * sqrt(1/n_eff + 1/R)
+
+two_sided_t_val <- qt(c(.025, .975), df=2^K * (R - 1))[2]
+tps_confidence_delta <- two_sided_t_val * s_y
+with_predictions$tps_confidence_delta <- tps_confidence_delta
 
 # ---- Plots ----
+
 # Error vs predicted throughput
 ggplot(with_predictions, aes(x=tps_predicted, y=error)) +
   geom_point(size=2, color=color_dark) +
@@ -99,6 +134,15 @@ ggplot(with_predictions, aes(x=tps_predicted, y=error)) +
 ggsave(paste0(output_dir, "/graphs/error_vs_predicted_tps.pdf"),
        width=fig_width, height=fig_height)
 
+# Distribution of errors
+ggplot(with_predictions, aes(x=error)) +
+  geom_histogram(bins=9, color=color_medium, fill=color_light, alpha=0.8) +
+  xlab("Error [requests/s]") +
+  ylab("Number of experiments") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/error_distribution.pdf"),
+       width=fig_width, height=fig_height)
+
 # Quantile-quantile plot
 quantiles <- seq(1/24, 1-1/24, 1/24)
 vals_residual <- quantile(with_predictions$error, probs=quantiles)
@@ -107,12 +151,34 @@ data2 <- data.frame(quantile=quantiles, residual=vals_residual, normal=vals_norm
 fit <- lm(residual ~ normal, data=data2)
 ggplot(data2, aes(x=normal, y=residual)) +
   geom_point() +
-  geom_abline(aes(yintercept=0), color="red", slope=fit$coefficients[["normal"]]) +
+  geom_abline(aes(yintercept=0), color=color_triad1_dark, slope=fit$coefficients[["normal"]]) +
   xlab("Quantiles of standard normal distribution") +
   ylab("Quantiles of residual distribution [requests/s]") +
   asl_theme
 ggsave(paste0(output_dir, "/graphs/quantile_quantile.pdf"),
        width=fig_width, height=fig_height)
 
+# Predictions vs actual results
+df_predicted <- with_predictions %>%
+  select(servers, replication, writes, repetition, tps_predicted)
 
-
+data3 <- exp_results %>%
+  select(servers, replication, writes, repetition, tps_mean) %>%
+  mutate(replication_str=get_replication_factor_vocal(servers, replication),
+         servers_str=paste0(servers, " servers"),
+         writes_str=get_writes_factor(writes)) %>%
+  left_join(df_predicted, by=c("servers", "replication", "writes", "repetition"))
+  
+ggplot(data3, aes(x=writes_str, group=repetition)) +
+  geom_ribbon(aes(ymin=tps_predicted-tps_confidence_delta,
+                  ymax=tps_predicted+tps_confidence_delta), fill=color_triad2, alpha=0.2) +
+  geom_line(aes(y=tps_predicted), color=color_triad2_dark, size=1) +
+  geom_line(aes(y=tps_mean), color=color_dark) +
+  geom_point(aes(y=tps_mean), color=color_dark) +
+  facet_wrap(~replication_str+servers_str, nrow=1) +
+  xlab("Proportion of writes") +
+  ylab("Throughput [requests/s]") +
+  ylim(0, NA) +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/actual_and_predicted_vs_servers_and_writes.pdf"),
+       width=fig_width, height=fig_height/2)
