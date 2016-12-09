@@ -199,9 +199,24 @@ Based on the outcome of the different modeling efforts from the previous section
 % --------------------------------------------------------------------------------
 
 \subsection{Guidelines}
-Length: 1-3 pages
 
-Design a $2^k$ factorial experiment and follow the best practices outlined in the book and in the lecture to analyze the results. You are free to choose the parameters for the experiment and in case you have already collected data in the second milestone that can be used as source for this experiment, you can reuse it. Otherwise, in case you need to run new experiments anyway, we recommend exploring the impact of request size on the middleware together with an other parameter.
+"the performance is expected to improve as the memory size is increased or the number of disk drives is increased. In such cases we can begin by experimenting at the minimum and the maximum level of the factor."
+
+\subsection{Experiment design}
+\todo{what am I predicting?} mean response time. maybe should just take SET requests?
+
+\todo{factors: replication and num servers}
+
+\todo{what did I keep fixed} (threads, write perc, etc -- see ms2 experiment description tables)
+
+\todo{how many repetitions? $2^kr$, $r=?$}
+
+\subsection{Data}
+\todo{ms2 exp2}
+
+\subsection{Results}
+\input{../results/analysis/part4_2k/variation_table.txt}
+
 
 \clearpage
 % --------------------------------------------------------------------------------
