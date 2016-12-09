@@ -124,6 +124,7 @@ result_params <- result_params  %>%
 # group_by(clients, threads) %>%
 #summarise(paths=paste0(path, collapse=";"))
 
+detailed_results <- NA
 results <- NA
 mw_results <- NA
 sr_combinations <- result_params %>%
@@ -157,6 +158,18 @@ for(i in 1:nrow(sr_combinations)) {
     } else {
       combined_result <- rbind(combined_result, repetition_result)
       combined_mw_result <- rbind(combined_mw_result, mw_result)
+    }
+    
+    # Save memaslap repetition result separately
+    mss <- memaslap_summary(repetition_result) %>%
+      mutate(servers=n_servers,
+             replication=n_replication,
+             writes=n_writes,
+             repetition=rep_id)
+    if(is.na(detailed_results)) {
+      detailed_results <- mss
+    } else {
+      detailed_results <- rbind(detailed_results, mss)
     }
   }
   
@@ -196,6 +209,8 @@ all_results <- cbind(sr_combinations, results) %>%
          writes_str=get_writes_factor(writes))
 
 write.csv(all_results, file=paste0(result_dir_base, "/all_results.csv"),
+          row.names=FALSE)
+write.csv(detailed_results, file=paste0(result_dir_base, "/detailed_results.csv"),
           row.names=FALSE)
 
 # ------------------
