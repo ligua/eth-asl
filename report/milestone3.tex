@@ -208,39 +208,90 @@ For each factor in $\{S,R,W\}$ we need to pick two levels. Since I expect throug
 
 The experimental data used in this section comes from Milestone~2 Section~3 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/writes}{results/writes}} (short name \texttt{writes-S*-R*-W*-r*} in Milestone~2). For each combination of $S$, $R$, and $W$ we have $r=3$ repetitions. This means data from $2^k \cdot r = 24$ distinct runs are used in this section.
 
+The data table is available in \hyperref[sec:appa]{Appendix~A}.
+
+%\input{../results/analysis/part4_2k/data_table.txt}
+
 \subsection{Results}
-\input{../results/analysis/part4_2k/data_table.txt}
-\input{../results/analysis/part4_2k/coefficient_table.txt}
-\input{../results/analysis/part4_2k/variation_table.txt}
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/error_vs_predicted_tps.pdf}
+\caption{Error of the $2^k$ model as a function of predicted throughput. Each point is one repetition of a configuration. Note the throughput axis does not include zero.}
+\label{fig:part4:errorvspredicted}
+\end{subfigure}
+\begin{subfigure}[t]{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/dist_vs_level.pdf}
+\caption{Boxplot of the error distribution for all levels of all factors. The box shows the inter-quartile range (between 25th and 75th percentiles, IQR), with the median shown as a horizontal line. The top and bottom whisker show the highest and lowest value within $1.5 IQR$ of the median. Experiment results are also plotted as single points. Note that each subplot contains all 24 data points.}
+\label{fig:part4:errordistvslevel}
+\end{subfigure}
+\caption{Evaluation of the $2^k$ model.}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/error_vs_order.pdf}
+\caption{Error of the $2^k$ model as a function of the order in which experiments were run. Color of the points shows the repetition number.}
+\label{fig:part4:errorvsorder}
+\end{figure}
+
+
+\subsubsection{Checking assumptions}
+
+Before delving into the predictions of model we need to check whether assumptions we made in modelling actually hold.
+
+\paragraph{Independent errors}
+
+The model assumes that errors are independently and identically distributed (IID). Figure~\ref{fig:part4:errorvspredicted} shows that error does not depend on the predicted throughput. Furthermore, errors do not depend on factor levels as shown in Figure~\ref{fig:part4:errordistvslevel}: the median and 25\% and 75\% percentiles of the error distribution are independent of the factor and the level.
+
+Figure~\ref{fig:part4:errorvsorder} shows that errors clearly depend on repetition. An obvious hypothesis here is that each successive repetition improved the throughput for some reason. However, repetition 2 was run on Nov 20, and both repetitions 3 and 4 were run on Nov 23 with a 6-hour difference; the resource group was hibernated and redeployed before each experiment. For this reason we can't accept the hypothesis that repetitions somehow affected each other.
+
+Thus, the large variation in throughput between experiments can be explained in two ways: it could a) be caused by differing conditions in Azure between deployments, or b) be somehow inherent to the SUT. If b) were true, we would also see large variance \emph{within} each deployment, which is not the case. This leaves us with option a): the conditions on Azure differed between employments -- possibly due to different server or network allocation, or the total load in Azure, or some other factor.
+
+\paragraph{Normally distributed errors}
+
+The model assumes that errors are normally distributed. The quantile-quantile plot in Figure~\ref{fig:part4:quantile_quantile} shows that this is clearly not the case -- the lowest quantiles are too low and medium-to-high quantiles too high for the distribution to be normal. This, however, is caused by the trimodality of the error distribution: the throughputs (and thus, errors) of each repetition individually are distributed much more closely to a normal distributions, but when we concatenate the repetitions, the result is trimodal.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{../results/analysis/part4_2k/graphs/quantile_quantile.pdf}
+\caption{Quantiles of the residual distribution plotted against quantiles of the standard normal distribution. The straight line shows the best fit of a linear trendline through the points.}
+\label{fig:part4:quantile_quantile}
+\end{figure}
+
+
+\paragraph{Constant standard deviation} As Figure~\ref{fig:part4:errordistvslevel} shows, the distribution looks similar at all factor levels, so the model assumption of a constant standard deviation holds.
+
+
+\subsubsection{Checking model fit}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/actual_and_predicted_vs_servers_and_writes.pdf}
+\caption{Throughput as a function of $W$. Each line with points shows the results of one repetition. The red line shows the throughput predicted by the $2^k$ model; the light red ribbon shows the standard deviation that we would expect to see according to the model, if we were to run 3 repetitions.}
+\label{fig:part4:actual_and_predicted_vs_servers_and_writes}
+\end{figure}
+
+
+\todo{} analyse how good our model fit is -- how big is error etc
+
+Book: "The residuals are an order of magnitude smaller than the responses, and there does not appear to be any definite trend in the mean or spread of the residuals."
 
 multiplicative model is not necessary because: a) range of values covered is small, residuals are small compared to actual values and the spread of residuals is independent of whether actual values are small or large \todo{check if this is true}
 
 additive model => mean error 1665; multiplicative => mean error 1667
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/error_vs_predicted_tps.pdf}
-\caption{\todo{} note scale}
-\label{fig:part4:errorvspredicted}
-\end{figure}
+\input{../results/analysis/part4_2k/coefficient_and_var_table.txt}
 
+\subsubsection{Analysis of the model}
+\todo{} 
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/quantile_quantile.pdf}
-\caption{\todo{} what is red line}
-\label{fig:part4:quantile_quantile}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/actual_and_predicted_vs_servers_and_writes.pdf}
-\caption{\todo{} what is red line; ribbon shows for M=3, i.e. if we made 3 FUTURE experiments, what would the stdev be. see Ch 18.}
-\label{fig:part4:actual_and_predicted_vs_servers_and_writes}
-\end{figure}
-
-error is explained by huge variation -- up to 2000 req/s. I ran 2 of the 3 repetitions on the same day and the remaining one 3 days earlier, so it can't be that Azure was biased on one day when I measured but not on the other.
-
+noise is obv biggest, writes is most significant, x\_ab also a tiny bit. others are all an order of magnitude smaller than writes.
 
 \clearpage
 % --------------------------------------------------------------------------------
@@ -307,8 +358,10 @@ Regardless of the exact reason of the deviation, the IRTL holds to a reasonably 
 
 \clearpage
 
-\section*{Appendix A: Template appendix}
+\section*{Appendix A: Data for the factorial experiment}
 \label{sec:appa}
-\addcontentsline{toc}{section}{Appendix A: Template appendix}
+\addcontentsline{toc}{section}{Appendix A: Data for the factorial experiment}
+
+\input{../results/analysis/part4_2k/data_table.txt}
 
 \end{document}

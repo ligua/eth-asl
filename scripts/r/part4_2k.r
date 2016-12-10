@@ -83,25 +83,21 @@ variations <- data.frame(var) %>%
 data_df <- exp_results %>%
   select(servers, replication_str, writes, repetition, tps_mean) %>%
   rename(throughput=tps_mean, repetition_id=repetition, replication=replication_str)
-data_table <- xtable(data_df, caption="\\todo{} caption",
+data_table <- xtable(data_df, caption="Data used in building the $2^k$ model in Section~\\ref{sec:part4-2k-experiment}.",
                           label="tbl:part4:data",
                           digits=0)
 print(data_table, file=paste0(output_dir, "/data_table.txt"))
 
-# Save variation table
-variation_table <- xtable(variations, caption="\\todo{} caption",
-                           label="tbl:part4:variation",
-                           digits=c(NA, NA, 3))
-print(variation_table, file=paste0(output_dir, "/variation_table.txt"))
-
 # Save coefficient table
-coefficient_df <- data.frame(value=coefficients) %>%
-  mutate(coefficient=variable_names) %>%
-  select(coefficient, value)
-coefficient_table <- xtable(coefficient_df, caption="\\todo{} caption",
+coefficient_and_var_df <- data.frame(value=coefficients) %>%
+  mutate(variable_names=variable_names) %>%
+  rename(variable=variable_names, coefficient_value=value) %>%
+  select(variable, coefficient_value) %>%
+  full_join(variation_table, by=c("variable"))
+coefficient_and_var_table <- xtable(coefficient_and_var_df, caption="Values of coefficients and allocation of variation for all variables in the $2^k$ model.",
                           label="tbl:part4:coefficients",
-                          digits=c(NA, NA, 1))
-print(coefficient_table, file=paste0(output_dir, "/coefficient_table.txt"))
+                          digits=c(NA, NA, 1, 3))
+print(coefficient_and_var_table, file=paste0(output_dir, "/coefficient_and_var_table.txt"))
 
 
 # Error analysis
@@ -129,10 +125,59 @@ ggplot(with_predictions, aes(x=tps_predicted, y=error)) +
   geom_point(size=2, color=color_dark) +
   geom_hline(yintercept=0, color="black") +
   xlab("Predicted throughput [requests / s]") +
-  ylab("Error") +
+  ylab("Error [requests/s]") +
   asl_theme
 ggsave(paste0(output_dir, "/graphs/error_vs_predicted_tps.pdf"),
-       width=fig_width, height=fig_height)
+       width=fig_width/2, height=fig_height/2)
+
+# Error vs throughput, by repetition
+ggplot(with_predictions, aes(x=tps_predicted, y=error)) +
+  geom_point(size=2, color=color_dark) +
+  geom_hline(yintercept=0, color="black") +
+  facet_wrap(~repetition, nrow=1) +
+  xlab("Predicted throughput [requests / s]") +
+  ylab("Error [requests/s]") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/error_vs_predicted_tps_by_rep.pdf"),
+       width=fig_width, height=fig_height/2)
+
+# Error vs experiment order
+data_ordered <- with_predictions %>%
+  arrange(repetition, servers, replication, writes) %>%
+  mutate(order=seq(1, nrow(with_predictions), 1)) %>%
+  mutate(repetition=as.factor(repetition))
+ggplot(data_ordered, aes(x=order, y=error)) +
+  geom_point(aes(color=repetition), size=2) +
+  geom_hline(yintercept=0, color="black") +
+  xlab("Order of running experiments") +
+  ylab("Error [requests/s]") +
+  asl_theme +
+  theme(legend.position="top")
+ggsave(paste0(output_dir, "/graphs/error_vs_order.pdf"),
+       width=fig_width, height=fig_height/2)
+
+# Error vs level -- for ALL factors!
+data_level <- with_predictions %>%
+  select(servers_str, replication_str, writes_str, repetition, error)
+
+factor_servers <- data_level %>%
+  mutate(factor="servers", level=as.numeric(as.factor(servers_str)))
+factor_replication <- data_level %>%
+  mutate(factor="replication", level=as.numeric(as.factor(replication_str)))
+factor_writes <- data_level %>%
+  mutate(factor="writes", level=as.numeric(as.factor(paste0(writes_str, "asd"))))
+data_level_combined <- rbind(factor_servers, factor_replication, factor_writes) %>%
+  mutate(level=as.factor(level))
+
+ggplot(data_level_combined, aes(x=level, y=error)) +
+  geom_boxplot(fill=color_triad1) +
+  geom_point(size=1) +
+  facet_wrap(~factor, nrow=1) +
+  xlab("Factor level") +
+  ylab("Error [requests/s]") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/dist_vs_level.pdf"),
+       width=fig_width/2, height=fig_height/2)
 
 # Distribution of errors
 ggplot(with_predictions, aes(x=error)) +
@@ -141,7 +186,7 @@ ggplot(with_predictions, aes(x=error)) +
   ylab("Number of experiments") +
   asl_theme
 ggsave(paste0(output_dir, "/graphs/error_distribution.pdf"),
-       width=fig_width, height=fig_height)
+       width=fig_width/2, height=fig_height/2)
 
 # Quantile-quantile plot
 quantiles <- seq(1/24, 1-1/24, 1/24)
@@ -153,10 +198,10 @@ ggplot(data2, aes(x=normal, y=residual)) +
   geom_point() +
   geom_abline(aes(yintercept=0), color=color_triad1_dark, slope=fit$coefficients[["normal"]]) +
   xlab("Quantiles of standard normal distribution") +
-  ylab("Quantiles of residual distribution [requests/s]") +
+  ylab("Quantiles of error distribution\n[requests/s]") +
   asl_theme
 ggsave(paste0(output_dir, "/graphs/quantile_quantile.pdf"),
-       width=fig_width, height=fig_height)
+       width=fig_width/2, height=fig_height/2)
 
 # Predictions vs actual results
 df_predicted <- with_predictions %>%
