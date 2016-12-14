@@ -49,7 +49,7 @@ predicted$response_time_quantile50 <- predicted$response_time_mean * log(1 / (1-
 predicted$response_time_quantile95 <- predicted$response_time_mean * log(1 / (1-0.95))
 predicted$waiting_time_mean <- rho * (1 / mu) / (1 - rho) * 1000 # ms
 predicted$waiting_time_std <- sqrt((2-rho) * rho / (mu^2 * (1-rho)^2)) * 1000 # ms
-predicted$utilisation <- 1 - rho
+predicted$utilisation <- rho
 predicted$num_jobs_in_system_mean <- rho / (1-rho)		
 predicted$num_jobs_in_system_std <- sqrt(rho / (1-rho)^2)
 predicted$num_jobs_in_queue_mean <- rho^2 / (1-rho)
