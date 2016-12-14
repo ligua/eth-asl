@@ -17,5 +17,7 @@ mss <- memaslap_summary(memaslap)
 mean_rt_memaslap <- mss$mean_response_time_get
 mean_rt_middleware <- mean(requests$timeReturned-requests$timeCreated)
 mean_network_delay <- (mean_rt_memaslap-mean_rt_middleware)/2
-mean_lb_time <- mean(requests$timeEnqueued-requests$timeCreated) + mean_network_delay
+mean_lb_time <- mean(requests$timeEnqueued-requests$timeCreated)
 mean_mwcomponent_time <- mean(requests$timeReturned-requests$timeDequeued)
+
+# ---- Actual results ----
