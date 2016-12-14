@@ -16,6 +16,7 @@ normalise_request_log_df <- function(df) {
 
 # ---- Directories and files ----
 output_dir <- "results/analysis/part3_network"
+octave_dir_base <- paste0(output_dir, "/mva")
 exp_dir <- "results/replication/S5_R1_rep5"
 memaslap_file <- paste0(exp_dir, "/memaslap_stats.csv")
 requests_file <- paste0(exp_dir, "/request.log")
@@ -26,6 +27,11 @@ requests <- file_to_df(requests_file, sep=",") %>%
   normalise_request_log_df()
 
 # ---- Preprocessing ----
+num_servers = 5 # TODO
+num_threads = 32
+num_clients = 180
+perc_writes = 5 # TODO possibly
+
 mss <- memaslap_summary(memaslap)
 
 model_inputs <- function(requests, mss, request_type) {
@@ -55,4 +61,17 @@ inputs_set <- model_inputs(requests, mss, "SET") %>% as.data.frame()
 inputs <- inputs_get %>% rbind(inputs_set)
 
 # ---- Actual results ----
-tps <- mss$tps_mean
+octave_output_file <- paste0(octave_dir_base, "/testing/results.mat")
+arg_list <- paste(octave_output_file,
+                  num_servers, num_threads, num_clients, perc_writes,
+                  inputs_get$network_delay, inputs_set$network_delay,
+                  inputs_get$lb_time, inputs_set$lb_time,
+                  inputs_get$mwcomponent_time, inputs_set$mwcomponent_time,
+                  collapse=" ")
+system(paste0("octave scripts/oct/mva_main.m ", arg_list))
+
+mva_results <- readMat(octave_output_file)
+
+
+
+
