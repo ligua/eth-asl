@@ -72,5 +72,12 @@ system(paste0("octave scripts/oct/mva_main.m ", arg_list))
 
 mva_results <- readMat(octave_output_file)
 
+mean_predicted_get_rt <- sum(mva_results$R[c(1,2,3,13)])*1000
+mean_predicted_set_rt <- sum(mva_results$R[c(1,2,12,13)])*1000
 
+# TODO why is response time off, especially for SETs, even though no replication?
+mss$mean_response_time_get
+mean_predicted_get_rt
 
+mss$mean_response_time_set
+mean_predicted_set_rt
