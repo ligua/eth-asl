@@ -1,0 +1,1 @@
+pkg load queueingmu = 12900lambda = 10294.08[U, R, Q, X, p0] = qsmm1(lambda, mu)
