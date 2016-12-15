@@ -219,7 +219,7 @@ if there is nothing in the queue and no responses from memcached then we will wa
 % --------------------------------------------------------------------------------
 
 \subsection{Experimental question and experiment design}
-The goal of this section is to find out the factors that influence throughput of the system. In particular, I will investigate the effect of $k=3$ factors -- $S$ (number of servers), $R$ (replication level) and $W$ (percentage of writes in workload) -- on total throughput of the system. Everything else will be kept fixed: the number of threads $T=32$ and the number of clients $C=180$.
+The goal of this section is to find out the factors that influence throughput of the system. In particular, I will investigate the effect of $k=3$ factors -- $S$ (number of servers), $R$ (replication level) and $W$ (percentage of \set{}s in workload) -- on total throughput of the system. Everything else will be kept fixed: the number of threads $T=32$ and the number of clients $C=180$.
 
 For each factor in $\{S,R,W\}$ we need to pick two levels. Since I expect throughput to monotonically increase with $S$, decrease with $R$, and decrease with $W$, we can use the minimum and maximum level for each factor in our $2^k$ experiment: $S \in \{3, 7\}$, $R \in \{1, S\}$, and $W \in \{1, 10\}$.
 
@@ -306,7 +306,7 @@ Figure~\ref{fig:part4:actual_and_predicted_vs_servers_and_writes} shows the pred
 
 In Table~\ref{tbl:part4:coefficients} we find the coefficients for each variable in our model, together with the allocated variation. By far the most variation is explained by the error. This is caused by the large variation in throughput in different deployments, as discussed above.
 
-Looking at the variation explained by other components, we find that the percentage of writes ($x_c$) explains the most at 27.6\%. The combination of servers and replication ($x_{ab}$) explains about 5\%; all other variables explain less than 1/10th of the variation of $x_c$ and can thus be considered insignificant.
+Looking at the variation explained by other components, we find that the percentage of \set{}s ($x_c$) explains the most at 27.6\%. The combination of servers and replication ($x_{ab}$) explains about 5\%; all other variables explain less than 1/10th of the variation of $x_c$ and can thus be considered insignificant.
 
 These results can be directly mapped the system design. There are $T$ times fewer \linkmain{WriteWorker}s than \linkmain{ReadWorker}s. This causes \set{}s to have a significantly higher response time (see Milestone~2 for details); increasing the proportion of \set{}s therefore increases response time significantly.
 
