@@ -88,11 +88,14 @@ In this section I create an M/M/1 model of the system. This means the following 
 	\item We treat the SUT as a single server and as a black box.
 	\item Arrivals are individual, so we have a birth-death process.
 \end{itemize}
+
+\todo{} mention that I do all calculations for the system WITHOUT memaslap--middleware network times!
+
+
+\todo{also that throughput statistics are not affected by the network (even though when calculating service times etc, I would want to exclude network times), so my way of estimating parameters is okay}
  
 \paragraph{Parameter estimation}
 Using the available experimental data, it is not possible to directly calculate the mean arrival rate $\lambda$ and mean service rate $\mu$ so we need to estimate them somehow. I estimated both using throughput of the system: I take $\lambda$ to be the \emph{mean} throughput over 1-second windows, and $\mu$ to be the the \emph{maximum} throughput in any 1-second window, calculated from middleware logs. I chose a 1-second window because a too small window is highly susceptible to noise whereas a too large window size drowns out useful information.
-
-\todo{mention that throughput statistics are not affected by the network (even though when calculating service times etc, I would want to exclude network times)}
 
 \paragraph{Problems}
 The assumptions above obviously do not hold for our actual system. Especially strong is the assumption of a single server; since we actually have multiple servers, this model is likely to predict the behaviour of the system very poorly. A second problem arises from my very indirect method of estimating parameters for the model (and an arbitrary choice of time window) which introduces inaccuracies.
@@ -200,7 +203,7 @@ MVA was performed using the Octave package \href{http://www.moreno.marzolla.name
 \subsection{Comparison of model and experiments}
 \todo{}
 
-performance of writeworker \rmph{depends on queue length} because if there are no elements in queue then we check memcached responses every 1ms, whereas if there are elements in queue then we check always after dequeueing an element. This dependence violates \todo{} what assumption?
+performance of writeworker \emph{depends on queue length} because if there are no elements in queue then we check memcached responses every 1ms, whereas if there are elements in queue then we check always after dequeueing an element. This dependence violates \todo{} what assumption?
 
 if there is nothing in the queue and no responses from memcached then we will wait for 2ms!
 
