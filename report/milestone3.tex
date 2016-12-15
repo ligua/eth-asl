@@ -193,11 +193,9 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 \subsection{Model}
 \todo{}
 
-we have CLOSED queueing network (book: closed queueing network has no external arrivals or departures. As shown in Figure 32.2, the jobs in the system keep circulating from one queue to the next. The total number of jobs in the system is constant.)
+We have a closed queueing network: the total number of jobs in the system is constant. This number is equal to the concurrency parameter $C$ we give to memaslap since each concurrent job in memaslap sends one request and waits for a response before sending the next one.
 
-we know number of jobs in our case it is concurrency -- or maybe a bit less. 
-
-if analysis would be too complicated, then assume no queue at loadbalancer (good approximation because it takes only a tiny bit of time there)
+MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
 
 \subsection{Comparison of model and experiments}
 \todo{}
