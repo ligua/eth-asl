@@ -118,7 +118,11 @@ two_sided_t_val <- qt(c(.025, .975), df=2^K * (R - 1))[2]
 tps_confidence_delta <- two_sided_t_val * s_y
 with_predictions$tps_confidence_delta <- tps_confidence_delta
 
-# ---- Plots ----
+
+
+# -----------------------
+# -------- Plots --------
+# -----------------------
 
 # Error vs predicted throughput
 ggplot(with_predictions, aes(x=tps_predicted, y=error)) +

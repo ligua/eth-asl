@@ -287,8 +287,9 @@ The model assumes that errors are normally distributed. The quantile-quantile pl
 \paragraph{Constant standard deviation} As Figure~\ref{fig:part4:errordistvslevel} shows, the distribution looks similar at all factor levels, so the model assumption of a constant standard deviation holds.
 
 
-\subsubsection{Checking model fit}
+\subsubsection{Analysis of the model fit}
 
+Even though the deviation from the mean is high in our experiments, residuals are almost an order of magnitude smaller than throughput values, and there does not appear to be any definite trend in the mean or spread of the residuals, so the fit of the model is reasonable given the noisiness of the data. Given that the range of throughput values covered is small and the additive model is a reasonable fit, we don't need to use a multiplicative model.
 
 \begin{figure}[h]
 \centering
@@ -297,21 +298,19 @@ The model assumes that errors are normally distributed. The quantile-quantile pl
 \label{fig:part4:actual_and_predicted_vs_servers_and_writes}
 \end{figure}
 
+Figure~\ref{fig:part4:actual_and_predicted_vs_servers_and_writes} shows the predictions of the model and actual results. The results of all repetitions have the same trend as the predicted mean, and stay within 1 standard deviation of the mean. This again confirms that the fit is decent.
 
-\todo{} analyse how good our model fit is -- how big is error etc
-
-Book: "The residuals are an order of magnitude smaller than the responses, and there does not appear to be any definite trend in the mean or spread of the residuals."
-
-multiplicative model is not necessary because: a) range of values covered is small, residuals are small compared to actual values and the spread of residuals is independent of whether actual values are small or large \todo{check if this is true}
-
-additive model => mean error 1665; multiplicative => mean error 1667
+\subsubsection{Allocation of variation}
 
 \input{../results/analysis/part4_2k/coefficient_and_var_table.txt}
 
-\subsubsection{Analysis of the model}
-\todo{} 
+In Table~\ref{tbl:part4:coefficients} we find the coefficients for each variable in our model, together with the allocated variation. By far the most variation is explained by the error. This is caused by the large variation in throughput in different deployments, as discussed above.
 
-noise is obv biggest, writes is most significant, x\_ab also a tiny bit. others are all an order of magnitude smaller than writes.
+Looking at the variation explained by other components, we find that the percentage of writes ($x_c$) explains the most at 27.6\%. The combination of servers and replication ($x_{ab}$) explains about 5\%; all other variables explain less than 1/10th of the variation of $x_c$ and can thus be considered insignificant.
+
+These results can be directly mapped the system design. There are $T$ times fewer \linkmain{WriteWorker}s than \linkmain{ReadWorker}s. This causes \set{}s to have a significantly higher response time (see Milestone~2 for details); increasing the proportion of \set{}s therefore increases response time significantly.
+
+The amount of servers $S$ or replication $R$ don't have a large effect individually; however, increasing both $S$ and $R$ from the minimum to the maximum increases the cost of \set{}s significantly ($S=7,R=S$ means 7 writes are made to memcached servers for each \set{}, compared to 1 write if $S=3,R=1$), and thus has a strong effect on throughput (via increased response time).
 
 \clearpage
 % --------------------------------------------------------------------------------
