@@ -200,6 +200,10 @@ MVA was performed using the Octave package \href{http://www.moreno.marzolla.name
 \subsection{Comparison of model and experiments}
 \todo{}
 
+performance of writeworker \rmph{depends on queue length} because if there are no elements in queue then we check memcached responses every 1ms, whereas if there are elements in queue then we check always after dequeueing an element. This dependence violates \todo{} what assumption?
+
+if there is nothing in the queue and no responses from memcached then we will wait for 2ms!
+
 \clearpage
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
