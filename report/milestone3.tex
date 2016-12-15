@@ -79,7 +79,9 @@ The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down tim
 \subsection{Model}
 \label{sec:part1:model}
 
-In this section I create an M/M/1 model of the system. This means the following definitions and assumptions:
+The system under test (SUT) in this section includes the middleware, memcached servers and the network between them. It does \emph{not} include clients or the network between clients and middleware.
+
+In this section I create an M/M/1 model of the SUT. This means the following definitions and assumptions:
 \begin{itemize}
 	\item The queues are defined as having infinite buffer capacity.
 	\item The population size is infinite.
@@ -88,14 +90,16 @@ In this section I create an M/M/1 model of the system. This means the following 
 	\item We treat the SUT as a single server and as a black box.
 	\item Arrivals are individual, so we have a birth-death process.
 \end{itemize}
-
-\todo{} mention that I do all calculations for the system WITHOUT memaslap--middleware network times!
-
-
-\todo{also that throughput statistics are not affected by the network (even though when calculating service times etc, I would want to exclude network times), so my way of estimating parameters is okay}
  
 \paragraph{Parameter estimation}
+
 Using the available experimental data, it is not possible to directly calculate the mean arrival rate $\lambda$ and mean service rate $\mu$ so we need to estimate them somehow. I estimated both using throughput of the system: I take $\lambda$ to be the \emph{mean} throughput over 1-second windows, and $\mu$ to be the the \emph{maximum} throughput in any 1-second window, calculated from middleware logs. I chose a 1-second window because a too small window is highly susceptible to noise whereas a too large window size drowns out useful information.
+
+%I estimated $\lambda$ using throughput of the system: I take it to be the \emph{mean} throughput over 1-second windows. To find mean service rate $\mu$, I first calculate the \maximum{throughput} over any 1-second window, and take it to be the first estimate of $\mu$. This, however, doesn't take into account the network 
+
+%service time $\bar{t}_{service}$ (total time spent in middleware, $t_{returned}-t_{created}$). From there I apply the Interactive Response Time Law to the system (i.e. as though network delay and client think time were 0). This yields $$\mu = \frac{C}{\bar{t}_{service}}$$ where $C=192$ is the number of clients in the trace experiment.
+
+%This method assumes that time spent queueing in front of \linkmain{LoadBalancer} is negligible (otherwise we couldn't find the service rate.
 
 \paragraph{Problems}
 The assumptions above obviously do not hold for our actual system. Especially strong is the assumption of a single server; since we actually have multiple servers, this model is likely to predict the behaviour of the system very poorly. A second problem arises from my very indirect method of estimating parameters for the model (and an arbitrary choice of time window) which introduces inaccuracies.

@@ -22,6 +22,13 @@ DROP_TIMES_AFTER_MW = last_request_time - 2 * 60 * 1000
 requests <- requests %>%
   filter(timeCreated > DROP_TIMES_BEFORE_MW & timeCreated <= DROP_TIMES_AFTER_MW)
 
+mean_rt_middleware <- mean(requests$timeReturned-requests$timeCreated)
+mean_rt_memaslap <- memaslap %>%
+  mutate(avg=avg/1000) %>%
+  filter(type=="t") %>%
+  summarise(rt=sum(ops*avg)/sum(ops))
+
+mean_network_delay <- (mean_rt_memaslap-mean_rt_middleware)/2
 # ------------------
 # ---- Analysis ----
 # ------------------
