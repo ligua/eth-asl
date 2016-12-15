@@ -132,9 +132,20 @@ all_results <- results %>%
          replication=as.numeric(as.character(replication)),
          replication_str=get_replication_factor(servers, replication),
          servers_str=paste0(servers, " servers"))
-ggplot(all_results %>% filter(repetition==6),
-             aes(x=replication_str, y=mean_response_time_set, group=type)) +
-  geom_line(aes(color=type)) +
-  facet_wrap(~servers_str, ncol=3) +
+
+# Predicted response time and actual response time, vs servers and replication
+data1 <- all_results %>%
+  select(replication_str, servers_str, repetition, type,
+         mean_response_time_get, mean_response_time_set) %>%
+  group_by(replication_str, servers_str, type) %>%
+  summarise(mean_response_time_get=mean(mean_response_time_get),
+            mean_response_time_set=mean(mean_response_time_set)) %>%
+  rename(GET=mean_response_time_get, SET=mean_response_time_set) %>%
+  melt(id.vars=c("replication_str", "servers_str", "type"))
+ggplot(data1,
+             aes(x=replication_str, y=value, group=type)) +
+  geom_line(aes(color=type), size=1) +
+  facet_wrap(~ variable + servers_str, ncol=3) +
   ylim(0, NA) +
   asl_theme
+
