@@ -65,13 +65,14 @@ get_network_results <- function(exp_dir) {
   perc_writes = 5
   
   mss <- memaslap_summary(memaslap) %>%
-    mutate(type="actual")
+    mutate(type="actual") %>%
+    as.list()
   
   inputs_get <- model_inputs(requests, mss, "GET") %>% as.data.frame()
   inputs_set <- model_inputs(requests, mss, "SET") %>% as.data.frame()
   inputs <- inputs_get %>% rbind(inputs_set)
   
-  # ---- Actual results ----
+  # ---- Model results ----
   octave_output_dir <- paste0(octave_dir_base, "/model1/", dir_name_end)
   system(paste0("mkdir -p ", octave_output_dir))
   octave_output_file <- paste0(octave_output_dir, "/results.mat")
@@ -84,8 +85,7 @@ get_network_results <- function(exp_dir) {
   system(paste0("octave scripts/oct/mva_main.m ", arg_list))
   mva <- readMat(octave_output_file)
   
-  # ---- Analyse results ----
-  
+  K <- ncol(mva$U) # number of nodes in the network
   predicted <- list()
   predicted$type <- "predicted"
   predicted$tps_mean <- sum(mva$X[1:2,1])
@@ -94,8 +94,26 @@ get_network_results <- function(exp_dir) {
   predicted$mean_response_time <-
     (1 - perc_writes / 100) * predicted$mean_response_time_get +
     perc_writes / 100 * predicted$mean_response_time_set
+  predicted$mean_response_time_lb_get <- mva$R[1,2] * 1000
+  predicted$mean_response_time_lb_set <- mva$R[2,2] * 1000
+  predicted$mean_response_time_worker_get <- mva$R[1,3] * 1000
+  predicted$util_lb_get <- mva$U[1,2]
+  predicted$util_lb_set <- mva$U[2,2]
+  predicted$util_worker_get <- mva$U[1,3]
+  predicted$util_worker_set <- mva$U[2,K-1]
+  predicted$items_network_get <- mva$Q[1,1]
+  predicted$items_network_set <- mva$Q[2,1]
+  predicted$items_lb_get <- mva$Q[1,2]
+  predicted$items_lb_set <- mva$Q[2,2]
+  predicted$items_worker_get <- mva$Q[1,3]
+  predicted$items_worker_set <- mva$Q[2,K-1]
+  predicted$tps_worker_get <- mva$X[1,3]
+  predicted$tps_worker_set <- mva$X[2,K-1]
   
-  comparison <- mss %>%
+  
+  # ---- Analysis ----
+  
+  comparison <- as.data.frame(mss) %>%
     select(-std_response_time) %>%
     rbind(as.data.frame(predicted)) %>%
     mutate(servers=num_servers, threads=num_threads, clients=num_clients,
@@ -149,3 +167,17 @@ ggplot(data1,
   ylim(0, NA) +
   asl_theme
 
+# ---- Estimate memcached service time ----
+mc_data <- read.csv("results/baseline/aggregated.csv", header=TRUE, sep=";") %>%
+  mutate(tmin=tmin/1000, tmax=tmax/1000, tavg=tavg/1000, tgeo=tgeo/1000, tstd=tstd/1000)
+fitting_data <- mc_data %>%
+  filter(concurrency <= 3000) %>%
+  select(concurrency, tavg, tmin) %>%
+  group_by(concurrency) %>%
+  summarise(tavg=mean(tavg), tmin=mean(tmin)) %>%
+  mutate(tservice=tavg-tmin)
+ggplot(fitting_data, aes(x=concurrency)) +
+  geom_line(aes(y=tmin), color="red") +
+  geom_line(aes(y=tavg)) +
+  ylim(0, NA) +
+  asl_theme
