@@ -50,6 +50,8 @@ get_network_results <- function(exp_dir) {
   memaslap <- file_to_df(memaslap_file) %>% mutate(repetition=0)
   requests <- file_to_df(requests_file, sep=",") %>%
     normalise_request_log_df()
+  requests_get <- requests %>% filter(type=="GET")
+  requests_set <- requests %>% filter(type=="SET")
   
   # ---- Preprocessing ----
   dir_name_regex <- paste0("/S(\\d)_R(\\d)_rep(\\d)$")
@@ -57,16 +59,16 @@ get_network_results <- function(exp_dir) {
   
   dir_name_end <- substr(result_params$V1, 2,
                          nchar(as.character(result_params$V1)))
-  num_servers = result_params$V2
-  num_replication = result_params$V3
+  num_servers = as.numeric(as.character(result_params$V2))
+  num_replication = as.numeric(as.character(result_params$V3))
   num_repetition = result_params$V4
   num_threads = 32
   num_clients = 180
   perc_writes = 5
+  prop_writes = perc_writes / 100
   
   mss <- memaslap_summary(memaslap) %>%
-    mutate(type="actual") %>%
-    as.list()
+    mutate(type="actual")
   
   inputs_get <- model_inputs(requests, mss, "GET") %>% as.data.frame()
   inputs_set <- model_inputs(requests, mss, "SET") %>% as.data.frame()
@@ -92,11 +94,12 @@ get_network_results <- function(exp_dir) {
   predicted$mean_response_time_get <- sum((mva$R * mva$V)[1,])*1000
   predicted$mean_response_time_set <- sum((mva$R * mva$V)[2,])*1000
   predicted$mean_response_time <-
-    (1 - perc_writes / 100) * predicted$mean_response_time_get +
-    perc_writes / 100 * predicted$mean_response_time_set
+    (1 - prop_writes) * predicted$mean_response_time_get +
+    prop_writes / 100 * predicted$mean_response_time_set
   predicted$mean_response_time_lb_get <- mva$R[1,2] * 1000
   predicted$mean_response_time_lb_set <- mva$R[2,2] * 1000
   predicted$mean_response_time_worker_get <- mva$R[1,3] * 1000
+  predicted$mean_response_time_worker_set <- mva$R[2,K-1] * 1000
   predicted$util_lb_get <- mva$U[1,2]
   predicted$util_lb_set <- mva$U[2,2]
   predicted$util_worker_get <- mva$U[1,3]
@@ -110,10 +113,31 @@ get_network_results <- function(exp_dir) {
   predicted$tps_worker_get <- mva$X[1,3]
   predicted$tps_worker_set <- mva$X[2,K-1]
   
+  # ---- Actual results ----
+  tps_get <- (1-prop_writes) * mss$tps_mean # TODO this is an estimate -- could get precise!
+  tps_set <- prop_writes * mss$tps_mean
+  actual <- as.list(mss)
+  actual$mean_response_time_lb_get <- NA
+  actual$mean_response_time_lb_set <- NA
+  actual$mean_response_time_worker_get <- mean(requests_get$timeReturned-requests_get$timeEnqueued)
+  actual$mean_response_time_worker_set <- mean(requests_set$timeReturned-requests_set$timeEnqueued)
+  actual$util_lb_get <- tps_get * inputs_get$lb_time / 1000 # utilization law
+  actual$util_lb_set <- tps_set * inputs_set$lb_time / 1000 # utilization law
+  actual$util_worker_get <- (tps_get / num_servers / num_threads) * inputs_get$mwcomponent_time / 1000 # utilization law
+  actual$util_worker_set <- (tps_set / num_servers) * inputs_set$mwcomponent_time / 1000 # utilization law # TODO fucked up somehow
+  actual$items_network_get <- NA # TODO this and others, see section 33-02 in ebook
+  actual$items_network_set <- NA
+  actual$items_lb_get <- NA
+  actual$items_lb_set <- NA
+  actual$items_worker_get <- NA
+  actual$items_worker_set <- NA
+  actual$tps_worker_get <- NA
+  actual$tps_worker_set <- NA
+  
   
   # ---- Analysis ----
   
-  comparison <- as.data.frame(mss) %>%
+  comparison <- as.data.frame(actual) %>%
     select(-std_response_time) %>%
     rbind(as.data.frame(predicted)) %>%
     mutate(servers=num_servers, threads=num_threads, clients=num_clients,
