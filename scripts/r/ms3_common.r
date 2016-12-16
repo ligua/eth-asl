@@ -103,14 +103,41 @@ get_service_and_queue_distributions <- function(requests2) {
   return(counts)
 }
 
-get_mmm_p0 <- function(m, rho) {
+log10_fac <- function(n) {
+  x <- seq(1, n, 1)
+  return(sum(log10(x)))
+}
+
+get_mmm_log10_p0_approx <- function(m, rho) {
+  THRESHOLD <- 0.5
   if(m == 1) {
     return(1 - rho)
   }
-  first_summand <- (m * rho)^m / (factorial(m) * (1 - rho))
-  n <- seq(1, m-1, 1)
-  second_summand <- sum((m * rho) ^ n / factorial(n))
-  return(1/(1 + first_summand + second_summand))
+  #first_summand <- (m * rho)^m / (factorial(m) * (1 - rho))
+  log_first_summand <- m * (log10(m)+log10(rho)) - log10_fac(m) - log10(1-rho)
+  log_second_components <- seq(m-1)
+  for(n in 1:(m-1)) {
+    log_second_components[n] <- n * (log10(m) + log10(rho)) - log10_fac(n)
+  }
+  max_log_second_component <- max(log_second_components)
+  picked_log_second_components <- log_second_components[log_second_components >= max_log_second_component - THRESHOLD]
+  log_second_summand <- mean(picked_log_second_components) + log10(length(picked_log_second_components))
+  
+  log_divisor_higher <- max(log_first_summand, log_second_summand)
+  log_divisor_lower <- max(log_first_summand, log_second_summand)
+  if(log_divisor_higher >= log_divisor_lower + THRESHOLD) {
+    log_divisor <- log_divisor_higher
+  } else {
+    log_divisor <- 0.5 * (log_divisor_higher + log_divisor_lower) + log10(2)
+  }
+  
+  return(-log_divisor)
+  #second_summand <- sum((m * rho) ^ n / factorial(n))
+  #return(1/(1 + first_summand + second_summand))
+}
+
+get_mmm_log10_weird_rho_approx <- function(m, rho, log10_p0) {
+  return(log10_p0 + m * (log10(m) + log10(rho)) - log10_fac(m) - log(1-rho))
 }
 
 get_mmm_weird_rho <- function(m, rho, p0) {

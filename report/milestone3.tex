@@ -175,7 +175,7 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{../results/analysis/part2_mmm/graphs/traffic_intensity_vs_clients.pdf}
+\includegraphics[width=0.5\textwidth]{../results/analysis/part2_mmm/graphs/utilisation_vs_clients.pdf}
 \caption{\todo{}}
 \label{fig:part2:trafficintensity}
 \end{figure}
@@ -371,6 +371,9 @@ Regardless of the exact reason of the deviation, the IRTL holds to a reasonably 
 
 \todo{hypothesis: initial insertion by memaslap fucks this up?}
 
+\todo{@rincewind:} Zsolt also said: if you have more virtual clients than cpu-cores per host then the time measurements could have some distortions
+
+\todo{@tineler:} my explanation would be, that the response time is not normally distributed and therefore the calculation is not really accurate because of the "long right tail"
 
 % potential reasons from slides: network effects, processing overhead, exceptions and non-normal return values
 

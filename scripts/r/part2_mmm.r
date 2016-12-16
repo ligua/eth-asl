@@ -43,11 +43,13 @@ get_mmm_summary <- function(results_dir) {
   
   # ---- Parameters ----
   arrival_rate <- mean(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
-  total_service_rate <- max(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
-  single_service_rate <- total_service_rate / m
-  rho <- arrival_rate / total_service_rate    # traffic intensity
-  p0 <- get_mmm_p0(m, rho)                    # prob. of 0 jobs in system
-  weird_rho <- get_mmm_weird_rho(m, rho, p0)  # prob. of >=m jobs in system
+  #total_service_rate <- max(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
+  #single_service_rate <- total_service_rate / m
+  single_service_rate <- 1/mean(requests$timeReturned-requests$timeDequeued) * 1000 # s
+  rho <- arrival_rate / (m * single_service_rate)    # traffic intensity
+  log_p0 <- get_mmm_log10_p0_approx(m, rho)
+  p0 <- 10^log_p0 # prob. of 0 jobs in system
+  weird_rho <- 10^get_mmm_log10_weird_rho_approx(m, rho, log_p0)  # prob. of >=m jobs in system
   print(paste0("Traffic intensity: ", round(rho, digits=2)))
   
   
@@ -59,7 +61,7 @@ get_mmm_summary <- function(results_dir) {
     get_mmm_response_time_mean(rho, weird_rho, single_service_rate, m) * 1000 # ms
   predicted$response_time_std <-
     get_mmm_response_time_std(rho, weird_rho, single_service_rate, m) * 1000 # ms
-  Ew <- get_mmm_waiting_time_mean(rho, weird_rho, mu, m)
+  Ew <- get_mmm_waiting_time_mean(rho, weird_rho, single_service_rate, m)
   predicted$response_time_q50 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.5) * 1000 # ms
   predicted$response_time_q95 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.95) * 1000 # ms # ms
   predicted$waiting_time_mean <- Ew * 1000 # ms
@@ -113,37 +115,38 @@ for(i in 1:length(filtered_dirs)) {
 
 # Saving table
 comparisons_to_save <- comparisons %>%
-  select(clients, type, response_time_mean:response_time_std) %>%
-  melt(id.vars=c("type", "clients")) %>%
-  dcast(variable + clients ~ type)
+  select(servers, type, response_time_mean:response_time_std) %>%
+  melt(id.vars=c("type", "servers")) %>%
+  dcast(variable ~ type + servers) %>%
+  select(variable, predicted_3, actual_3, predicted_5, actual_5,
+         predicted_7, actual_7)
 comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model.",
                            label="tbl:part2:comparison_table",
-                           digits=c(NA, NA, 0, 2, 2))
+                           digits=c(NA, NA, 2, 2, 2, 2, 2, 2))
 print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
 
 
 # ---- Plotting ----
 
-# Traffic intensity
-ggplot(comparisons %>% filter(type=="predicted"), aes(x=clients, y=traffic_intensity, color=type)) +
+# Utilisation
+ggplot(comparisons, aes(x=servers, y=utilisation, color=type)) +
   geom_line(size=1) +
   geom_point(size=2) +
   ylim(0, 1) +
   xlab("Number of clients") +
-  ylab("Traffic intensity") +
-  asl_theme +
-  theme(legend.position="none")
-ggsave(paste0(output_dir, "/graphs/traffic_intensity_vs_clients.pdf"),
+  ylab("Utilisation") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/utilisation_vs_clients.pdf"),
        width=fig_width/2, height=fig_height/2)
 
 # Mean response time
-ggplot(comparisons, aes(x=clients, y=response_time_mean, color=type, fill=type)) +
+ggplot(comparisons, aes(x=servers, y=response_time_mean, color=type, fill=type)) +
   geom_ribbon(aes(ymin=response_time_mean-response_time_std,
                   ymax=response_time_mean+response_time_std),
               alpha=0.3, color=NA) +
   geom_line(size=1) +
   geom_point(size=2) +
-  facet_wrap(~type, scales="free_y", nrow=1) +
+  facet_wrap(~type, nrow=1) +
   #ylim(0, NA) +
   xlab("Number of clients") +
   ylab("Mean response time") +
