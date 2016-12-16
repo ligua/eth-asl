@@ -101,20 +101,23 @@ Using the available experimental data, it is not possible to directly calculate 
 
 %This method assumes that time spent queueing in front of \linkmain{LoadBalancer} is negligible (otherwise we couldn't find the service rate.
 
-\paragraph{Problems}
+\paragraph{Problems of the model}
 The assumptions above obviously do not hold for our actual system. Especially strong is the assumption of a single server; since we actually have multiple servers, this model is likely to predict the behaviour of the system very poorly. A second problem arises from my very indirect method of estimating parameters for the model (and an arbitrary choice of time window) which introduces inaccuracies.
 
 \subsection{Comparison of model and experiments}
 
-Explain the characteristics and behavior of the model built, and compare it with the experimental data (collected both outside and inside the middleware). Map the similarities and differences to aspects of the design or the experiments.
-
-Table~\ref{tbl:part1:comparison_table} shows a comparison of the predictions of the M/M/1 model with actual results from the trace experiment. 
-
-\todo{this whole subsection}
-
-\todo{mention that IRTL doesn't hold for the model}
-
 \input{../results/analysis/part1_mm1/comparison_table.txt}
+
+%Explain the characteristics and behavior of the model built, and compare it with the experimental data (collected both outside and inside the middleware). Map the similarities and differences to aspects of the design or the experiments.
+
+Table~\ref{tbl:part1:comparison_table} shows a comparison of the predictions of the M/M/1 model with actual results from the trace experiment.
+
+It is clear that actual response time is much higher -- about 40 times higher -- than what the model predicts. This is because using M/M/1 for the SUT as a black box does not take into account internal parallelisation: we have $S \cdot T$ threads for \get{}s and $S$ threads for \set{}s. For a single thread to achieve the same throughput as $K$ parallel threads, it needs to process each request $K$ times faster. This doesn't explain the whole difference, though, given that in the trace experiment $K=15$ (compared to the 40x difference in predicted and actual values we observe).
+
+Another factor is queueing: since the M/M/1 model predicts a much lower response/service time, the queues in that model are also shorter. The number of jobs in each \linkmain{ReadWorker} queue is $\frac{149.79}{S \cdot R} = 9.07$ which is roughly 2 times more than what M/M/1 predicts. A longer queue means a longer waiting time.
+
+The model does provide a reasonable estimate of the utilisation of the system and the proportion of jobs in queue (out of all jobs in the system). This is mostly because the inputs we gave to the model (arrival rate and service rate) were good estimates and not because the model itself is accurate.
+
 
 \begin{figure}[h]
 \includegraphics[width=\textwidth]{../results/analysis/part1_mm1/graphs/response_time_quantiles_actual_and_predicted.pdf}
@@ -122,14 +125,10 @@ Table~\ref{tbl:part1:comparison_table} shows a comparison of the predictions of 
 \label{fig:part1:quantiles_responsetime}
 \end{figure}
 
-\todo{mention} that number of jobs is calculated using Little's law
 
-\begin{figure}[h]
-\includegraphics[width=\textwidth]{../results/analysis/part1_mm1/graphs/queue_time_quantiles_actual_and_predicted.pdf}
-\caption{Quantiles of the waiting time distribution: experimental results and predictions of the M/M/1 model. Note the extreme difference in the queue time scale.}
-\label{fig:part1:quantiles_queuetime}
-\end{figure}
+The quantiles of the response time distribution are shown in Figure~\ref{fig:part1:quantiles_responsetime}. M/M/1 appears to do a good job at predicting the shape of the distribution; however, the time scale is off by roughly 20x. As before, this is because M/M/1 does not account for parallelisation.
 
+In summary, the model a) does not adequately take into account the internal structure of SUT, and b) does not predict empirical results with reasonable accuracy. For this reason, it is near worthless and we need to build more complex models in Sections~\ref{sec:part2-analysis-scalability} and \ref{sec:part3-network-of-queues}.
 
 \clearpage
 % --------------------------------------------------------------------------------

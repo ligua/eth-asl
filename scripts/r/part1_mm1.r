@@ -9,6 +9,11 @@ trace_dir <- "results/trace_rep3"
 memaslap <- file_to_df(paste0(trace_dir, "/memaslap_stats.csv"))
 requests <- file_to_df(paste0(trace_dir, "/request.log"), sep=",")
 
+num_servers = 3
+num_replication = 3
+num_threads = 5
+num_clients = 3 * 64
+prop_writes = 1 / 100
 
 # ---- Preprocessing ----
 DROP_TIMES_BEFORE_MS = 2 * 60 # How many seconds in the beginning we want to drop
@@ -61,6 +66,7 @@ predicted$num_jobs_in_system_mean <- rho / (1-rho)
 predicted$num_jobs_in_system_std <- sqrt(rho / (1-rho)^2)
 predicted$num_jobs_in_queue_mean <- rho^2 / (1-rho)
 predicted$num_jobs_in_queue_std <- sqrt(rho^2 * (1 + rho - rho^2) / ((1-rho)^2))
+predicted$proportion_jobs_in_queue <- predicted$num_jobs_in_queue_mean / predicted$num_jobs_in_system_mean
 predicted$num_jobs_served_in_busy_period_mean <- 1 / (1-rho)
 predicted$num_jobs_served_in_busy_period_std <- sqrt(rho * (1 + rho) / (1 - rho)^3)
 predicted$busy_period_duration_mean <- 1 / (mu * (1 - rho)) * 1000
@@ -79,11 +85,13 @@ actual$response_time_quantile50 <- quantile(response_times, probs=c(0.5))
 actual$response_time_quantile95 <- quantile(response_times, probs=c(0.95))
 actual$waiting_time_mean <- mean(queue_times)
 actual$waiting_time_std <- sd(queue_times)
-actual$utilisation <- NA
+actual$utilisation <- (1 - prop_writes) * arrival_rate * mean(requests$timeReturned-requests$timeDequeued) /
+  num_servers / num_threads / 1000 # utilization law
 actual$num_jobs_in_system_mean <- arrival_rate * actual$response_time_mean / 1000 # ms -> s # Little's law
 actual$num_jobs_in_system_std <- NA
 actual$num_jobs_in_queue_mean <- arrival_rate * actual$waiting_time_mean / 1000# TODO Little's law?
 actual$num_jobs_in_queue_std <- NA
+actual$proportion_jobs_in_queue <- actual$num_jobs_in_queue_mean / actual$num_jobs_in_system_mean
 actual$num_jobs_served_in_busy_period_mean <- NA
 actual$num_jobs_served_in_busy_period_std <- NA
 actual$busy_period_duration_mean <- NA
@@ -94,7 +102,7 @@ comparison <- rbind(data.frame(predicted), data.frame(actual)) %>%
   dcast(variable ~ type) %>%
   rename(metric=variable)
 
-comparison_table <- xtable(comparison, caption="Comparison of experimental results ('actual') and predictions of the M/M/1 model ('predicted') for different metrics. Where the 'actual' column is empty, experimental data was not detailed enough to calculate the desired metric. All time units are milliseconds.",
+comparison_table <- xtable(comparison, caption="Comparison of experimental results ('actual') and predictions of the M/M/1 model ('predicted') for different metrics. Where the 'actual' column is empty, experimental data was not detailed enough to calculate the desired metric. All time units are milliseconds. Actual utilisation of SUT is calculated as the utilisation of a \\linkmain{ReadWorker}.",
                            label="tbl:part1:comparison_table")
 print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
 
