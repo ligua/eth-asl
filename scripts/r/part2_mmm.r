@@ -18,22 +18,23 @@ get_mmm_summary <- function(results_dir) {
   requests <- requests %>%
     filter(timeCreated > DROP_TIMES_BEFORE_MW & timeCreated <= DROP_TIMES_AFTER_MW)
   
-  filename_regex <- paste0("clients(\\d{1,3})_threads(\\d{1,2})_rep(\\d{1,2})") # exp1
+  filename_regex <- paste0("/S(\\d)_R(1)_rep([5])$") # exp1
   filename_match <- grep(filename_regex, results_dir, value=TRUE, perl=TRUE)
   result_params <- as.data.frame(str_match(filename_match, filename_regex))
-  colnames(result_params) <- c("path", "clients", "threads", "repetition")
+  colnames(result_params) <- c("path", "servers", "replication", "repetition")
   result_params <- result_params %>%
-    mutate(clients=as.numeric(as.character(clients)),
-           threads=as.numeric(as.character(threads)),
+    mutate(servers=as.numeric(as.character(servers)),
+           replication=as.numeric(as.character(replication)),
            repetition=as.numeric(as.character(repetition)))
   
   # ------------------
   # ---- Analysis ----
   # ------------------
-  m <- 5
+  num_threads <- 32 + 1 # also writes
+  prop_writes <- 5 / 1000
+  m <- result_params$servers * num_threads
   WINDOW_SIZE <- 1 # seconds
-  SAMPLING_RATE <- 100 # from exp1 setup
-  MAX_THROUGHPUT <- 26500 # from exp1: clients=576, repetition=0
+  SAMPLING_RATE <- 10 # from exp1 setup
   service_rates <- requests %>%
     mutate(secondCreated=floor(timeCreated/1000/WINDOW_SIZE)) %>%
     group_by(secondCreated) %>%
@@ -42,7 +43,7 @@ get_mmm_summary <- function(results_dir) {
   
   # ---- Parameters ----
   arrival_rate <- mean(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
-  total_service_rate <- MAX_THROUGHPUT # max(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
+  total_service_rate <- max(service_rates$count) / WINDOW_SIZE * SAMPLING_RATE
   single_service_rate <- total_service_rate / m
   rho <- arrival_rate / total_service_rate    # traffic intensity
   p0 <- get_mmm_p0(m, rho)                    # prob. of 0 jobs in system
@@ -53,18 +54,15 @@ get_mmm_summary <- function(results_dir) {
   # ---- Predictions ---- # TODO
   predicted = list()
   predicted$type <- "predicted"
-  predicted$traffic_intensity <- rho
   predicted$utilisation <- rho
   predicted$response_time_mean <-
     get_mmm_response_time_mean(rho, weird_rho, single_service_rate, m) * 1000 # ms
   predicted$response_time_std <-
     get_mmm_response_time_std(rho, weird_rho, single_service_rate, m) * 1000 # ms
-  Ew <- weird_rho / (m * single_service_rate * (1 - rho))
-  # predicted$mean_waiting_time <- Ew
-  predicted$response_time_q50 <- max(0, Ew / weird_rho * log(weird_rho / (1 - 0.5))) * 1000 # ms
-  predicted$response_time_q95 <- max(0, Ew / weird_rho * log(weird_rho / (1 - 0.95))) * 1000 # ms
-  predicted$arrival_rate <- NA
-  predicted$total_service_rate <- NA
+  Ew <- get_mmm_waiting_time_mean(rho, weird_rho, mu, m)
+  predicted$response_time_q50 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.5) * 1000 # ms
+  predicted$response_time_q95 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.95) * 1000 # ms # ms
+  predicted$waiting_time_mean <- Ew * 1000 # ms
   
   # ---- Actual results ----
   actual = list()
@@ -72,29 +70,29 @@ get_mmm_summary <- function(results_dir) {
   response_times <- requests$timeReturned - requests$timeEnqueued
   
   actual$type <- "actual"
-  actual$traffic_intensity <- NA
-  actual$utilisation <- NA # can't measure this on a per-server basis here
+  actual$utilisation <- arrival_rate * mean(requests$timeReturned-requests$timeDequeued) /
+    result_params$servers / num_threads / 1000 # utilization law
   actual$response_time_mean <- mean(response_times)
   actual$response_time_std <- sd(response_times)
   actual$response_time_q50 <- quantile(response_times, probs=c(0.5))
   actual$response_time_q95 <- quantile(response_times, probs=c(0.95))
-  actual$arrival_rate <- arrival_rate
-  actual$total_service_rate <- total_service_rate
+  actual$waiting_time_mean <- mean(requests$timeDequeued-requests$timeEnqueued)
   
   comparison <- rbind(data.frame(predicted), data.frame(actual)) %>%
-    mutate(clients=result_params$clients[[1]],
-           threads=result_params$threads[[1]],
-           repetition=result_params$repetition[[1]])
+    mutate(servers=result_params$servers[[1]],
+           replication=result_params$replication[[1]],
+           repetition=result_params$repetition[[1]],
+           threads=num_threads)
 }
 
 
 # ---- Directories ----
 output_dir <- "results/analysis/part2_mmm"
-result_dir_base <- "results/throughput"
+result_dir_base <- "results/replication"
 
 # ---- Extracting data
 dir_name_regex <- paste0(result_dir_base,
-                          "/clients(\\d{1,3})_threads(32)_rep(0)$")
+                          "/S(\\d)_R(1)_rep([5])$")
 unfiltered_dirs <- list.dirs(path=result_dir_base, recursive=TRUE)
 filtered_dirs <- grep(dir_name_regex, unfiltered_dirs, value=TRUE, perl=TRUE)
 
@@ -102,15 +100,9 @@ comparisons <- NA
 for(i in 1:length(filtered_dirs)) {
   dirname = filtered_dirs[i]
   dirname_match <- grep(dir_name_regex, dirname, value=TRUE, perl=TRUE)
-  n_clients <- as.numeric(as.character(as.data.frame(str_match(dirname_match, dir_name_regex))$V2))
   print(paste0("DIR: ", dirname))
   
-  if(n_clients == 1 | n_clients == 180 | n_clients > 576) {
-    print("skipping")
-    next
-  } else {
-    summary <- get_mmm_summary(dirname)
-  }
+  summary <- get_mmm_summary(dirname)
   
   if(is.na(comparisons)) {
     comparisons <- summary

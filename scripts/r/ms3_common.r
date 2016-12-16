@@ -125,6 +125,18 @@ get_mmm_response_time_std <- function(rho, weird_rho, mu, m) {
   return(sqrt(1 / mu^2 * (1 + (weird_rho * (2 - weird_rho))/(m^2 * (1-rho)^2))))
 }
 
+get_mmm_response_time_quantile <- function(weird_rho, Ew, p) {
+  return(max(0, Ew / weird_rho * log(weird_rho / (1 - p))))
+}
+
+get_mmm_waiting_time_mean <- function(rho, weird_rho, mu, m) {
+  return(weird_rho / (m * mu * (1 - rho)))
+}
+
+get_mmm_waiting_time_std <- function(rho, weird_rho, mu, m) {
+  return(sqrt(weird_rho))
+}
+
 get_mmm_num_jobs_in_system_mean <- function(rho, weird_rho, mu, m) {
   return(m * rho + rho * weird_rho / (1 - rho))
 }
@@ -133,6 +145,13 @@ get_mmm_num_jobs_in_system_std <- function(rho, weird_rho, mu, m) {
   return(sqrt(m * rho + rho * weird_rho * ((1 + rho - rho * weird_rho)/((1 - rho)^2) + m)))
 }
 
+get_mmm_num_jobs_in_queue_mean <- function(rho, weird_rho, mu, m) {
+  return(rho * weird_rho * (1-rho))
+}
+
+get_mmm_num_jobs_in_queue_std <- function(rho, weird_rho, mu, m) {
+  return(NA)
+}
 
 
 
