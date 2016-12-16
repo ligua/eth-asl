@@ -131,7 +131,7 @@ comparisons_to_save <- comparisons %>%
   dcast(variable ~ type + servers) %>%
   select(variable, predicted_3, actual_3, predicted_5, actual_5,
          predicted_7, actual_7)
-comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model. All time units are milliseconds.",
+comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model, for $S \\in \\{3,5,7\\}$. Where the 'actual' column is empty, experimental data was not detailed enough to calculate the desired metric. All time units are milliseconds.",
                            label="tbl:part2:comparison_table",
                            digits=c(NA, NA, 2, 2, 2, 2, 2, 2),
                            align="|ll|rr|rr|rr|")
@@ -145,7 +145,7 @@ ggplot(comparisons, aes(x=servers, y=utilisation, color=type)) +
   geom_line(size=1) +
   geom_point(size=2) +
   ylim(0, 1) +
-  xlab("Number of clients") +
+  xlab("Number of servers") +
   ylab("Utilisation") +
   asl_theme
 ggsave(paste0(output_dir, "/graphs/utilisation_vs_clients.pdf"),
@@ -160,7 +160,7 @@ ggplot(comparisons, aes(x=servers, y=response_time_mean, color=type, fill=type))
   geom_point(size=2) +
   facet_wrap(~type, nrow=1) +
   #ylim(0, NA) +
-  xlab("Number of clients") +
+  xlab("Number of servers") +
   ylab("Mean response time") +
   asl_theme +
   theme(legend.position="none")
