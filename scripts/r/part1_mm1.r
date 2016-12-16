@@ -103,8 +103,8 @@ comparison <- rbind(data.frame(predicted), data.frame(actual)) %>%
   rename(metric=variable)
 
 comparison_table <- xtable(comparison, caption="Comparison of experimental results ('actual') and predictions of the M/M/1 model ('predicted') for different metrics. Where the 'actual' column is empty, experimental data was not detailed enough to calculate the desired metric. All time units are milliseconds. Actual utilisation of SUT is calculated as the utilisation of a \\linkmain{ReadWorker}.",
-                           label="tbl:part1:comparison_table")
-print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
+                           label="tbl:part1:comparison_table", align="|ll|rr|")
+print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"), size="\\fontsize{9pt}{10pt}\\selectfont")
 
 
 # ---- Plots ----

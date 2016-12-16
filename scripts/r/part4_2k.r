@@ -85,19 +85,21 @@ data_df <- exp_results %>%
   rename(throughput=tps_mean, repetition_id=repetition, replication=replication_str)
 data_table <- xtable(data_df, caption="Data used in building the $2^k$ model in Section~\\ref{sec:part4-2k-experiment}.",
                           label="tbl:part4:data",
-                          digits=0)
-print(data_table, file=paste0(output_dir, "/data_table.txt"))
+                          digits=0,
+                     align="|rllrr|r|")
+print(data_table, file=paste0(output_dir, "/data_table.txt"), size="\\fontsize{9pt}{10pt}\\selectfont")
 
 # Save coefficient table
 coefficient_and_var_df <- data.frame(value=coefficients) %>%
   mutate(variable_names=variable_names) %>%
   rename(variable=variable_names, coefficient_value=value) %>%
   select(variable, coefficient_value) %>%
-  full_join(variation_table, by=c("variable"))
+  full_join(variations, by=c("variable"))
 coefficient_and_var_table <- xtable(coefficient_and_var_df, caption="Values of coefficients and allocation of variation for all variables in the $2^k$ model.",
                           label="tbl:part4:coefficients",
-                          digits=c(NA, NA, 1, 3))
-print(coefficient_and_var_table, file=paste0(output_dir, "/coefficient_and_var_table.txt"))
+                          digits=c(NA, NA, 1, 3),
+                          align="|rl|rr|")
+print(coefficient_and_var_table, file=paste0(output_dir, "/coefficient_and_var_table.txt"), size="\\fontsize{9pt}{10pt}\\selectfont")
 
 
 # Error analysis
