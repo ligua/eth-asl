@@ -65,6 +65,11 @@ get_mmm_summary <- function(results_dir) {
   predicted$response_time_q50 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.5) * 1000 # ms
   predicted$response_time_q95 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.95) * 1000 # ms # ms
   predicted$waiting_time_mean <- Ew * 1000 # ms
+  predicted$waiting_time_std <- get_mmm_waiting_time_std(rho, weird_rho, mu, m)
+  predicted$num_jobs_in_system_mean <- get_mmm_num_jobs_in_system_mean(rho, weird_rho, mu, m)
+  predicted$num_jobs_in_system_std <- get_mmm_num_jobs_in_system_std(rho, weird_rho, mu, m)
+  predicted$num_jobs_in_queue_mean <- get_mmm_num_jobs_in_queue_mean(rho, weird_rho, mu, m)
+  predicted$num_jobs_in_queue_std <- get_mmm_num_jobs_in_queue_std(rho, weird_rho, mu, m)
   
   # ---- Actual results ----
   actual = list()
@@ -79,6 +84,11 @@ get_mmm_summary <- function(results_dir) {
   actual$response_time_q50 <- quantile(response_times, probs=c(0.5))
   actual$response_time_q95 <- quantile(response_times, probs=c(0.95))
   actual$waiting_time_mean <- mean(requests$timeDequeued-requests$timeEnqueued)
+  actual$waiting_time_std <- sd(requests$timeDequeued-requests$timeEnqueued)
+  actual$num_jobs_in_system_mean <- arrival_rate * actual$response_time_mean / 1000 # ms -> s # Little's law
+  actual$num_jobs_in_system_std <- NA
+  actual$num_jobs_in_queue_mean <- arrival_rate * actual$waiting_time_mean / 1000 # ms -> s # Little's law
+  actual$num_jobs_in_queue_std <- NA
   
   comparison <- rbind(data.frame(predicted), data.frame(actual)) %>%
     mutate(servers=result_params$servers[[1]],
@@ -115,15 +125,17 @@ for(i in 1:length(filtered_dirs)) {
 
 # Saving table
 comparisons_to_save <- comparisons %>%
-  select(servers, type, response_time_mean:response_time_std) %>%
+  select(type, response_time_mean:servers) %>%
+  select(-response_time_q50, -response_time_q95) %>%
   melt(id.vars=c("type", "servers")) %>%
   dcast(variable ~ type + servers) %>%
   select(variable, predicted_3, actual_3, predicted_5, actual_5,
          predicted_7, actual_7)
-comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model.",
+comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model. All time units are milliseconds.",
                            label="tbl:part2:comparison_table",
-                           digits=c(NA, NA, 2, 2, 2, 2, 2, 2))
-print(comparison_table, file=paste0(output_dir, "/comparison_table.txt"))
+                           digits=c(NA, NA, 2, 2, 2, 2, 2, 2),
+                           align="|ll|rr|rr|rr|")
+print.xtable(comparison_table, file=paste0(output_dir, "/comparison_table.txt"), size="\\fontsize{9pt}{10pt}\\selectfont")
 
 
 # ---- Plotting ----
