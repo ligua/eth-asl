@@ -65,11 +65,11 @@ get_mmm_summary <- function(results_dir) {
   predicted$response_time_q50 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.5) * 1000 # ms
   predicted$response_time_q95 <- get_mmm_response_time_quantile(weird_rho, Ew, 0.95) * 1000 # ms # ms
   predicted$waiting_time_mean <- Ew * 1000 # ms
-  predicted$waiting_time_std <- get_mmm_waiting_time_std(rho, weird_rho, mu, m)
-  predicted$num_jobs_in_system_mean <- get_mmm_num_jobs_in_system_mean(rho, weird_rho, mu, m)
-  predicted$num_jobs_in_system_std <- get_mmm_num_jobs_in_system_std(rho, weird_rho, mu, m)
-  predicted$num_jobs_in_queue_mean <- get_mmm_num_jobs_in_queue_mean(rho, weird_rho, mu, m)
-  predicted$num_jobs_in_queue_std <- get_mmm_num_jobs_in_queue_std(rho, weird_rho, mu, m)
+  predicted$waiting_time_std <- get_mmm_waiting_time_std(rho, weird_rho, single_service_rate, m)
+  predicted$num_jobs_in_system_mean <- get_mmm_num_jobs_in_system_mean(rho, weird_rho, single_service_rate, m)
+  predicted$num_jobs_in_system_std <- get_mmm_num_jobs_in_system_std(rho, weird_rho, single_service_rate, m)
+  predicted$num_jobs_in_queue_mean <- get_mmm_num_jobs_in_queue_mean(rho, weird_rho, single_service_rate, m)
+  predicted$num_jobs_in_queue_std <- get_mmm_num_jobs_in_queue_std(rho, weird_rho, single_service_rate, m)
   
   # ---- Actual results ----
   actual = list()

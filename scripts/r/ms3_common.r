@@ -177,7 +177,7 @@ get_mmm_num_jobs_in_queue_mean <- function(rho, weird_rho, mu, m) {
 }
 
 get_mmm_num_jobs_in_queue_std <- function(rho, weird_rho, mu, m) {
-  return(NA)
+  return((2-rho)*rho/(mu^2 * (1-rho)^2))
 }
 
 
