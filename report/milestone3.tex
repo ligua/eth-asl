@@ -70,12 +70,6 @@
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\subsection{Data}
-
-The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}} (short names \texttt{trace\_ms*}, \texttt{trace\_mw} and \texttt{trace\_req} in Milestone~1). For details, see Milestone~2, Appendix A.
-
-The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
-
 \subsection{Model}
 \label{sec:part1:model}
 
@@ -90,19 +84,26 @@ In this section I create an M/M/1 model of the SUT. This means the following def
 	\item We treat the SUT as a single server and as a black box.
 	\item Arrivals are individual, so we have a birth-death process.
 \end{itemize}
- 
-\paragraph{Parameter estimation}
 
-Using the available experimental data, it is not possible to directly calculate the mean arrival rate $\lambda$ and mean service rate $\mu$ so we need to estimate them somehow. I estimated both using throughput of the system: I take $\lambda$ to be the \emph{mean} throughput over 1-second windows, and $\mu$ to be the the \emph{maximum} throughput in any 1-second window, calculated from middleware logs. I chose a 1-second window because a too small window is highly susceptible to noise whereas a too large window size drowns out useful information.
+\paragraph{Problems of the model}
+The assumptions above obviously do not hold for our actual system. Especially strong is the assumption of a single server; since we actually have multiple servers, this model is likely to predict the behaviour of the system very poorly. A second problem arises from my very indirect method of estimating parameters for the model (and an arbitrary choice of time window) which introduces inaccuracies.
+
+
+\subsection{Data}
+
+The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}} (short names \texttt{trace\_ms*}, \texttt{trace\_mw} and \texttt{trace\_req} in Milestone~1). For details, see Milestone~2, Appendix A.
+
+The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
+ 
+\subsection{Parameter estimation}
+
+Using the available experimental data, it is not possible to directly calculate the mean arrival rate $\lambda$ and mean service rate $\mu$ so we need to estimate them somehow. I estimated both using throughput of the system: I take $\lambda = 10294 \frac{requests}{s}$ to be the \emph{mean} throughput over 1-second windows, and $\mu =  = 12900 \frac{requests}{s}$ to be the the \emph{maximum} throughput in any 1-second window, calculated from middleware logs. I chose a 1-second window because a too small window is highly susceptible to noise whereas a too large window size drowns out useful information.
 
 %I estimated $\lambda$ using throughput of the system: I take it to be the \emph{mean} throughput over 1-second windows. To find mean service rate $\mu$, I first calculate the \maximum{throughput} over any 1-second window, and take it to be the first estimate of $\mu$. This, however, doesn't take into account the network 
 
 %service time $\bar{t}_{service}$ (total time spent in middleware, $t_{returned}-t_{created}$). From there I apply the Interactive Response Time Law to the system (i.e. as though network delay and client think time were 0). This yields $$\mu = \frac{C}{\bar{t}_{service}}$$ where $C=192$ is the number of clients in the trace experiment.
 
 %This method assumes that time spent queueing in front of \linkmain{LoadBalancer} is negligible (otherwise we couldn't find the service rate.
-
-\paragraph{Problems of the model}
-The assumptions above obviously do not hold for our actual system. Especially strong is the assumption of a single server; since we actually have multiple servers, this model is likely to predict the behaviour of the system very poorly. A second problem arises from my very indirect method of estimating parameters for the model (and an arbitrary choice of time window) which introduces inaccuracies.
 
 \subsection{Comparison of model and experiments}
 
@@ -137,14 +138,9 @@ In summary, the model a) does not adequately take into account the internal stru
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\subsection{Data}
-
-The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and $R=1$ were used (short names \texttt{replication-S*-R1-r5}).
-
-
 \subsection{Model}
 
-\todo{} mention no replication
+The system under test (SUT) in this section includes the middleware, memcached servers and the network between them. It does \emph{not} include clients or the network between clients and middleware.
 
 The assumptions and definitions of the M/M/m model are the same as for the M/M/1 model laid out in Section~\ref{sec:part1:model} with the following modifications:
 
@@ -155,11 +151,9 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 	\item If all servers are busy, an arriving job is added to the queue.
 \end{itemize}
 
-\paragraph{Parameter estimation}
-\todo{} describe how I found the parameters
-\todo{} where do we get parameter $m$
+The model built here does not account for the effect of replication. For this reason I will only use data from experiments for which $R=1$.
 
-\paragraph{Problems}
+\paragraph{Problems of the model}
 \todo{}
 
 \begin{enumerate}
@@ -167,20 +161,32 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 	\item I map requests to servers uniformly. M/M/m assumes that each server takes a request when it finishes with the previous one, but that is not true in my case -- I take earlier
 \end{enumerate}
 
+\subsection{Parameter estimation}
+
+We need to determine three parameters: the number of servers $m$, the arrival rate $\lambda$ and the service rate of each server $\mu$.
+
+Let us first find $m$. Since SUT has $S$ \linkmain{MiddlewareComponent}s, each of which has $T$ read threads and 1 write thread, all of which ideally run in parallel (i.e. none starve for resources). Thus I take $m := S \cdot (T + 1)$.
+
+To estimate $\mu$ we can calculate the service time of each worker as the time spent between dequeueing the request and sending it back to the client: $t_{service} := t_{returned} - t_{dequeued}$. From there we find $\mu := \frac{1}{t_{service}}$. Note that this calculation does not distinguish between write and read threads.
+
+We can find $\lambda$ as simply the mean throughput over 1-second windows, similarly to Section~\ref{sec:part1:model}.
+
+
+\subsection{Data}
+
+The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and $R=1$ were used (short names \texttt{replication-S*-R1-r5}).
+
+The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
+
 \subsection{Comparison of model and experiments}
 
-\todo{mention} if system is stable
+Table~\ref{tbl:part2:comparison_table} shows the results of modelling the system as M/M/m. Since $\rho < 1$ the model is stable for all cases. However, the table reveals an important shortcoming of the model: waiting times and the time spent in the queue are 0.
 
-\todo{find formula for} num\_jobs\_in\_queue\_mean
+The reason becomes clear if we look at the formulas for calculating $p_0$ (the probability of 0 jobs in the system). As $m$ goes to infinity, $p_0$ goes to zero (because the inverse of $p_0$ is a sum that goes to infinity). Even for finite values of $m \in [99, 231]$, $p_0$ is on the order of $10^{-32}$ to $10^{-77}$ (for rho=0.8). Since the probability of queueing $\varrho$ also depends on $p_0$, this causes queueing to become nonexistent in the M/M/m model.
+
+There are some aspects in which the model performs well, though. Figure~\ref{fig:part2:responsetime} shows that the model only slightly underestimates response time, although the variance estimate is too low.
 
 \todo{}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.5\textwidth]{../results/analysis/part2_mmm/graphs/utilisation_vs_clients.pdf}
-\caption{\todo{}}
-\label{fig:part2:trafficintensity}
-\end{figure}
 
 \begin{figure}[h]
 \centering
@@ -199,9 +205,6 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\subsection{Data}
-\todo{}
-
 \subsection{Model}
 \todo{}
 
@@ -210,6 +213,10 @@ We have a closed queueing network: the total number of jobs in the system is con
 \todo{} problem is that I include loadbalancer queueing time in network roundtrip, but this is not a problem -- I just add a (tiny) constant amount of time to the network time because of this
 
 MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
+
+\subsection{Data}
+\todo{}
+
 
 \subsection{Comparison of model and experiments}
 \todo{}
@@ -326,19 +333,19 @@ The amount of servers $S$ or replication $R$ don't have a large effect individua
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
+\subsection{Model}
+
+We are assuming a closed system, i.e. clients wait for a response from the server before sending another request. Under this assumption, the Interactive Response Time Law (IRTL) should hold:
+
+$$R = \frac{N}{X} - Z$$
+
+where $R$ is mean response time, $Z$ is waiting time in the client, $N$ is the number of clients and $X$ is throughput. In this section we test whether IRTL does in fact hold.
+
 \subsection{Data}
 
 The experimental data used in this section comes from Milestone~2, Section~2 (Effect of Replication) and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}} (short name \texttt{replication-S*-R*-r*} in Milestone~2). This includes a total of 27 experiments in 9 different configurations.
 
-The first 2 minutes and last 2 minutes were \textbf{not} dropped because the Interactive Response Time Law (IRTL) should hold also in warm-up and cool-down periods. Repetitions at the same configuration were considered as separate experiments.
-
-\subsection{Model}
-
-We are assuming a closed system, i.e. clients wait for a response from the server before sending another request. Under this assumption, the IRTL should hold:
-
-$$R = \frac{N}{X} - Z$$
-
-where $R$ is mean response time, $Z$ is waiting time in the client, $N$ is the number of clients and $X$ is throughput.
+The first 2 minutes and last 2 minutes were \textbf{not} dropped because IRTL should hold also in warm-up and cool-down periods. Repetitions at the same configuration were considered as separate experiments.
 
 \subsection{Results}
 

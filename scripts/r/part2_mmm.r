@@ -57,6 +57,9 @@ get_mmm_summary <- function(results_dir) {
   predicted = list()
   predicted$type <- "predicted"
   predicted$utilisation <- rho
+  predicted$m <- m
+  predicted$lambda <- arrival_rate
+  predicted$mu <- single_service_rate
   predicted$response_time_mean <-
     get_mmm_response_time_mean(rho, weird_rho, single_service_rate, m) * 1000 # ms
   predicted$response_time_std <-
@@ -79,6 +82,9 @@ get_mmm_summary <- function(results_dir) {
   actual$type <- "actual"
   actual$utilisation <- arrival_rate * mean(requests$timeReturned-requests$timeDequeued) /
     result_params$servers / num_threads / 1000 # utilization law
+  actual$m <- m
+  actual$lambda <- arrival_rate
+  actual$mu <- single_service_rate
   actual$response_time_mean <- mean(response_times)
   actual$response_time_std <- sd(response_times)
   actual$response_time_q50 <- quantile(response_times, probs=c(0.5))
@@ -125,13 +131,13 @@ for(i in 1:length(filtered_dirs)) {
 
 # Saving table
 comparisons_to_save <- comparisons %>%
-  select(type, response_time_mean:servers) %>%
+  select(type, m:servers) %>%
   select(-response_time_q50, -response_time_q95) %>%
   melt(id.vars=c("type", "servers")) %>%
   dcast(variable ~ type + servers) %>%
   select(variable, predicted_3, actual_3, predicted_5, actual_5,
          predicted_7, actual_7)
-comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model, for $S \\in \\{3,5,7\\}$. Where the 'actual' column is empty, experimental data was not detailed enough to calculate the desired metric. All time units are milliseconds.",
+comparison_table <- xtable(comparisons_to_save, caption="Comparison of experimental results and predictions of the M/M/m model, for $S \\in \\{3,5,7\\}$. Where the 'actual' column is empty, experimental data was not detailed enough to calculate the desired metric. Variables 'm', 'lambda' and 'mu' were inputs to the model. All time units are milliseconds.",
                            label="tbl:part2:comparison_table",
                            digits=c(NA, NA, 2, 2, 2, 2, 2, 2),
                            align="|ll|rr|rr|rr|")
@@ -157,7 +163,7 @@ ggplot(comparisons, aes(x=servers, y=response_time_mean, color=type, fill=type))
                   ymax=response_time_mean+response_time_std),
               alpha=0.3, color=NA) +
   geom_line(size=1) +
-  geom_point(size=2) +
+  geom_point(size=3) +
   facet_wrap(~type, nrow=1) +
   #ylim(0, NA) +
   xlab("Number of servers") +
@@ -165,6 +171,6 @@ ggplot(comparisons, aes(x=servers, y=response_time_mean, color=type, fill=type))
   asl_theme +
   theme(legend.position="none")
 ggsave(paste0(output_dir, "/graphs/response_time_predicted_and_actual.pdf"),
-       width=fig_width, height=0.75 * fig_height)
+       width=fig_width, height=0.5 * fig_height)
 
 
