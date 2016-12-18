@@ -32,6 +32,7 @@ model_inputs <- function(requests, mss) {
   res$tLB_set <- mean(requests_set$timeEnqueued-requests_set$timeCreated)
   res$tRW <- mean(requests_get$timeReturned-requests_get$timeDequeued)
   res$tWW <- 1/tps_WW * 1000
+  res$tMC <- mean(requests_set$timeReturned-requests_set$timeForwarded)
   
   rt_middleware_get <- mean(requests_get$timeReturned-requests_get$timeCreated)
   rt_middleware_set <- mean(requests_set$timeReturned-requests_set$timeCreated)
@@ -44,7 +45,7 @@ model_inputs <- function(requests, mss) {
   return(res)
 }
 
-exp_dir <- "./results/replication/S5_R5_rep5"
+exp_dir <- "./results/replication/S5_R1_rep5"
 
 memaslap_file <- paste0(exp_dir, "/memaslap_stats.csv")
 requests_file <- paste0(exp_dir, "/request.log")
@@ -81,12 +82,12 @@ octave_output_dir <- paste0(octave_dir_base, "/model2/", dir_name_end)
 system(paste0("mkdir -p ", octave_output_dir))
 octave_output_file <- paste0(octave_output_dir, "/results.mat")
 arg_list <- paste(octave_output_file,
-                  num_servers, num_threads, num_clients, perc_writes,
+                  num_servers, num_replication, num_threads, num_clients, perc_writes,
                   inputs$tNW_get, inputs$tNW_set,
                   inputs$tLB_get, inputs$tLB_set,
-                  inputs$tWW, inputs$tRW,
+                  inputs$tWW, inputs$tRW, inputs$tMC, 0,
                   collapse=" ")
-system(paste0("octave scripts/oct/mva3_main.m ", arg_list))
+system(paste0("octave scripts/oct/mva2_main.m ", arg_list))
 mva <- readMat(octave_output_file)
 
 K <- ncol(mva$U) # number of nodes in the network
