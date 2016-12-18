@@ -11,7 +11,7 @@ from colors import Colors
 
 # region ---- Experimental setup ----
 S_values = [3, 5, 7]                        # number of servers
-R_lambdas = [lambda S: 1, lambda S: math.ceil(S / 2), lambda S: S]      # replication factor
+R_lambdas = [lambda S: 1] #, lambda S: math.ceil(S / 2), lambda S: S]      # replication factor
 virtual_clients = 180
 num_threads = 32
 
@@ -25,7 +25,7 @@ memaslap_window_size = "1k"
 combinations = []
 for S in S_values:
     for R_lambda in R_lambdas:
-        for repetition in [8]:#range(num_repetitions):
+        for repetition in [9]:#range(num_repetitions):
             R = R_lambda(S)
             combinations.append((S, R, repetition))
 #combinations = [(5, 1, 1)] # override combinations
