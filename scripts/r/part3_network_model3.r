@@ -32,7 +32,6 @@ model_inputs <- function(requests, mss) {
   res$tLB_set <- mean(requests_set$timeEnqueued-requests_set$timeCreated)
   res$tRW <- mean(requests_get$timeReturned-requests_get$timeDequeued)
   res$tWW <- 1/tps_WW * 1000
-  res$tMC <- mean(requests_set$timeReturned-requests_set$timeForwarded)
   
   rt_middleware_get <- mean(requests_get$timeReturned-requests_get$timeCreated)
   rt_middleware_set <- mean(requests_set$timeReturned-requests_set$timeCreated)
@@ -93,6 +92,7 @@ mva <- readMat(octave_output_file)
 K <- ncol(mva$U) # number of nodes in the network
 ind_RW = 3:(3+num_servers-1) # ReadWorker devices
 ind_WW = (3+num_servers):(3+2*num_servers-1) # WriteWorker devices
+ind_network = c(1, K)
 
 predicted <- list()
 predicted$type <- "predicted"
@@ -102,15 +102,43 @@ predicted$mean_response_time_set <- sum((mva$R * mva$V)[2,])*1000
 predicted$mean_response_time <-
   (1 - prop_writes) * predicted$mean_response_time_get +
   prop_writes / 100 * predicted$mean_response_time_set
-predicted$rt_rw <- sum((mva$R * mva$V)[,ind_RW])*1000
-predicted$rt_ww <- sum((mva$R * mva$V)[,c(ind_WW)])*1000
+predicted$mean_response_time_readworker <- sum((mva$R * mva$V)[,ind_RW])*1000
+predicted$mean_response_time_writeworker <- sum((mva$R * mva$V)[,c(ind_WW)])*1000
+predicted$mean_response_time_lb_get <- mva$R[1,2] * 1000
+predicted$mean_response_time_lb_set <- mva$R[2,2] * 1000
+predicted$util_lb_get <- mva$U[1,2]
+predicted$util_lb_set <- mva$U[2,2]
+predicted$util_readworker <- mva$U[1,3]
+predicted$util_writeworker <- mva$U[2,K-1]
+predicted$items_network_get <- sum(mva$Q[1,ind_network])
+predicted$items_network_set <- sum(mva$Q[2,ind_network])
+predicted$items_lb_get <- mva$Q[1,2]
+predicted$items_lb_set <- mva$Q[2,2]
+predicted$items_readworker <- sum(mva$Q[1,ind_RW])
+predicted$items_writeworker <- sum(mva$Q[2,ind_WW])
+predicted$tps_readworker <- sum(mva$X[1,ind_RW])
+predicted$tps_writeworker <- sum(mva$X[2,ind_WW])
 
 # ---- Actual results ----
 tps_get <- (1-prop_writes) * mss$tps_mean # TODO this is an estimate -- could get precise!
 tps_set <- prop_writes * mss$tps_mean
 actual <- as.list(mss)
-actual$rt_rw <- mean(requests_get$timeReturned-requests_get$timeEnqueued)
-actual$rt_ww <- mean(requests_set$timeReceived-requests_set$timeEnqueued)
+actual$mean_response_time_readworker <- mean(requests_get$timeReturned-requests_get$timeEnqueued)
+actual$mean_response_time_writeworker <- mean(requests_set$timeReturned-requests_set$timeEnqueued)
+actual$mean_response_time_lb_get <- NA
+actual$mean_response_time_lb_set <- NA
+actual$util_lb_get <- tps_get * inputs$tLB_get / 1000 # utilization law
+actual$util_lb_set <- tps_set * inputs$tLB_set / 1000 # utilization law
+actual$util_readworker <- (tps_get / num_servers / num_threads) * inputs$tRW / 1000 # utilization law
+actual$util_writeworker <- (tps_set / num_servers) * inputs$tWW / 1000 # utilization law # TODO fucked up somehow
+actual$items_network_get <- 2 * inputs$tNW_get / 1000 * tps_get # Little's law (33-02)
+actual$items_network_set <- 2 * inputs$tNW_set / 1000 * tps_set
+actual$items_lb_get <- NA
+actual$items_lb_set <- NA
+actual$items_readworker <- actual$mean_response_time_readworker / 1000 * tps_get
+actual$items_writeworker <- actual$mean_response_time_readworker / 1000 * tps_set
+actual$tps_readworker <- tps_get
+actual$tps_writeworker <- tps_set
 
 
 
@@ -126,10 +154,49 @@ comparison
 
 # Time breakdown: actual vs predicted
 data1 <- comparison %>%
-  select(rt_rw, rt_ww, type) %>%
+  select(mean_response_time_readworker, mean_response_time_writeworker,
+         mean_response_time_get, mean_response_time_set, type) %>%
   melt(id.vars=c("type"))
 
 ggplot(data1, aes(x=type, y=value, fill=type)) +
   geom_bar(stat="identity") +
   facet_wrap(~variable) +
   asl_theme
+ggsave(paste0(output_dir, "/graphs/responsetime_actual_vs_predicted.pdf"),
+       width=fig_width, height=fig_height)
+
+# Number of items: actual vs predicted
+data2_gets <- comparison %>%
+  select(items_network_get, items_readworker, type) %>%
+  rename(items_network=items_network_get,
+         items_worker=items_readworker) %>%
+  melt(id.vars=c("type")) %>%
+  mutate(request_type="GET")
+data2_sets <- comparison %>%
+  select(items_network_set, items_writeworker, type) %>%
+  rename(items_network=items_network_set,
+         items_worker=items_writeworker) %>%
+  melt(id.vars=c("type")) %>%
+  mutate(request_type="SET")
+data2 <- data2_gets %>%
+  rbind(data2_sets)
+  
+ggplot(data2, aes(x=type, y=value, fill=type)) +
+  geom_bar(stat="identity") +
+  facet_wrap(~request_type + variable) +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/items_actual_vs_predicted.pdf"),
+       width=fig_width, height=fig_height)
+
+# Utilisation: actual vs predicted
+data3 <- comparison %>%
+  select(util_lb_get:util_writeworker, type) %>%
+  melt(id.vars=c("type"))
+
+ggplot(data3, aes(x=type, y=value, fill=type)) +
+  geom_bar(stat="identity") +
+  facet_wrap(~variable, nrow=1) +
+  asl_theme +
+  theme(legend.position="none")
+ggsave(paste0(output_dir, "/graphs/utilisation_actual_vs_predicted.pdf"),
+       width=fig_width, height=fig_height / 2)
