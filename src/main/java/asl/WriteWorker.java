@@ -18,8 +18,6 @@ class WriteWorker implements Runnable {
 
     private static final Logger log = LogManager.getLogger(WriteWorker.class);
 
-    public static final Integer SELECTOR_TIMEOUT = 1; // Milliseconds
-
     private Integer componentId;
     private List<Integer> targetMachines;
     private BlockingQueue<Request> writeQueue;
@@ -126,7 +124,7 @@ class WriteWorker implements Runnable {
                 // endregion
 
                 // region Communicate with memcached servers
-                selector.select(SELECTOR_TIMEOUT);
+                selector.selectNow();
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> selectionKeyIterator = selectedKeys.iterator();
 
@@ -192,11 +190,6 @@ class WriteWorker implements Runnable {
                     }
                 }
                 // endregion
-
-                // Sleep if did nothing
-                if(didNothing) {
-                    Thread.sleep(MiddlewareMain.WRITE_WORKER_SLEEP_TIME);
-                }
             }
         } catch (Exception ex) {
             log.error(ex);

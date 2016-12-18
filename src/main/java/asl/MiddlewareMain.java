@@ -20,7 +20,6 @@ public class MiddlewareMain implements Runnable {
     public static final Integer FULL_BUFFER_SIZE = 2048;
     public static final Integer RESPONSE_BUFFER_SIZE = 1024;
     public static final Integer QUEUE_SIZE = 2000;
-    public static final long WRITE_WORKER_SLEEP_TIME = 1;  // ms
     public static final long LOAD_BALANCER_SLEEP_TIME = 1;  // ms
 
     public static List<String> memcachedAddresses;
