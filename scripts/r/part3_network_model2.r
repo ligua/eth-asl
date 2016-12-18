@@ -29,7 +29,8 @@ model_inputs <- function(requests, mss) {
   res$tLB_set <- mean(requests_set$timeEnqueued-requests_set$timeCreated)
   res$tRW <- mean(requests_get$timeReturned-requests_get$timeDequeued)
   res$tWW <- mean(requests_set$timeForwarded-requests_set$timeDequeued)
-  res$tMC <- mean(requests_set$timeReturned-requests_set$timeForwarded)
+  res$tMC <- mean(requests_set$timeReceived-requests_set$timeForwarded)
+  res$tWWR <- mean(requests_set$timeReturned-requests_set$timeReceived)
   
   rt_middleware_get <- mean(requests_get$timeReturned-requests_get$timeCreated)
   rt_middleware_set <- mean(requests_set$timeReturned-requests_set$timeCreated)
@@ -41,7 +42,8 @@ model_inputs <- function(requests, mss) {
   
   return(res)
 }
-exp_dir <- "./results/replication/S5_R1_rep5"
+
+exp_dir <- "./results/replication/S5_R5_rep5"
 
 memaslap_file <- paste0(exp_dir, "/memaslap_stats.csv")
 requests_file <- paste0(exp_dir, "/request.log")
@@ -81,7 +83,7 @@ arg_list <- paste(octave_output_file,
                   perc_writes,
                   inputs$tNW_get, inputs$tNW_set,
                   inputs$tLB_get, inputs$tLB_set,
-                  inputs$tWW, inputs$tRW, inputs$tMC,
+                  inputs$tWW, inputs$tRW, inputs$tMC, inputs$tWWR,
                   collapse=" ")
 system(paste0("octave scripts/oct/mva2_main.m ", arg_list))
 mva <- readMat(octave_output_file)
@@ -89,7 +91,8 @@ mva <- readMat(octave_output_file)
 K <- ncol(mva$U) # number of nodes in the network
 ind_RW = 3:(3+num_servers-1) # ReadWorker devices
 ind_WW = (3+num_servers):(3+2*num_servers-1) # WriteWorker devices
-ind_MC = (3+2*num_servers):(K-1)
+ind_MC = (3+2*num_servers):(3+3*num_servers-1)
+ind_WWR = (3+3*num_servers):(K-1) # WriteWorkerRet
 
 predicted <- list()
 predicted$type <- "predicted"
@@ -100,14 +103,14 @@ predicted$mean_response_time <-
   (1 - prop_writes) * predicted$mean_response_time_get +
   prop_writes / 100 * predicted$mean_response_time_set
 predicted$rt_rw <- sum((mva$R * mva$V)[,ind_RW])*1000
-predicted$rt_ww_and_mc <- sum((mva$R * mva$V)[,c(ind_WW, ind_MC)])*1000
+predicted$rt_ww <- sum((mva$R * mva$V)[,c(ind_WW)])*1000
 
 # ---- Actual results ----
 tps_get <- (1-prop_writes) * mss$tps_mean # TODO this is an estimate -- could get precise!
 tps_set <- prop_writes * mss$tps_mean
 actual <- as.list(mss)
 actual$rt_rw <- mean(requests_get$timeReturned-requests_get$timeEnqueued)
-actual$rt_ww_and_mc <- mean(requests_set$timeReturned-requests_set$timeEnqueued)
+actual$rt_ww <- mean(requests_set$timeReceived-requests_set$timeEnqueued)
 
 
 
@@ -123,7 +126,7 @@ comparison
 
 # Time breakdown: actual vs predicted
 data1 <- comparison %>%
-  select(rt_rw, rt_ww_and_mc, type) %>%
+  select(rt_rw, rt_ww, type) %>%
   melt(id.vars=c("type"))
 
 ggplot(data1, aes(x=type, y=value, fill=type)) +
