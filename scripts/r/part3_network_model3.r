@@ -165,6 +165,43 @@ print.xtable(comparison_table, file=paste0(output_dir, "/comparison_table.txt"),
              size="\\fontsize{9pt}{10pt}\\selectfont",
              table.placement="h")
 
+# Bottleneck analysis
+Z <- 0 # waiting time
+D <- mva$U / mva$X
+D_sum <- sum(D, na.rm=TRUE)  # sum(D[1,ind_RW]) + sum(D[2,ind_WW]) + sum(D[2,])
+D_max <- max(D, na.rm=TRUE)
+throughput_slope <- 1 / (D_sum + Z)
+throughput_constant <- 1/D_max
+responsetime_slope <- D_max
+responsetime_constant <- D_sum
+
+N <- 1:100
+rt_bound <- pmax(responsetime_constant, responsetime_slope * N)
+data_rt <- data.frame(N, rt_bound)
+ggplot(data_rt, aes(x=N)) +
+  geom_hline(aes(yintercept=responsetime_constant), linetype = 2) + 
+  geom_abline(aes(intercept=-Z, slope=responsetime_slope), linetype = 2) + 
+  geom_line(aes(y=rt_bound), size=1) +
+  xlab("Number of clients") +
+  ylab("Response time") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/asymptotics_responsetime.pdf"),
+       width=fig_width, height=fig_height)
+
+
+tp_bound <- pmin(throughput_constant, throughput_slope * N)
+data_tp <- data.frame(N, tp_bound)
+ggplot(data_tp, aes(x=N)) +
+  geom_hline(aes(yintercept=throughput_constant), linetype = 2) + 
+  geom_abline(aes(intercept=0, slope=throughput_slope), linetype = 2) + 
+  geom_line(aes(y=tp_bound), size=1) +
+  xlab("Number of clients") +
+  ylab("Throughput") +
+  asl_theme
+ggsave(paste0(output_dir, "/graphs/asymptotics_throughput.pdf"),
+       width=fig_width, height=fig_height)
+
+
 
 # Time breakdown: actual vs predicted
 data1 <- comparison %>%

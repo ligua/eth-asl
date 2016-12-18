@@ -214,7 +214,7 @@ There are some aspects in which the model performs well, though. Figure~\ref{fig
 \subsection{Model}
 \todo{}
 
-We have a closed queueing network: the total number of jobs in the system is constant. This number is equal to the concurrency parameter $C$ we give to memaslap since each concurrent job in memaslap sends one request and waits for a response before sending the next one.
+We have a closed \todo{closed system AND closed network} queueing network: the total number of jobs in the system is constant. This number is equal to the concurrency parameter $C$ we give to memaslap since each concurrent job in memaslap sends one request and waits for a response before sending the next one.
 
 \todo{} problem is that I include loadbalancer queueing time in network roundtrip, but this is not a problem -- I just add a (tiny) constant amount of time to the network time because of this
 
@@ -257,7 +257,9 @@ if there is nothing in the queue and no responses from memcached then we will wa
 \label{fig:part3:utilisation}
 \end{figure}
 
-\todo{}
+\todo{} Book 33-03 (33.6)
+
+calculate bounds of throughput and response time
 
 \clearpage
 % --------------------------------------------------------------------------------
