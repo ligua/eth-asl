@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NUM_CLIENTS=180
+NUM_CLIENTS=10
 
 LOG_DIR=tmp/local
 mkdir -p $LOG_DIR

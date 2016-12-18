@@ -52,6 +52,7 @@ public class LoadBalancer implements Runnable {
 
         Integer primaryMachine = hasher.getPrimaryMachine(request.getKey());
         MiddlewareComponent mc = middlewareComponents.get(primaryMachine);
+        request.primaryMachine = primaryMachine;
 
         ByteBuffer buffer = request.getBuffer();
         buffer.limit(numBytesRead.get(selectionKey));

@@ -18,7 +18,7 @@ public class Request {
     private static final Logger log = LogManager.getLogger(Request.class);
     private static final Logger csvLog = LogManager.getLogger("request_csv");
 
-    public static final int LOG_SAMPLING_FREQUENCY = 1;
+    public static final int LOG_SAMPLING_FREQUENCY = 10;
 
     private RequestType type;
     private ByteBuffer buffer;
@@ -26,6 +26,7 @@ public class Request {
     private String key;
     private String stringRepresentation;
     private SelectionKey selectionKey;
+    public Integer primaryMachine = -1;
 
     private long timeCreated;
     private long timeEnqueued;
@@ -280,8 +281,8 @@ public class Request {
      */
     public void logTimestamps() {
         if(shouldLog) {
-            csvLog.info(String.format("%s,%s,%d,%d,%d,%d,%d,%d",
-                    type, responseFlag, timeCreated, timeEnqueued, timeDequeued, timeForwarded, timeReceived, timeReturned));
+            csvLog.info(String.format("%s,%s,%d,%d,%d,%d,%d,%d,%d",
+                    type, responseFlag, primaryMachine, timeCreated, timeEnqueued, timeDequeued, timeForwarded, timeReceived, timeReturned));
         }
     }
 
