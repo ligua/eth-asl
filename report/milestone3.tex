@@ -212,6 +212,10 @@ We have a closed queueing network: the total number of jobs in the system is con
 
 \todo{} problem is that I include loadbalancer queueing time in network roundtrip, but this is not a problem -- I just add a (tiny) constant amount of time to the network time because of this
 
+better to model as one component because my model basically works serially if memcached responds within 1ms
+
+also WriteWorker performance depends on queue length -- if 0 elements, then requests will be received from memcached and forwarded back to the client faster 
+
 MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
 
 \subsection{Data}

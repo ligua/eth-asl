@@ -31,7 +31,7 @@ model_inputs <- function(requests, mss) {
   res$tLB_get <- mean(requests_get$timeEnqueued-requests_get$timeCreated)
   res$tLB_set <- mean(requests_set$timeEnqueued-requests_set$timeCreated)
   res$tRW <- mean(requests_get$timeReturned-requests_get$timeDequeued)
-  res$tWW <- 1/tps_WW * 1000
+  res$tWW <- mean(requests_set$timeReturned-requests_set$timeDequeued) #1/tps_WW * 1000
   
   rt_middleware_get <- mean(requests_get$timeReturned-requests_get$timeCreated)
   rt_middleware_set <- mean(requests_set$timeReturned-requests_set$timeCreated)

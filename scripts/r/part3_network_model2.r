@@ -31,7 +31,9 @@ model_inputs <- function(requests, mss) {
   res$tLB_get <- mean(requests_get$timeEnqueued-requests_get$timeCreated)
   res$tLB_set <- mean(requests_set$timeEnqueued-requests_set$timeCreated)
   res$tRW <- mean(requests_get$timeReturned-requests_get$timeDequeued)
-  res$tWW <- 1/tps_WW * 1000
+  res$tWW <- mean(requests_set$timeForwarded-requests_set$timeDequeued)
+  res$tMC <- mean(requests_set$timeReceived-requests_set$timeForwarded)
+  res$tWWR <- mean(requests_set$timeReturned-requests_set$timeReceived)
   
   rt_middleware_get <- mean(requests_get$timeReturned-requests_get$timeCreated)
   rt_middleware_set <- mean(requests_set$timeReturned-requests_set$timeCreated)
@@ -44,7 +46,7 @@ model_inputs <- function(requests, mss) {
   return(res)
 }
 
-exp_dir <- "./results/replication/S5_R5_rep5"
+exp_dir <- "./results/replication/S7_R1_rep9"
 
 memaslap_file <- paste0(exp_dir, "/memaslap_stats.csv")
 requests_file <- paste0(exp_dir, "/request.log")
@@ -81,12 +83,12 @@ octave_output_dir <- paste0(octave_dir_base, "/model2/", dir_name_end)
 system(paste0("mkdir -p ", octave_output_dir))
 octave_output_file <- paste0(octave_output_dir, "/results.mat")
 arg_list <- paste(octave_output_file,
-                  num_servers, num_threads, num_clients, perc_writes,
+                  num_servers, num_replication, num_threads, num_clients, perc_writes,
                   inputs$tNW_get, inputs$tNW_set,
                   inputs$tLB_get, inputs$tLB_set,
-                  inputs$tWW, inputs$tRW,
+                  inputs$tWW, inputs$tRW, inputs$tMC, inputs$tWWR,
                   collapse=" ")
-system(paste0("octave scripts/oct/mva3_main.m ", arg_list))
+system(paste0("octave scripts/oct/mva2_main.m ", arg_list))
 mva <- readMat(octave_output_file)
 
 K <- ncol(mva$U) # number of nodes in the network
@@ -109,7 +111,7 @@ tps_get <- (1-prop_writes) * mss$tps_mean # TODO this is an estimate -- could ge
 tps_set <- prop_writes * mss$tps_mean
 actual <- as.list(mss)
 actual$rt_rw <- mean(requests_get$timeReturned-requests_get$timeEnqueued)
-actual$rt_ww <- mean(requests_set$timeReceived-requests_set$timeEnqueued)
+actual$rt_ww <- mean(requests_set$timeForwarded-requests_set$timeEnqueued)
 
 
 
