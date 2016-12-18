@@ -15,7 +15,7 @@ R_lambdas = [lambda S: 1, lambda S: math.ceil(S / 2), lambda S: S]      # replic
 virtual_clients = 180
 num_threads = 32
 
-experiment_runtime = 6
+experiment_runtime = 5
 runtime_buffer = 15 # will be cut off when memaslaps are done
 num_repetitions = 1
 stats_frequency = "10s"
@@ -25,7 +25,7 @@ memaslap_window_size = "1k"
 combinations = []
 for S in S_values:
     for R_lambda in R_lambdas:
-        for repetition in [6, 7]:#range(num_repetitions):
+        for repetition in [8]:#range(num_repetitions):
             R = R_lambda(S)
             combinations.append((S, R, repetition))
 #combinations = [(5, 1, 1)] # override combinations
