@@ -78,16 +78,16 @@ mss <- memaslap_summary(memaslap) %>%
 inputs <- model_inputs(requests, mss) %>% as.data.frame()
 
 # ---- Model results ----
-octave_output_dir <- paste0(octave_dir_base, "/model2/", dir_name_end)
+octave_output_dir <- paste0(octave_dir_base, "/model3/", dir_name_end)
 system(paste0("mkdir -p ", octave_output_dir))
 octave_output_file <- paste0(octave_output_dir, "/results.mat")
 arg_list <- paste(octave_output_file,
-                  num_servers, num_replication, num_threads, num_clients, perc_writes,
+                  num_servers, num_threads, num_clients, perc_writes,
                   inputs$tNW_get, inputs$tNW_set,
                   inputs$tLB_get, inputs$tLB_set,
-                  inputs$tWW, inputs$tRW, inputs$tMC, 0,
+                  inputs$tWW, inputs$tRW,
                   collapse=" ")
-system(paste0("octave scripts/oct/mva2_main.m ", arg_list))
+system(paste0("octave scripts/oct/mva3_main.m ", arg_list))
 mva <- readMat(octave_output_file)
 
 K <- ncol(mva$U) # number of nodes in the network
