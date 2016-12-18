@@ -148,3 +148,18 @@ ggplot(data3, aes(x=value, y=quantiles, color=variable)) +
 ggsave(paste0(output_dir, "/graphs/queue_time_quantiles_actual_and_predicted.pdf"),
        width=fig_width, height=fig_height/2)
 
+# Response time vs traffic intensity
+rhos <- seq(0.01, 0.9, 0.01)
+rts <- 1 / (mu * (1-rhos)) * 1000 # ms
+data <- data.frame(rho=rhos, response_time=rts)
+ggplot(data, aes(x=rho, y=response_time)) +
+  geom_point() +
+  geom_line() +
+  asl_theme
+
+
+
+
+
+
+
