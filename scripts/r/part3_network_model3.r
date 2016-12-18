@@ -96,12 +96,14 @@ ind_network = c(1, K)
 
 predicted <- list()
 predicted$type <- "predicted"
-predicted$tps_mean <- sum(mva$X[1:2,1])
+predicted$throughput <- sum(mva$X[1:2,1])
+predicted$throughput_readworkers <- sum(mva$X[1,ind_RW])
+predicted$throughput_writeworkers <- sum(mva$X[2,ind_WW])
 predicted$mean_response_time_get <- sum((mva$R * mva$V)[1,])*1000
 predicted$mean_response_time_set <- sum((mva$R * mva$V)[2,])*1000
 predicted$mean_response_time <-
   (1 - prop_writes) * predicted$mean_response_time_get +
-  prop_writes / 100 * predicted$mean_response_time_set
+  prop_writes * predicted$mean_response_time_set
 predicted$mean_response_time_readworker <- sum((mva$R * mva$V)[,ind_RW])*1000
 predicted$mean_response_time_writeworker <- sum((mva$R * mva$V)[,c(ind_WW)])*1000
 predicted$mean_response_time_lb_get <- mva$R[1,2] * 1000
@@ -114,15 +116,15 @@ predicted$items_network_get <- sum(mva$Q[1,ind_network])
 predicted$items_network_set <- sum(mva$Q[2,ind_network])
 predicted$items_lb_get <- mva$Q[1,2]
 predicted$items_lb_set <- mva$Q[2,2]
-predicted$items_readworker <- sum(mva$Q[1,ind_RW])
-predicted$items_writeworker <- sum(mva$Q[2,ind_WW])
-predicted$tps_readworker <- sum(mva$X[1,ind_RW])
-predicted$tps_writeworker <- sum(mva$X[2,ind_WW])
+predicted$items_readworkers <- sum(mva$Q[1,ind_RW])
+predicted$items_writeworkers <- sum(mva$Q[2,ind_WW])
 
 # ---- Actual results ----
 tps_get <- (1-prop_writes) * mss$tps_mean # TODO this is an estimate -- could get precise!
 tps_set <- prop_writes * mss$tps_mean
-actual <- as.list(mss)
+actual <- as.list(mss %>% rename(throughput=tps_mean))
+actual$throughput_readworkers <- tps_get
+actual$throughput_writeworkers <- tps_set
 actual$mean_response_time_readworker <- mean(requests_get$timeReturned-requests_get$timeEnqueued)
 actual$mean_response_time_writeworker <- mean(requests_set$timeReturned-requests_set$timeEnqueued)
 actual$mean_response_time_lb_get <- NA
@@ -135,12 +137,8 @@ actual$items_network_get <- 2 * inputs$tNW_get / 1000 * tps_get # Little's law (
 actual$items_network_set <- 2 * inputs$tNW_set / 1000 * tps_set
 actual$items_lb_get <- NA
 actual$items_lb_set <- NA
-actual$items_readworker <- actual$mean_response_time_readworker / 1000 * tps_get
-actual$items_writeworker <- actual$mean_response_time_readworker / 1000 * tps_set
-actual$tps_readworker <- tps_get
-actual$tps_writeworker <- tps_set
-
-
+actual$items_readworkers <- actual$mean_response_time_readworker / 1000 * tps_get
+actual$items_writeworkers <- actual$mean_response_time_writeworker / 1000 * tps_set
 
 # ---- Analysis ----
 
@@ -151,6 +149,22 @@ comparison <- as.data.frame(actual) %>%
          writes=perc_writes, replication=num_replication,
          repetition=num_repetition)
 comparison
+
+comparisons_to_save <- comparison %>%
+  select(-servers, -threads, -clients, -writes, -replication, -repetition,
+         -mean_response_time_lb_get, -mean_response_time_lb_set,
+         -items_lb_get, -items_lb_set) %>%
+  melt(id.vars=c("type")) %>%
+  dcast(variable ~ type) %>%
+  select(variable, predicted, actual)
+comparison_table <- xtable(comparisons_to_save, caption="\\todo{} loadbalancer items and response times have been left out because they were extremely low",
+                             label="tbl:part3:comparison_table",
+                             digits=c(NA, NA, 2, 2),
+                             align="|l|l|r|r|")
+print.xtable(comparison_table, file=paste0(output_dir, "/comparison_table.txt"),
+             size="\\fontsize{9pt}{10pt}\\selectfont",
+             table.placement="h")
+
 
 # Time breakdown: actual vs predicted
 data1 <- comparison %>%
@@ -183,7 +197,7 @@ data2 <- data2_gets %>%
   
 ggplot(data2, aes(x=type, y=value, fill=type)) +
   geom_bar(stat="identity") +
-  facet_wrap(~request_type + variable) +
+  facet_wrap(~request_type + variable, nrow=1) +
   asl_theme
 ggsave(paste0(output_dir, "/graphs/items_actual_vs_predicted.pdf"),
        width=fig_width, height=fig_height)
@@ -196,6 +210,8 @@ data3 <- comparison %>%
 ggplot(data3, aes(x=type, y=value, fill=type)) +
   geom_bar(stat="identity") +
   facet_wrap(~variable, nrow=1) +
+  xlab("Value") +
+  ylab("Utilisation") +
   asl_theme +
   theme(legend.position="none")
 ggsave(paste0(output_dir, "/graphs/utilisation_actual_vs_predicted.pdf"),

@@ -70,6 +70,8 @@
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
+\todo{Purpose} of this section (1-2 sentences)
+
 \subsection{Model}
 \label{sec:part1:model}
 
@@ -138,6 +140,8 @@ In summary, the model a) does not adequately take into account the internal stru
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
+\todo{Purpose} of this section (1-2 sentences)
+
 \subsection{Model}
 
 The system under test (SUT) in this section includes the middleware, memcached servers and the network between them. It does \emph{not} include clients or the network between clients and middleware.
@@ -205,6 +209,8 @@ There are some aspects in which the model performs well, though. Figure~\ref{fig
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
+\todo{Purpose} of this section (1-2 sentences)
+
 \subsection{Model}
 \todo{}
 
@@ -219,15 +225,32 @@ also WriteWorker performance depends on queue length -- if 0 elements, then requ
 MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
 
 \subsection{Data}
-\todo{}
-
+The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and one configuration ($S=5, R=1$) were used (short name \texttt{replication-S5-R1-r5}). As a reminder, that experiment had $W=5\%$ and $C=180$.
 
 \subsection{Comparison of model and experiments}
+
+
+
+\subsubsection{Mean value analysis}
+
+\input{../results/analysis/part3_network/comparison_table.txt}
+
 \todo{}
 
 performance of writeworker \emph{depends on queue length} because if there are no elements in queue then we check memcached responses every 1ms, whereas if there are elements in queue then we check always after dequeueing an element. This dependence violates \todo{} what assumption?
 
 if there is nothing in the queue and no responses from memcached then we will wait for 2ms!
+
+\subsubsection{Bottleneck analysis}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../results/analysis/part3_network/graphs/utilisation_actual_vs_predicted.pdf}
+\caption{\todo{}}
+\label{fig:part3:utilisation}
+\end{figure}
+
+\todo{}
 
 \clearpage
 % --------------------------------------------------------------------------------
@@ -236,8 +259,12 @@ if there is nothing in the queue and no responses from memcached then we will wa
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
+\todo{Purpose} of this section (1-2 sentences)
+
 \subsection{Experimental question and experiment design}
 The goal of this section is to find out the factors that influence throughput of the system. In particular, I will investigate the effect of $k=3$ factors -- $S$ (number of servers), $R$ (replication level) and $W$ (percentage of \set{}s in workload) -- on total throughput of the system. Everything else will be kept fixed: the number of threads $T=32$ and the number of clients $C=180$.
+
+\todo{} Especially interesting is proportion of writes because writes are so fucked up in SUT.
 
 For each factor in $\{S,R,W\}$ we need to pick two levels. Since I expect throughput to monotonically increase with $S$, decrease with $R$, and decrease with $W$, we can use the minimum and maximum level for each factor in our $2^k$ experiment: $S \in \{3, 7\}$, $R \in \{1, S\}$, and $W \in \{1, 10\}$.
 
@@ -336,6 +363,8 @@ The amount of servers $S$ or replication $R$ don't have a large effect individua
 \section{Interactive Law Verification}\label{sec:part5-interactive-law}
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
+
+\todo{Purpose} of this section (1-2 sentences)
 
 \subsection{Model}
 
