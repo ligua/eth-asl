@@ -87,7 +87,7 @@ In this section I create an M/M/1 model of the SUT. This means the following def
 	\item Arrivals are individual, so we have a birth-death process.
 \end{itemize}
 
-\paragraph{Problems of the model}
+\subsection{Problems of the model}
 The assumptions above obviously do not hold for our actual system. Especially strong is the assumption of a single server; since we actually have multiple servers, this model is likely to predict the behaviour of the system very poorly. A second problem arises from my very indirect method of estimating parameters for the model (and an arbitrary choice of time window) which introduces inaccuracies.
 
 
@@ -157,7 +157,7 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 
 The model built here does not account for the effect of replication. For this reason I will only use data from experiments for which $R=1$.
 
-\paragraph{Problems of the model}
+\subsection{Problems of the model}
 \todo{}
 
 \begin{enumerate}
@@ -214,25 +214,66 @@ There are some aspects in which the model performs well, though. Figure~\ref{fig
 \subsection{Model}
 \todo{}
 
-We have a closed \todo{closed system AND closed network} queueing network: the total number of jobs in the system is constant. This number is equal to the concurrency parameter $C$ we give to memaslap since each concurrent job in memaslap sends one request and waits for a response before sending the next one.
+The system under test (SUT) in this section includes the clients, middleware, memcached servers and the network between them.
 
-\todo{} problem is that I include loadbalancer queueing time in network roundtrip, but this is not a problem -- I just add a (tiny) constant amount of time to the network time because of this
+Thus we can model SUT as a \emph{closed} queueing network: the total number of jobs in the system is constant and equal to the concurrency parameter $C$ we give to memaslap -- each concurrent job in memaslap sends one request and waits for a response before sending the next one.
 
-better to model as one component because my model basically works serially if memcached responds within 1ms
-
-also WriteWorker performance depends on queue length -- if 0 elements, then requests will be received from memcached and forwarded back to the client faster 
-
-MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
+I will use the following definitions and assumptions:
+\begin{itemize}
+	\item The queues are defined as having infinite buffer capacity.
+	\item The population size is infinite.
+	\item The service discipline is FCFS.
+	\item Interarrival times and the service times are exponentially distributed.
+	\item The clients have $Z=0$ think time.
+\end{itemize}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{figures/queueing_network}
-\caption{\todo{} only one middlewarecomponent shown; network delay nodes are identical; ...}
+\caption{The queueing network model. Only one \linkmain{MiddlewareComponent} out of $S$ is shown. The network delay centers have identical service and are separated in the figure only for clarity.}
 \label{fig:part3:network_diagram}
 \end{figure}
 
+Figure~\ref{fig:part3:network_diagram} shows the queueing network model used in this section. The client--middleware network time is modelled as a delay center. \linkmain{LoadBalancer} -- which consists of a single thread dequeueing from one queue -- is modelled as an M/M/1 node.
+
+There are two queues in each \linkmain{MiddlewareComponent} and they are modelled as such: $T$ \linkmain{ReadWorker}s are dequeueing from a single queue of \get{}s and one \linkmain{WriteWorker} is dequeueing from a queue of \set{}s. This gives rise to M/M/$T$ and M/M/1 architectures, respectively.
+
+There is no explicit modelling of memcached servers: instead, the network round-trip to memcached, the waiting time in memcached and the service time of memcached servers is all counted into the service time of Workers.
+
+\get{}s and \set{}s are modelled separately, i.e. this is a \emph{multiclass} queueing network.
+
+\subsection{Problems of the model}
+
+One fundamental problem of the model is the simplification of not modelling memcached servers. This simplification makes sense for \linkmain{ReadWorker}s because they block until a \get{} has been returned to the client, but since \linkmain{WriteWorker}s are asynchronous, this is not an accurate model.
+
+However, after dequeueing a \set{} and sending it to memcached, a \linkmain{WriteWorker} waits for 1 millisecond (using \texttt{Selector.select(long timeout)}) before proceeding to dequeueing the next element. As a consequence, if the response from memcached arrives within 1ms and no other responses are ready to be \texttt{select}ed, the behaviour is equivalent to blocking until a response is received. For a similar reason, if we increase $S$ or $R$, WriteWorkers will get faster because there is less blocking on the \texttt{select()} method. (This also explains the behaviour seen in Milestone~2 Section~2).
+
+For this reason, \linkmain{WriteWorker}s exhibit a behaviour that is on average 'between' asynchronous and synchronous -- and using a single M/M/1 model for the \linkmain{WriteWorker} -- memcached -- \linkmain{WriteWorker} part of SUT is a better approximation.
+
+A consequence of the problem described above is that replication has no effect on the predictions -- if we want to find parameters from one configuration and use them to predict the performance for varying $R$, we will get exactly the same results.
+
+
+\subsection{Parameter estimation}
+
+The inputs to the queueing network model are: $S$, $T$, $C$, $W$, and service times in each node of the network. The service times for each component are defined as follows (refer to Milestone~1 Figure~1 for timestamp definitions):
+
+\begin{itemize}
+	\item $s_{network} = 0.5 \cdot (T_{ms} - T_{mw})$, where $T_{ms}$ is the mean response time measured by memaslap, and $T_{mw} = mean(t_{returned}-t_{created})$ (mean response time measured by middleware)
+	\item $s_{LoadBalancer} = mean(t_{enqueued}-t_{created})$
+	\item $s_{WriteWorker} = mean(t_{returned}-t_{dequeued})$
+	\item $s_{ReadWorker} = mean(t_{returned}-t_{dequeued})$
+\end{itemize}
+
+$s_{network}$ and $s_{LoadBalancer}$ are calculated separately for \get{}s and \set{}s (the names of Workers already imply that the service times are only calculated for one request type).
+
+\todo{} problem is that I include loadbalancer queueing time in network roundtrip, but this is not a problem -- I just add a (tiny) constant amount of time to the network time because of this
+
+MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
+
+
 \subsection{Data}
-The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and one configuration ($S=5, R=1$) were used (short name \texttt{replication-S5-R1-r5}). As a reminder, that experiment had $W=5\%$ and $C=180$.
+\label{sec:part3:data}
+The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and one configuration ($S=5$, $R=1$) were used (short name \texttt{replication-S5-R1-r5}). As a reminder, that experiment had $W=5\%$, $T=32$ and $C=180$.
 
 \subsection{Comparison of model and experiments}
 
