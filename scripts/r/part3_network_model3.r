@@ -175,31 +175,42 @@ throughput_constant <- 1/D_max
 responsetime_slope <- D_max
 responsetime_constant <- D_sum
 
-N <- 1:100
+N_max <- 100
+M <- K
+S <- mva$S[1,] #(1-prop_writes) * mva$S[1,] + prop_writes * mva$S[2,]
+V <- mva$V[1,] #(1-prop_writes) * mva$V[1,] + prop_writes * mva$V[2,]
+delay_centers <- c(1, M)
+multiple_servers <- 2:(2+num_servers-1)
+
+manual_mva_res <- get_mva_results(N_max, Z, M, S, V, delay_centers, multiple_servers)
+
+N <- 1:N_max
 rt_bound <- pmax(responsetime_constant, responsetime_slope * N)
-data_rt <- data.frame(N, rt_bound)
+data_rt <- data.frame(N, rt_bound, rt_mva=manual_mva_res$response_times)
 ggplot(data_rt, aes(x=N)) +
   geom_hline(aes(yintercept=responsetime_constant), linetype = 2) + 
   geom_abline(aes(intercept=-Z, slope=responsetime_slope), linetype = 2) + 
   geom_line(aes(y=rt_bound), size=1) +
+  geom_line(aes(y=rt_mva), color="red") +
   xlab("Number of clients") +
   ylab("Response time") +
   asl_theme
-ggsave(paste0(output_dir, "/graphs/asymptotics_responsetime.pdf"),
-       width=fig_width, height=fig_height)
+#ggsave(paste0(output_dir, "/graphs/asymptotics_responsetime.pdf"),
+#       width=fig_width, height=fig_height)
 
 
 tp_bound <- pmin(throughput_constant, throughput_slope * N)
-data_tp <- data.frame(N, tp_bound)
+data_tp <- data.frame(N, tp_bound, tp_mva=manual_mva_res$throughputs)
 ggplot(data_tp, aes(x=N)) +
   geom_hline(aes(yintercept=throughput_constant), linetype = 2) + 
   geom_abline(aes(intercept=0, slope=throughput_slope), linetype = 2) + 
   geom_line(aes(y=tp_bound), size=1) +
+  geom_line(aes(y=tp_mva), color="red") +
   xlab("Number of clients") +
   ylab("Throughput") +
   asl_theme
-ggsave(paste0(output_dir, "/graphs/asymptotics_throughput.pdf"),
-       width=fig_width, height=fig_height)
+#ggsave(paste0(output_dir, "/graphs/asymptotics_throughput.pdf"),
+#       width=fig_width, height=fig_height)
 
 
 

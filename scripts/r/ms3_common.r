@@ -180,6 +180,36 @@ get_mmm_num_jobs_in_queue_std <- function(rho, weird_rho, mu, m) {
   return((2-rho)*rho/(mu^2 * (1-rho)^2))
 }
 
-#get_mva_results <- function(N_max, Z, M, S)
+get_mva_results <- function(N_max, Z, M, S, V, delay_centers, multiple_servers) {
+  response_times <- integer(N_max)
+  throughputs <- integer(N_max)
+  
+  Q <- integer(M)
+  R <- integer(M)
+  U <- integer(M)
+  for(n in 1:N_max) {
+    for(i in 1:M) {
+      if(i %in% delay_centers) {
+        R[i] <- S[i]
+      } else {
+        R[i] <- S[i] * (1 + Q[i])
+      }
+    }
+    
+    response_times[n] <- sum(R * V)
+    throughputs[n] <- n / (Z + response_times[n])
+    
+    for(i in 1:M) {
+      Q[i] <- throughputs[n] * V[i] * R[i]
+    }
+  }
+  
+  res <- list(response_times=response_times, throughputs=throughputs)
+  res$Q <- Q
+  res$R <- R
+  res$X <- throughputs[N_max] * V
+  res$U <- throughputs[N_max] * S * V
+  return(res)
+}
 
 
