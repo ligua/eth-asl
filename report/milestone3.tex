@@ -70,7 +70,7 @@
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\todo{Purpose} of this section (1-2 sentences)
+In this section I will build a very simple black-box model of the system.
 
 \subsection{Model}
 \label{sec:part1:model}
@@ -79,12 +79,11 @@ The system under test (SUT) in this section includes the middleware, memcached s
 
 In this section I create an M/M/1 model of the SUT. This means the following definitions and assumptions:
 \begin{itemize}
-	\item The queues are defined as having infinite buffer capacity.
+	\item The queues have infinite buffer capacity.
 	\item The population size is infinite.
 	\item The service discipline is FCFS.
 	\item Interarrival times and the service times are exponentially distributed.
 	\item We treat the SUT as a single server and as a black box.
-	\item Arrivals are individual, so we have a birth-death process.
 \end{itemize}
 
 \subsection{Problems of the model}
@@ -93,7 +92,7 @@ The assumptions above obviously do not hold for our actual system. Especially st
 
 \subsection{Data}
 
-The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}} (short names \texttt{trace\_ms*}, \texttt{trace\_mw} and \texttt{trace\_req} in Milestone~1). For details, see Milestone~2, Appendix A.
+The experimental data used in this section comes from the updated trace experiment, found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/trace\_rep3}{results/trace\_rep3}} (short names \texttt{trace\_ms*}, \texttt{trace\_mw} and \texttt{trace\_req} in Milestone~1). For details, see Milestone~2, Appendix A. As a reminder, that experiment had $S=3$, $R=3$, $W=1\%$, $T=5$ and $C=192$.
 
 The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
  
@@ -113,11 +112,11 @@ Using the available experimental data, it is not possible to directly calculate 
 
 %Explain the characteristics and behavior of the model built, and compare it with the experimental data (collected both outside and inside the middleware). Map the similarities and differences to aspects of the design or the experiments.
 
-Table~\ref{tbl:part1:comparison_table} shows a comparison of the predictions of the M/M/1 model with actual results from the trace experiment. \todo{mention} if system is stable
+Table~\ref{tbl:part1:comparison_table} shows a comparison of the predictions of the M/M/1 model with actual results from the trace experiment. The system is stable since $\rho < 1$.
 
 It is clear that actual response time is much higher -- about 40 times higher -- than what the model predicts. This is because using M/M/1 for the SUT as a black box does not take into account internal parallelisation: we have $S \cdot T$ threads for \get{}s and $S$ threads for \set{}s. For a single thread to achieve the same throughput as $K$ parallel threads, it needs to process each request $K$ times faster. This doesn't explain the whole difference, though, given that in the trace experiment $K=15$ (compared to the 40x difference in predicted and actual values we observe).
 
-Another factor is queueing: since the M/M/1 model predicts a much lower response/service time, the queues in that model are also shorter. The number of jobs in each \linkmain{ReadWorker} queue is $\frac{149.79}{S \cdot R} = 9.07$ which is roughly 2 times more than what M/M/1 predicts. A longer queue means a longer waiting time.
+Another factor is queueing: since the M/M/1 model predicts a much lower response/service time, the queues in that model are also shorter. The number of jobs in each \get{} queue is $\frac{149.79}{S} = 9.07$ which is roughly 2 times more than what M/M/1 predicts. A longer queue means a longer waiting time.
 
 The model does provide a reasonable estimate of the utilisation of the system and the proportion of jobs in queue (out of all jobs in the system). This is mostly because the inputs we gave to the model (arrival rate and service rate) were good estimates and not because the model itself is accurate.
 
@@ -178,7 +177,7 @@ We can find $\lambda$ as simply the mean throughput over 1-second windows, simil
 
 \subsection{Data}
 
-The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and $R=1$ were used (short names \texttt{replication-S*-R1-r5}).
+The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and $R=1$ were used (short names \texttt{replication-S*-R1-r5}). As a reminder, that experiment had \todo{} $S=3$, $R=3$, $W=1\%$, $T=5$ and $C=192$.
 
 The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
 
@@ -414,11 +413,11 @@ The amount of servers $S$ or replication $R$ don't have a large effect individua
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\todo{Purpose} of this section (1-2 sentences)
+In this section, I will check the validity of experiments from Section~2 of Milestone~2 using the Interactive Response Time Law (IRTL).
 
 \subsection{Model}
 
-We are assuming a closed system, i.e. clients wait for a response from the server before sending another request. Under this assumption, the Interactive Response Time Law (IRTL) should hold:
+We are assuming a closed system, i.e. clients wait for a response from the server before sending another request. Under this assumption, IRTL should hold:
 
 $$R = \frac{N}{X} - Z$$
 
@@ -453,21 +452,9 @@ If we assume the wait time $Z$ to be 0, we get a mean relative prediction error 
 
 If we assume a nonzero $Z$ and estimate it from the experiments, we get a mean estimated wait time of -0.111ms. Clearly this is impossible: wait time must be non-negative.
 
-To explain these results, we need to answer the question: why is the actual throughput lower than the actual throughput? It could be that memaslap starts the clock for a new request before stopping the clock for the previous request -- which would violate the closed system assumption -- but this is very unlikely as it would be a major design flaw in memaslap.
-
-A more plausible hypothesis is that the effective value of $N$ is slightly lower than the concurrency I set using the relevant command line flags -- because the number of cores in the memaslap machine is much lower than the concurrency I'm using.
+To explain these results, we need to answer the question: why is the actual throughput lower than the actual throughput? The most plausible hypothesis is that memaslap starts the clock for a new request before stopping the clock for the previous request -- which would violate the closed system assumption. This could be caused by us using more virtual clients than CPU cores in each memaslap machine -- a practice discouraged by the creators of memaslap.
 
 Regardless of the exact reason of the deviation, the IRTL holds to a reasonably high accuracy. Perfect accuracy is impossible even without the middleware: in the baseline experiments (Milestone~1 Section~2), relative prediction error is 0.2\%-0.5\% in a selection of values of $N$ that I checked.
-
-\todo{if time} think about what could be causing the -1\%, but not a priority
-
-\todo{hypothesis: initial insertion by memaslap fucks this up?}
-
-\todo{@rincewind:} Zsolt also said: if you have more virtual clients than cpu-cores per host then the time measurements could have some distortions
-
-\todo{@tineler:} my explanation would be, that the response time is not normally distributed and therefore the calculation is not really accurate because of the "long right tail"
-
-% potential reasons from slides: network effects, processing overhead, exceptions and non-normal return values
 
 
 
