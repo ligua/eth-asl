@@ -242,6 +242,7 @@ There is no explicit modelling of memcached servers: instead, the network round-
 \get{}s and \set{}s are modelled separately, i.e. this is a \emph{multiclass} queueing network.
 
 \subsection{Problems of the model}
+\label{sec:part3:problems}
 
 One fundamental problem of the model is the simplification of not modelling memcached servers. This simplification makes sense for \linkmain{ReadWorker}s because they block until a \get{} has been returned to the client, but since \linkmain{WriteWorker}s are asynchronous, this is not an accurate model.
 
@@ -308,14 +309,12 @@ calculate bounds of throughput and response time
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\todo{Purpose} of this section (1-2 sentences)
+In this section, I will use a $2^kr$ experiment to understand the system. Of special interest here is the proportion of \set{}s because the performance of \set{}s in SUT strongly depends on parameters, as explained in Section~\ref{sec:part3:problems}.
 
 \subsection{Experimental question and experiment design}
 The goal of this section is to find out the factors that influence throughput of the system. In particular, I will investigate the effect of $k=3$ factors -- $S$ (number of servers), $R$ (replication level) and $W$ (percentage of \set{}s in workload) -- on total throughput of the system. Everything else will be kept fixed: the number of threads $T=32$ and the number of clients $C=180$.
 
-\todo{} Especially interesting is proportion of writes because writes are so fucked up in SUT.
-
-For each factor in $\{S,R,W\}$ we need to pick two levels. Since I expect throughput to monotonically increase with $S$, decrease with $R$, and decrease with $W$, we can use the minimum and maximum level for each factor in our $2^k$ experiment: $S \in \{3, 7\}$, $R \in \{1, S\}$, and $W \in \{1, 10\}$.
+For each factor in $\{S,R,W\}$ we need to pick two levels. Since I expect throughput to monotonically increase with $S$, decrease with $R$, and decrease with $W$, we can use the minimum and maximum level for each factor in our $2^kr$ experiment: $S \in \{3, 7\}$, $R \in \{1, S\}$, and $W \in \{1, 10\}$.
 
 
 \subsection{Data}
@@ -333,7 +332,7 @@ The data table is available in \hyperref[sec:appa]{Appendix~A}.
 \begin{subfigure}[t]{0.49\textwidth}
 \centering
 \includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/error_vs_predicted_tps.pdf}
-\caption{Error of the $2^k$ model as a function of predicted throughput. Each point is one repetition of a configuration. Note the throughput axis does not include zero.}
+\caption{Error of the $2^kr$ model as a function of predicted throughput. Each point is one repetition of a configuration. Note the throughput axis does not include zero.}
 \label{fig:part4:errorvspredicted}
 \end{subfigure}
 \begin{subfigure}[t]{0.49\textwidth}
@@ -342,14 +341,14 @@ The data table is available in \hyperref[sec:appa]{Appendix~A}.
 \caption{Boxplot of the error distribution for all levels of all factors. The box shows the inter-quartile range (between 25th and 75th percentiles, IQR), with the median shown as a horizontal line. The top and bottom whisker show the highest and lowest value within $1.5 IQR$ of the median. Experiment results are also plotted as single points. Note that each subplot contains all 24 data points.}
 \label{fig:part4:errordistvslevel}
 \end{subfigure}
-\caption{Evaluation of the $2^k$ model.}
+\caption{Evaluation of the $2^kr$ model.}
 \end{figure}
 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/error_vs_order.pdf}
-\caption{Error of the $2^k$ model as a function of the order in which experiments were run. Color of the points shows the repetition number.}
+\caption{Error of the $2^kr$ model as a function of the order in which experiments were run. Color of the points shows the repetition number.}
 \label{fig:part4:errorvsorder}
 \end{figure}
 
@@ -388,7 +387,7 @@ Even though the deviation from the mean is high in our experiments, residuals ar
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/actual_and_predicted_vs_servers_and_writes.pdf}
-\caption{Throughput as a function of $W$. Each line with points shows the results of one repetition. The red line shows the throughput predicted by the $2^k$ model; the light red ribbon shows the standard deviation that we would expect to see according to the model, if we were to run 3 repetitions.}
+\caption{Throughput as a function of $W$. Each line with points shows the results of one repetition. The red line shows the throughput predicted by the $2^kr$ model; the light red ribbon shows the standard deviation that we would expect to see according to the model, if we were to run 3 repetitions.}
 \label{fig:part4:actual_and_predicted_vs_servers_and_writes}
 \end{figure}
 
