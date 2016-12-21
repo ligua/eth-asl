@@ -139,7 +139,7 @@ In summary, the model a) does not adequately take into account the internal stru
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\todo{Purpose} of this section (1-2 sentences)
+In this section I will build a simple model of the system that assumes $m$ parallel workers in the system, all dequeueing from a single queue.
 
 \subsection{Model}
 
@@ -208,10 +208,9 @@ There are some aspects in which the model performs well, though. Figure~\ref{fig
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-\todo{Purpose} of this section (1-2 sentences)
+In this section, I will build a comprehensive network of queues model and identify bottlenecks in the system.
 
 \subsection{Model}
-\todo{}
 
 The system under test (SUT) in this section includes the clients, middleware, memcached servers and the network between them.
 
@@ -266,7 +265,7 @@ The inputs to the queueing network model are: $S$, $T$, $C$, $W$, and service ti
 
 $s_{network}$ and $s_{LoadBalancer}$ are calculated separately for \get{}s and \set{}s (the names of Workers already imply that the service times are only calculated for one request type).
 
-\todo{} problem is that I include loadbalancer queueing time in network roundtrip, but this is not a problem -- I just add a (tiny) constant amount of time to the network time because of this
+One issue with this definirion is that $s_{network}$ includes the queueing time in \linkmain{LoadBalancer}, but this is not an issue because the service time in that node is extremely low and thus, the queueing time is extremely low. Accordingly, our estimate for $s_{network}$ is not off by more than a few tenths of a percent.
 
 MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
 
@@ -294,7 +293,7 @@ if there is nothing in the queue and no responses from memcached then we will wa
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/analysis/part3_network/graphs/utilisation_actual_vs_predicted.pdf}
-\caption{\todo{}}
+\caption{Predicted and actual utilisations of all queueing nodes that are not delay centers, for \get{}s and \set{}s. \texttt{lb} stands for \linkmain{LoadBalancer}.}
 \label{fig:part3:utilisation}
 \end{figure}
 
