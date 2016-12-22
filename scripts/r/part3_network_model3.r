@@ -157,7 +157,7 @@ comparisons_to_save <- comparison %>%
   melt(id.vars=c("type")) %>%
   dcast(variable ~ type) %>%
   select(variable, predicted, actual)
-comparison_table <- xtable(comparisons_to_save, caption="\\todo{} loadbalancer items and response times have been left out because they were extremely low",
+comparison_table <- xtable(comparisons_to_save, caption="Parameters of the system calculated using MVA. \\texttt{lb} stands for \\linkmain{LoadBalancer}. The throughput and number of items in workers is given as the total over all threads. The response time of and number of items in \\linkmain{LoadBalancer} have been left out of the table because they were extremely low.",
                              label="tbl:part3:comparison_table",
                              digits=c(NA, NA, 2, 2),
                              align="|l|l|r|r|")
@@ -167,50 +167,13 @@ print.xtable(comparison_table, file=paste0(output_dir, "/comparison_table.txt"),
 
 # Bottleneck analysis
 Z <- 0 # waiting time
+X <- max(mva$X)
 D <- mva$U / mva$X
 D_sum <- sum(D, na.rm=TRUE)  # sum(D[1,ind_RW]) + sum(D[2,ind_WW]) + sum(D[2,])
 D_max <- max(D, na.rm=TRUE)
-throughput_slope <- 1 / (D_sum + Z)
-throughput_constant <- 1/D_max
-responsetime_slope <- D_max
-responsetime_constant <- D_sum
-
-N_max <- 100
-M <- K
-S <- mva$S[1,] #(1-prop_writes) * mva$S[1,] + prop_writes * mva$S[2,]
-V <- mva$V[1,] #(1-prop_writes) * mva$V[1,] + prop_writes * mva$V[2,]
-delay_centers <- c(1, M)
-multiple_servers <- 2:(2+num_servers-1)
-
-manual_mva_res <- get_mva_results(N_max, Z, M, S, V, delay_centers, multiple_servers)
-
-N <- 1:N_max
-rt_bound <- pmax(responsetime_constant, responsetime_slope * N)
-data_rt <- data.frame(N, rt_bound, rt_mva=manual_mva_res$response_times)
-ggplot(data_rt, aes(x=N)) +
-  geom_hline(aes(yintercept=responsetime_constant), linetype = 2) + 
-  geom_abline(aes(intercept=-Z, slope=responsetime_slope), linetype = 2) + 
-  geom_line(aes(y=rt_bound), size=1) +
-  geom_line(aes(y=rt_mva), color="red") +
-  xlab("Number of clients") +
-  ylab("Response time") +
-  asl_theme
-#ggsave(paste0(output_dir, "/graphs/asymptotics_responsetime.pdf"),
-#       width=fig_width, height=fig_height)
-
-
-tp_bound <- pmin(throughput_constant, throughput_slope * N)
-data_tp <- data.frame(N, tp_bound, tp_mva=manual_mva_res$throughputs)
-ggplot(data_tp, aes(x=N)) +
-  geom_hline(aes(yintercept=throughput_constant), linetype = 2) + 
-  geom_abline(aes(intercept=0, slope=throughput_slope), linetype = 2) + 
-  geom_line(aes(y=tp_bound), size=1) +
-  geom_line(aes(y=tp_mva), color="red") +
-  xlab("Number of clients") +
-  ylab("Throughput") +
-  asl_theme
-#ggsave(paste0(output_dir, "/graphs/asymptotics_throughput.pdf"),
-#       width=fig_width, height=fig_height)
+throughput_constant <- num_servers * ((1-prop_writes) * 1/D[1,3] + prop_writes * 1/D[2,8])
+responsetime_constant_get <- D[1,3] * 1000 # ms
+responsetime_constant_set <- D[2,8] * 1000 # ms
 
 
 

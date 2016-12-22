@@ -239,6 +239,8 @@ There is no explicit modelling of memcached servers: instead, the network round-
 
 \get{}s and \set{}s are modelled separately, i.e. this is a \emph{multiclass} queueing network.
 
+To analyse the model, I will perform MVA using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
+
 \subsection{Problems of the model}
 \label{sec:part3:problems}
 
@@ -266,26 +268,18 @@ $s_{network}$ and $s_{LoadBalancer}$ are calculated separately for \get{}s and \
 
 One issue with this definirion is that $s_{network}$ includes the queueing time in \linkmain{LoadBalancer}, but this is not an issue because the service time in that node is extremely low and thus, the queueing time is extremely low. Accordingly, our estimate for $s_{network}$ is not off by more than a few tenths of a percent.
 
-MVA was performed using the Octave package \href{http://www.moreno.marzolla.name/software/queueing/queueing.html}{queueing}.
-
 
 \subsection{Data}
 \label{sec:part3:data}
 The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and one configuration ($S=5$, $R=1$) were used (short name \texttt{replication-S5-R1-r5}). As a reminder, that experiment had $W=5\%$, $T=32$ and $C=180$.
 
 \subsection{Comparison of model and experiments}
-
-
-
-\subsubsection{Mean value analysis}
-
 \input{../results/analysis/part3_network/comparison_table.txt}
 
-\todo{}
+The predictions of the model match experimental results fairly well compared to the previous two Sections, as shown in Table~\ref{tbl:part3:comparison_table}. Total throughput is off by roughly 15\% and the response time to \get{}s is off by 10\% and so is the number of items in \linkmain{ReadWorker}s. Response time to \set{}s is off by a factor of 2. This is explained when we consider the discussion in Section~\ref{sec:part3:problems}: behaviour of \linkmain{WriteWorker}s is much less predictable than that of \linkmain{ReadWorker}s -- but since there are many more \get{}s than \set{}s the throughput estimate is still reasonable.
 
-performance of writeworker \emph{depends on queue length} because if there are no elements in queue then we check memcached responses every 1ms, whereas if there are elements in queue then we check always after dequeueing an element. This dependence violates \todo{} what assumption?
+In summary, the model is quite accurate for \linkmain{ReadWorker}s but less accurate for the more unpredictable \linkmain{WriteWorker}s.
 
-if there is nothing in the queue and no responses from memcached then we will wait for 2ms!
 
 \subsubsection{Bottleneck analysis}
 
@@ -296,9 +290,12 @@ if there is nothing in the queue and no responses from memcached then we will wa
 \label{fig:part3:utilisation}
 \end{figure}
 
-\todo{} Book 33-03 (33.6)
+To find the bottleneck, we can compare utilisation of each node in the queueing network. Figure~\ref{fig:part3:utilisation} shows that \linkmain{WriteWorker}s are the bottleneck in the actual system as well as in the model. However, since only \set{}s pass through \linkmain{WriteWorker}s, \get{}s have a different bottleneck -- which is clearly \linkmain{ReadWorker}s based on Figure~\ref{fig:part3:utilisation}.
 
-calculate bounds of throughput and response time
+We can estimate the upper bound on throughput by finding out what would happen if the bottlenecks had utilisation $U=1$. For each \linkmain{WriteWorker}, this is roughly 320 and for each \linkmain{ReadWorker} roughly 10500 requests per second, and the total throughput of the system is bound above by roughly 49900 requests per second. The response time of a \linkmain{WriteWorker}s is bound below by 3.1 ms and that of \linkmain{ReadWorker} by 0.095 ms.
+
+
+
 
 \clearpage
 % --------------------------------------------------------------------------------
