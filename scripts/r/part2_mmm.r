@@ -158,7 +158,9 @@ ggsave(paste0(output_dir, "/graphs/utilisation_vs_clients.pdf"),
        width=fig_width/2, height=fig_height/2)
 
 # Mean response time
-ggplot(comparisons, aes(x=servers, y=response_time_mean, color=type, fill=type)) +
+data2 <- comparisons %>% 
+  mutate(type=factor(type, levels=c("actual", "predicted")))
+ggplot(data2, aes(x=servers, y=response_time_mean, color=type, fill=type)) +
   geom_ribbon(aes(ymin=response_time_mean-response_time_std,
                   ymax=response_time_mean+response_time_std),
               alpha=0.3, color=NA) +
@@ -167,7 +169,7 @@ ggplot(comparisons, aes(x=servers, y=response_time_mean, color=type, fill=type))
   facet_wrap(~type, nrow=1) +
   #ylim(0, NA) +
   xlab("Number of servers") +
-  ylab("Mean response time") +
+  ylab("Mean response time [ms]") +
   asl_theme +
   theme(legend.position="none")
 ggsave(paste0(output_dir, "/graphs/response_time_predicted_and_actual.pdf"),

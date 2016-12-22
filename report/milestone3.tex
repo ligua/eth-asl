@@ -157,49 +157,47 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 The model built here does not account for the effect of replication. For this reason I will only use data from experiments for which $R=1$.
 
 \subsection{Problems of the model}
-\todo{}
-
-\begin{enumerate}
-	\item I actually have $m$ queues (one for each server), not a single queue; each request is assigned to a server when \linkmain{LoadBalancer} receives it.
-	\item I map requests to servers uniformly. M/M/m assumes that each server takes a request when it finishes with the previous one, but that is not true in my case -- I take earlier
-\end{enumerate}
+As in the previous section, the assumption of a single queue is inaccurate -- we actually have $S$ queues for \get{}s and $S$ queues for \set{}s. Another inaccuracy is the M/M/m assumption that each server dequeues a request only once it has finished with the previous one: this is true if we consider each \linkmain{ReadWorker} a separate server, but incorrect for \linkmain{WriteWorker}s that are designed to be asynchronous (see Section~\ref{sec:part3:problems} for a detailed discussion about this design).
 
 \subsection{Parameter estimation}
 
 We need to determine three parameters: the number of servers $m$, the arrival rate $\lambda$ and the service rate of each server $\mu$.
 
-Let us first find $m$. Since SUT has $S$ \linkmain{MiddlewareComponent}s, each of which has $T$ read threads and 1 write thread, all of which ideally run in parallel (i.e. none starve for resources). Thus I take $m := S \cdot (T + 1)$.
+Let us first find $m$. SUT has $S$ \linkmain{MiddlewareComponent}s, each of which has $T$ read threads and 1 write thread, all of which ideally run in parallel (i.e. none are starved of resources). Thus I take $m := S \cdot (T + 1)$.
 
-To estimate $\mu$ we can calculate the service time of each worker as the time spent between dequeueing the request and sending it back to the client: $t_{service} := t_{returned} - t_{dequeued}$. From there we find $\mu := \frac{1}{t_{service}}$. Note that this calculation does not distinguish between write and read threads.
+To estimate $\mu$ we can calculate the service time of each server (worker) as the time spent between dequeueing the request and sending it back to the client: $t_{service} := t_{returned} - t_{dequeued}$. From there we find $\mu := \frac{1}{t_{service}}$. Note that this calculation does not distinguish between \get{}s and \set{}s.
 
 We can find $\lambda$ as simply the mean throughput over 1-second windows, similarly to Section~\ref{sec:part1:model}.
 
 
 \subsection{Data}
 
-The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and $R=1$ were used (short names \texttt{replication-S*-R1-r5}). As a reminder, that experiment had \todo{} $S=3$, $R=3$, $W=1\%$, $T=5$ and $C=192$.
+The experimental data used in this section comes from Milestone~2 Section~2 and can be found in \texttt{\href{https://gitlab.inf.ethz.ch/pungast/asl-fall16-project/tree/master/results/replication}{results/replication}}. For this section, only data from one repetition (rep. no. 5) and $R=1$ were used (short names \texttt{replication-S*-R1-r5}), which gives a total of 3 distinct experiments. As a reminder, the experiments had $S \in \{3,5,7\}$, $W=5\%$, $T=32$ and $C=180$.
 
 The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down time similarly to previous milestones.
 
 \subsection{Comparison of model and experiments}
 
-Table~\ref{tbl:part2:comparison_table} shows the results of modelling the system as M/M/m. Since $\rho < 1$ the model is stable for all cases. However, the table reveals an important shortcoming of the model: waiting times and the time spent in the queue are 0.
+\input{../results/analysis/part2_mmm/comparison_table.txt}
 
-The reason becomes clear if we look at the formulas for calculating $p_0$ (the probability of 0 jobs in the system). As $m$ goes to infinity, $p_0$ goes to zero (because the inverse of $p_0$ is a sum that goes to infinity). Even for finite values of $m \in [99, 231]$, $p_0$ is on the order of $10^{-32}$ to $10^{-77}$ (for rho=0.8). Since the probability of queueing $\varrho$ also depends on $p_0$, this causes queueing to become nonexistent in the M/M/m model.
+Table~\ref{tbl:part2:comparison_table} shows the results of modelling the system as M/M/m. Since $\rho < 1$, the model is stable for all cases. However, the table reveals an important shortcoming of the model: waiting times and the time spent in the queue are 0.
 
-There are some aspects in which the model performs well, though. Figure~\ref{fig:part2:responsetime} shows that the model only slightly underestimates response time, although the variance estimate is too low.
+The reason becomes clear if we look at the formulas for calculating $p_0$ (the probability of 0 jobs in the system). As $m$ goes to infinity, $p_0$ goes to zero (because the inverse of $p_0$ is a sum that goes to infinity). Even for finite values of $m \in [99, 231]$, $p_0$ is on the order of $10^{-32}$ to $10^{-77}$ (for rho=0.8). Since the probability of queueing $\varrho$ also depends on $p_0$, this causes queueing to become nonexistent in the M/M/m model. Needless to say, this is a huge 
 
-\todo{}
+There are some aspects in which the model performs well, though. Figure~\ref{fig:part2:responsetime} shows that the model only slightly underestimates response time, although the variance estimate is too low. For the same reason the number of jobs in the system -- which mostly depends on the ratio of the response time and network delay -- is off by a relatively small factor.
+
+\subsubsection{Scalability}
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/analysis/part2_mmm/graphs/response_time_predicted_and_actual.pdf}
-\caption{\todo{} note difference in scale}
+\caption{Predicted and actual mean response time of SUT (line with points) and standard deviation of the response time (semi-transparent ribbon).}
 \label{fig:part2:responsetime}
 \end{figure}
 
-\input{../results/analysis/part2_mmm/comparison_table.txt}
+Figure~\ref{fig:part2:responsetime} shows the response time of SUT as a function of $S$ and the M/M/m predictions of the same metric (exact numbers are shown in Table~\ref{tbl:part2:comparison_table}). The model is correctly able to capture the overall trend: there is almost no change in response time when $S$ is changed. However, M/M/m underestimates the variance in response time; this is because of the nonexistent predicted queueing time discussed above. Furthermore, the model predicts a slight increase in response time as $S$ increases (2.89 ms at $S=3$ to 3.28 ms at $S=7$), which we do not observe. The scalability of the system -- especially with respect to \set{}s -- is further discussed in Section~\ref{sec:part3:problems}.
 
+In summary, while M/M/m does a much better job than M/M/1 at capturing the behaviour of SUT, its main shortcoming -- no queueing -- renders the model useless for practical purposes (we want to build a queueing model!). This is the motivation for building a more complex model in Section~\ref{sec:part3-network-of-queues}.
 
 \clearpage
 % --------------------------------------------------------------------------------
