@@ -99,7 +99,7 @@ The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down tim
  
 \subsection{Parameter estimation}
 
-Using the available experimental data, it is not possible to directly calculate the mean arrival rate $\lambda$ and mean service rate $\mu$ so we need to estimate them somehow. I estimated both using throughput of the system: I take $\lambda = 10294 \frac{requests}{s}$ to be the \emph{mean} throughput over 1-second windows, and $\mu =  = 12900 \frac{requests}{s}$ to be the the \emph{maximum} throughput in any 1-second window, calculated from middleware logs. I chose a 1-second window because a too small window is highly susceptible to noise whereas a too large window size drowns out useful information.
+Using the available experimental data, it is not possible to directly calculate the mean arrival rate $\lambda$ and mean service rate $\mu$ so we need to estimate them somehow. I estimated both using throughput of the system: I take $\lambda = 10294 \frac{requests}{s}$ to be the \emph{mean} throughput over 1-second windows, and $\mu = 12900 \frac{requests}{s}$ to be the the \emph{maximum} throughput in any 1-second window, calculated from middleware logs. I chose a 1-second window because a too small window is highly susceptible to noise whereas a too large window size drowns out useful information.
 
 %I estimated $\lambda$ using throughput of the system: I take it to be the \emph{mean} throughput over 1-second windows. To find mean service rate $\mu$, I first calculate the \maximum{throughput} over any 1-second window, and take it to be the first estimate of $\mu$. This, however, doesn't take into account the network 
 
@@ -117,7 +117,7 @@ Table~\ref{tbl:part1:comparison_table} shows a comparison of the predictions of 
 
 It is clear that actual response time is much higher -- about 40 times higher -- than what the model predicts. This is because using M/M/1 for the SUT as a black box does not take into account internal parallelisation: we have $S \cdot T$ threads for \get{}s and $S$ threads for \set{}s. For a single thread to achieve the same throughput as $K$ parallel threads, it needs to process each request $K$ times faster. This doesn't explain the whole difference, though, given that in the trace experiment $K=15$ (compared to the 40x difference in predicted and actual values we observe).
 
-Another factor is queueing: since the M/M/1 model predicts a much lower response/service time, the queues in that model are also shorter. The number of jobs in each \get{} queue is $\frac{149.79}{S} = 9.07$ which is roughly 2 times more than what M/M/1 predicts. A longer queue means a longer waiting time.
+Another factor is queueing: since the M/M/1 model predicts a much lower response/service time, the queues in that model are also shorter. The number of jobs in each \get{} queue is $\frac{149.79}{S} = 30.0$ which is roughly 7 times more than what M/M/1 predicts. A longer queue means a longer waiting time.
 
 The model does provide a reasonable estimate of the utilisation of the system and the proportion of jobs in queue (out of all jobs in the system). This is mostly because the inputs we gave to the model (arrival rate and service rate) were good estimates and not because the model itself is accurate.
 
@@ -150,7 +150,6 @@ The assumptions and definitions of the M/M/m model are the same as for the M/M/1
 
 \begin{itemize}
 	\item We treat the SUT as a collection of $m$ servers.
-	\item All jobs waiting for service are held in one queue.
 	\item If any server is idle, an arriving job is serviced immediately.
 	\item If all servers are busy, an arriving job is added to the queue.
 \end{itemize}
@@ -183,7 +182,7 @@ The first 2 minutes and last 2 minutes were dropped as warm-up and cool-down tim
 
 Table~\ref{tbl:part2:comparison_table} shows the results of modelling the system as M/M/m. Since $\rho < 1$, the model is stable for all cases. However, the table reveals an important shortcoming of the model: waiting times and the time spent in the queue are 0.
 
-The reason becomes clear if we look at the formulas for calculating $p_0$ (the probability of 0 jobs in the system). As $m$ goes to infinity, $p_0$ goes to zero (because the inverse of $p_0$ is a sum that goes to infinity). Even for finite values of $m \in [99, 231]$, $p_0$ is on the order of $10^{-32}$ to $10^{-77}$ (for rho=0.8). Since the probability of queueing $\varrho$ also depends on $p_0$, this causes queueing to become nonexistent in the M/M/m model. Needless to say, this is a huge 
+The reason becomes clear if we look at the formulas for calculating $p_0$ (the probability of 0 jobs in the system). As $m$ goes to infinity, $p_0$ goes to zero (because the inverse of $p_0$ is a sum that goes to infinity). Even for finite values of $m \in [99, 231]$, $p_0$ is on the order of $10^{-32}$ to $10^{-77}$ (for rho=0.8). Since the probability of queueing $\varrho$ also depends on $p_0$, this causes queueing to become nonexistent in the M/M/m model. Needless to say, this is a huge failure of the model.
 
 There are some aspects in which the model performs well, though. Figure~\ref{fig:part2:responsetime} shows that the model only slightly underestimates response time, although the variance estimate is too low. For the same reason the number of jobs in the system -- which mostly depends on the ratio of the response time and network delay -- is off by a relatively small factor.
 
@@ -217,7 +216,7 @@ Thus we can model SUT as a \emph{closed} queueing network: the total number of j
 
 I will use the following definitions and assumptions:
 \begin{itemize}
-	\item The queues are defined as having infinite buffer capacity.
+	\item The queues have infinite buffer capacity.
 	\item The population size is infinite.
 	\item The service discipline is FCFS.
 	\item Interarrival times and the service times are exponentially distributed.
@@ -235,7 +234,7 @@ Figure~\ref{fig:part3:network_diagram} shows the queueing network model used in 
 
 There are two queues in each \linkmain{MiddlewareComponent} and they are modelled as such: $T$ \linkmain{ReadWorker}s are dequeueing from a single queue of \get{}s and one \linkmain{WriteWorker} is dequeueing from a queue of \set{}s. This gives rise to M/M/$T$ and M/M/1 architectures, respectively.
 
-There is no explicit modelling of memcached servers: instead, the network round-trip to memcached, the waiting time in memcached and the service time of memcached servers is all counted into the service time of Workers.
+There is no explicit modelling of memcached servers: instead, the network round-trip to memcached, the waiting time in memcached and the service time of memcached servers are all counted into the service time of Workers.
 
 \get{}s and \set{}s are modelled separately, i.e. this is a \emph{multiclass} queueing network.
 
@@ -244,13 +243,11 @@ To analyse the model, I will perform MVA using the Octave package \href{http://w
 \subsection{Problems of the model}
 \label{sec:part3:problems}
 
-One fundamental problem of the model is the simplification of not modelling memcached servers. This simplification makes sense for \linkmain{ReadWorker}s because they block until a \get{} has been returned to the client, but since \linkmain{WriteWorker}s are asynchronous, this is not an accurate model.
+One fundamental problem of the model is the simplification of not modelling memcached servers. This simplification makes sense for \linkmain{ReadWorker}s because they block until a \get{} has been returned to the client, but since \linkmain{WriteWorker}s are asynchronous, this is not an accurate model. A consequence of this is that replication has no effect on the predictions -- if we want to find parameters from one configuration and use them to predict the performance for varying $R$, we will get exactly the same results.
 
 However, after dequeueing a \set{} and sending it to memcached, a \linkmain{WriteWorker} waits for 1 millisecond (using \texttt{Selector.select(long timeout)}) before proceeding to dequeueing the next element. As a consequence, if the response from memcached arrives within 1ms and no other responses are ready to be \texttt{select}ed, the behaviour is equivalent to blocking until a response is received. For a similar reason, if we increase $S$ or $R$, WriteWorkers will get faster because there is less blocking on the \texttt{select()} method. (This also explains the behaviour seen in Milestone~2 Section~2).
 
 For this reason, \linkmain{WriteWorker}s exhibit a behaviour that is on average 'between' asynchronous and synchronous -- and using a single M/M/1 model for the \linkmain{WriteWorker} -- memcached -- \linkmain{WriteWorker} part of SUT is a better approximation.
-
-A consequence of the problem described above is that replication has no effect on the predictions -- if we want to find parameters from one configuration and use them to predict the performance for varying $R$, we will get exactly the same results.
 
 
 \subsection{Parameter estimation}
@@ -266,7 +263,7 @@ The inputs to the queueing network model are: $S$, $T$, $C$, $W$, and service ti
 
 $s_{network}$ and $s_{LoadBalancer}$ are calculated separately for \get{}s and \set{}s (the names of Workers already imply that the service times are only calculated for one request type).
 
-One issue with this definirion is that $s_{network}$ includes the queueing time in \linkmain{LoadBalancer}, but this is not an issue because the service time in that node is extremely low and thus, the queueing time is extremely low. Accordingly, our estimate for $s_{network}$ is not off by more than a few tenths of a percent.
+One issue with this definition is that $s_{network}$ includes the queueing time in \linkmain{LoadBalancer}, but this is not an issue because the service time in that node is extremely low and thus, the queueing time is extremely low. Accordingly, our estimate for $s_{network}$ is not off by more than a few tenths of a percent.
 
 
 \subsection{Data}
@@ -304,7 +301,7 @@ We can estimate the upper bound on throughput by finding out what would happen i
 % --------------------------------------------------------------------------------
 % --------------------------------------------------------------------------------
 
-In this section, I will use a $2^kr$ experiment to understand the system. Of special interest here is the proportion of \set{}s because the performance of \set{}s in SUT strongly depends on parameters, as explained in Section~\ref{sec:part3:problems}.
+In this section, I will use a $2^kr$ experiment to understand the system. Of special interest here is the proportion of \set{}s because the performance of \set{}s in SUT has an unusual dependence on parameters, as explained in Section~\ref{sec:part3:problems}.
 
 \subsection{Experimental question and experiment design}
 The goal of this section is to find out the factors that influence throughput of the system. In particular, I will investigate the effect of $k=3$ factors -- $S$ (number of servers), $R$ (replication level) and $W$ (percentage of \set{}s in workload) -- on total throughput of the system. Everything else will be kept fixed: the number of threads $T=32$ and the number of clients $C=180$.
@@ -362,7 +359,7 @@ Thus, the large variation in throughput between experiments can be explained in 
 
 \paragraph{Normally distributed errors}
 
-The model assumes that errors are normally distributed. The quantile-quantile plot in Figure~\ref{fig:part4:quantile_quantile} shows that this is clearly not the case -- the lowest quantiles are too low and medium-to-high quantiles too high for the distribution to be normal. This, however, is caused by the trimodality of the error distribution: the throughputs (and thus, errors) of each repetition individually are distributed much more closely to a normal distributions, but when we concatenate the repetitions, the result is trimodal.
+The model assumes that errors are normally distributed. The quantile-quantile plot in Figure~\ref{fig:part4:quantile_quantile} shows that this is clearly not the case -- the lowest quantiles are too low and medium-to-high quantiles too high for the distribution to be normal. This, however, is caused by the trimodality of the error distribution: the throughputs (and thus, errors) of each repetition individually are distributed much more closely to a normal distribution, but when we concatenate the repetitions, the result is trimodal.
 
 \begin{figure}
 \centering
@@ -377,14 +374,14 @@ The model assumes that errors are normally distributed. The quantile-quantile pl
 
 \subsubsection{Analysis of the model fit}
 
-Even though the deviation from the mean is high in our experiments, residuals are almost an order of magnitude smaller than throughput values, and there does not appear to be any definite trend in the mean or spread of the residuals, so the fit of the model is reasonable given the noisiness of the data. Given that the range of throughput values covered is small and the additive model is a reasonable fit, we don't need to use a multiplicative model.
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{../results/analysis/part4_2k/graphs/actual_and_predicted_vs_servers_and_writes.pdf}
 \caption{Throughput as a function of $W$. Each line with points shows the results of one repetition. The red line shows the throughput predicted by the $2^kr$ model; the light red ribbon shows the standard deviation that we would expect to see according to the model, if we were to run 3 repetitions.}
 \label{fig:part4:actual_and_predicted_vs_servers_and_writes}
 \end{figure}
+
+Even though the deviation from the mean is high in our experiments, residuals are almost an order of magnitude smaller than throughput values, and there does not appear to be any definite trend in the mean or spread of the residuals, so the fit of the model is reasonable given the noisiness of the data. Given that the range of throughput values covered is small and the additive model is a reasonable fit, we don't need to use a multiplicative model.
 
 Figure~\ref{fig:part4:actual_and_predicted_vs_servers_and_writes} shows the predictions of the model and actual results. The results of all repetitions have the same trend as the predicted mean, and stay within 1 standard deviation of the mean. This again confirms that the fit is decent.
 
@@ -394,9 +391,9 @@ Figure~\ref{fig:part4:actual_and_predicted_vs_servers_and_writes} shows the pred
 
 In Table~\ref{tbl:part4:coefficients} we find the coefficients for each variable in our model, together with the allocated variation. By far the most variation is explained by the error. This is caused by the large variation in throughput in different deployments, as discussed above.
 
-Looking at the variation explained by other components, we find that the percentage of \set{}s ($x_c$) explains the most at 27.6\%. The combination of servers and replication ($x_{ab}$) explains about 5\%; all other variables explain less than 1/10th of the variation of $x_c$ and can thus be considered insignificant.
+Among other components, we find that the percentage of \set{}s ($x_c$) explains the most at 27.6\%. Servers and replication together ($x_{ab}$) explains about 5\%; all other variables explain less than 1/10th of the variation of $x_c$ so can be considered insignificant.
 
-These results can be directly mapped the system design. There are $T$ times fewer \linkmain{WriteWorker}s than \linkmain{ReadWorker}s. This causes \set{}s to have a significantly higher response time (see Milestone~2 for details); increasing the proportion of \set{}s therefore increases response time significantly.
+These results can be directly mapped the system design. There are $T$ times fewer \linkmain{WriteWorker}s than \linkmain{ReadWorker}s, so \set{}s to have a higher response time (see Milestone~2 for details); increasing the proportion of \set{}s therefore increases response time significantly.
 
 The amount of servers $S$ or replication $R$ don't have a large effect individually; however, increasing both $S$ and $R$ from the minimum to the maximum increases the cost of \set{}s significantly ($S=7,R=S$ means 7 writes are made to memcached servers for each \set{}, compared to 1 write if $S=3,R=1$), and thus has a strong effect on throughput (via increased response time).
 
